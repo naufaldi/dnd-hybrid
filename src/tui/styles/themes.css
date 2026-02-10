@@ -1,0 +1,113 @@
+/* Theme definitions for D&D Roguelike */
+/* Using Textual's native theme system */
+
+App {
+    background: #0d1117;
+    color: #c9d1d9;
+}
+
+#menu_container {
+    width: 100%;
+    height: 100%;
+    align: center middle;
+}
+
+#menu_items {
+    width: auto;
+    height: auto;
+    padding: 2 4;
+}
+
+#title {
+    text-align: center;
+    text-style: bold;
+    color: #58a6ff;
+    width: 100%;
+}
+
+#subtitle {
+    text-align: center;
+    color: #8b949e;
+    width: 100%;
+}
+
+#game_layout {
+    width: 100%;
+    height: 100%;
+}
+
+#map_container {
+    width: 80%;
+    height: 100%;
+}
+
+#sidebar {
+    width: 20%;
+    height: 100%;
+    border-left: solid #30363d;
+}
+
+#cc_container {
+    width: 100%;
+    height: 100%;
+    align: center middle;
+}
+
+#cc_content {
+    width: 60%;
+    height: auto;
+    padding: 2 4;
+}
+
+#char_container {
+    width: 100%;
+    height: 100%;
+}
+
+#char_content {
+    width: 50%;
+    height: auto;
+    padding: 2 4;
+}
+
+#inv_container {
+    width: 100%;
+    height: 100%;
+}
+
+#inv_content {
+    width: 60%;
+    height: auto;
+    padding: 2 4;
+}
+
+#log_container {
+    width: 100%;
+    height: 100%;
+}
+
+#log_content_container {
+    width: 90%;
+    height: 90%;
+    padding: 2 4;
+}
+
+Button {
+    margin: 1 2;
+    background: #161b22;
+    color: #c9d1d9;
+    border: solid #30363d;
+}
+
+Button:hover {
+    background: #21262d;
+}
+
+Static {
+    width: 100%;
+}
+
+ListView {
+    height: 100%;
+    background: #161b22;
+}

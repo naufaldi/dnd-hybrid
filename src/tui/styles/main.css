@@ -1,0 +1,104 @@
+/* Main CSS styles for D&D Roguelike TUI */
+
+Screen {
+    background: $surface;
+    color: $text;
+}
+
+#menu_container {
+    width: 100%;
+    height: 100%;
+    align: center middle;
+}
+
+#menu_items {
+    width: auto;
+    height: auto;
+    padding: 2 4;
+}
+
+#title {
+    text-align: center;
+    text-style: bold;
+    color: $accent;
+    width: 100%;
+}
+
+#subtitle {
+    text-align: center;
+    color: $text-muted;
+    width: 100%;
+}
+
+#game_layout {
+    width: 100%;
+    height: 100%;
+}
+
+#map_container {
+    width: 80%;
+    height: 100%;
+}
+
+#sidebar {
+    width: 20%;
+    height: 100%;
+    border-left: solid $border;
+}
+
+#cc_container {
+    width: 100%;
+    height: 100%;
+    align: center middle;
+}
+
+#cc_content {
+    width: 60%;
+    height: auto;
+    padding: 2 4;
+}
+
+#char_container {
+    width: 100%;
+    height: 100%;
+}
+
+#char_content {
+    width: 50%;
+    height: auto;
+    padding: 2 4;
+}
+
+#inv_container {
+    width: 100%;
+    height: 100%;
+}
+
+#inv_content {
+    width: 60%;
+    height: auto;
+    padding: 2 4;
+}
+
+#log_container {
+    width: 100%;
+    height: 100%;
+}
+
+#log_content_container {
+    width: 90%;
+    height: 90%;
+    padding: 2 4;
+}
+
+Button {
+    margin: 1 2;
+}
+
+Static {
+    width: 100%;
+}
+
+ListView {
+    height: 100%;
+}

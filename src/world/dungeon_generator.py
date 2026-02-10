@@ -55,9 +55,7 @@ class DungeonGenerator:
     def generate(self) -> GameMap:
         """Generate a complete dungeon."""
         self.map = GameMap(
-            width=self.config.width,
-            height=self.config.height,
-            seed=self.config.seed
+            width=self.config.width, height=self.config.height, seed=self.config.seed
         )
 
         # Fill with walls (overriding default floors)
@@ -97,13 +95,29 @@ class DungeonGenerator:
         for room in self.rooms:
             self._carve_room(room)
 
+        # Sync rooms to map
+        self.map.rooms = self.rooms
+
     def _build_bsp(self, node: BSPNode, depth: int) -> None:
         """Recursively build BSP tree."""
-        max_depth = 5
+        max_depth = 8
 
         # Determine if we should split
-        can_split_horizontally = node.width > self.config.max_room_size * 2
-        can_split_vertically = node.height > self.config.max_room_size * 2
+        min_size = self.config.min_room_size
+        max_size = self.config.max_room_size
+
+        # Check if both dimensions allow splitting
+        can_split = (node.width > max_size and node.height >= min_size * 2) or (
+            node.height > max_size and node.width >= min_size * 2
+        )
+
+        # Prefer splitting the larger dimension
+        if node.width >= node.height:
+            can_split_vertically = node.width > max_size and node.height >= min_size * 2
+            can_split_horizontally = node.height > max_size and node.width >= min_size * 2
+        else:
+            can_split_horizontally = node.height > max_size and node.width >= min_size * 2
+            can_split_vertically = node.width > max_size and node.height >= min_size * 2
 
         if depth < max_depth and (can_split_horizontally or can_split_vertically):
             # Decide split direction
@@ -122,7 +136,9 @@ class DungeonGenerator:
                     return  # Cannot split
                 split_point = random.randint(min_split, max_split)
                 node.left = BSPNode(node.x, node.y, node.width, split_point)
-                node.right = BSPNode(node.x, node.y + split_point, node.width, node.height - split_point)
+                node.right = BSPNode(
+                    node.x, node.y + split_point, node.width, node.height - split_point
+                )
             else:
                 # Vertical split (left/right)
                 min_split = self.config.min_room_size
@@ -131,17 +147,26 @@ class DungeonGenerator:
                     return  # Cannot split
                 split_point = random.randint(min_split, max_split)
                 node.left = BSPNode(node.x, node.y, split_point, node.height)
-                node.right = BSPNode(node.x + split_point, node.y, node.width - split_point, node.height)
+                node.right = BSPNode(
+                    node.x + split_point, node.y, node.width - split_point, node.height
+                )
 
             self._build_bsp(node.left, depth + 1)
             self._build_bsp(node.right, depth + 1)
+        else:
+            # Cannot split further - this node will become a leaf
+            pass
 
     def _extract_bsp_rooms(self, node: BSPNode) -> None:
         """Extract rooms from BSP leaf nodes."""
         if node.left is None and node.right is None:
             # This is a leaf - create a room
-            room_width = random.randint(self.config.min_room_size, min(self.config.max_room_size, node.width))
-            room_height = random.randint(self.config.min_room_size, min(self.config.max_room_size, node.height))
+            room_width = random.randint(
+                self.config.min_room_size, min(self.config.max_room_size, node.width)
+            )
+            room_height = random.randint(
+                self.config.min_room_size, min(self.config.max_room_size, node.height)
+            )
 
             # Center room in partition
             room_x = node.x + (node.width - room_width) // 2
@@ -152,7 +177,7 @@ class DungeonGenerator:
                 x=room_x,
                 y=room_y,
                 width=room_width,
-                height=room_height
+                height=room_height,
             )
             node.room = room
             self.rooms.append(room)
@@ -178,8 +203,7 @@ class DungeonGenerator:
                     if tile and tile.tile_type.name == "WALL":
                         # Only set wall if not part of a room
                         is_in_room = any(
-                            room.x <= x < room.x + room.width and
-                            room.y <= y < room.y + room.height
+                            room.x <= x < room.x + room.width and room.y <= y < room.y + room.height
                             for room in self.rooms
                         )
                         if not is_in_room:
@@ -246,8 +270,9 @@ class DungeonGenerator:
 
     def _apply_cellular_automata(self) -> None:
         """Apply cellular automata smoothing."""
-        new_tiles = [[self.map.get_tile(x, y) for x in range(self.map.width)]
-                     for y in range(self.map.height)]
+        new_tiles = [
+            [self.map.get_tile(x, y) for x in range(self.map.width)] for y in range(self.map.height)
+        ]
 
         for y in range(self.map.height):
             for x in range(self.map.width):
