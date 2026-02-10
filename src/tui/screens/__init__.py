@@ -19,12 +19,8 @@ class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.selected_index = 0
-        self.menu_items = [
-            ("New Game", self.action_new_game),
-            ("Continue", self.action_continue),
-            ("Options", self.action_options),
-            ("Quit", self.action_quit),
-        ]
+        self.menu_options = ["New Game", "Continue", "Options", "Quit"]
+        self.buttons = ["btn_new", "btn_continue", "btn_options", "btn_quit"]
 
     def compose(self):
         """Compose the menu screen."""
@@ -32,39 +28,58 @@ class MenuScreen(Screen):
             Vertical(
                 Static("D&D ROGUELIKE", id="title"),
                 Static("A roguelike with D&D 5e mechanics", id="subtitle"),
-                Static("\n" * 3),
-                Static("> New Game", id="menu_0"),
-                Static("  Continue", id="menu_1"),
-                Static("  Options", id="menu_2"),
-                Static("  Quit", id="menu_3"),
-                id="menu_items",
+                Static("\n" * 5),
+                Static("  Use UP/DOWN arrows to select", id="hint"),
+                Static("\n"),
+                Button("New Game", id="btn_new", variant="primary"),
+                Static("\n"),
+                Button("Continue", id="btn_continue"),
+                Static("\n"),
+                Button("Options", id="btn_options"),
+                Static("\n"),
+                Button("Quit", id="btn_quit"),
+                id="menu_content",
             ),
             id="menu_container",
         )
 
+    def on_mount(self):
+        """Focus first button on mount."""
+        self.query_one("#btn_new").focus()
+
     def on_key(self, event: events.Key) -> None:
         """Handle key presses for menu navigation."""
         if event.key == "up":
-            self.selected_index = (self.selected_index - 1) % len(self.menu_items)
-            self._update_menu_display()
+            self.selected_index = (self.selected_index - 1) % len(self.menu_options)
+            self._update_focus()
         elif event.key == "down":
-            self.selected_index = (self.selected_index + 1) % len(self.menu_items)
-            self._update_menu_display()
+            self.selected_index = (self.selected_index + 1) % len(self.menu_options)
+            self._update_focus()
         elif event.key == "enter":
-            self.menu_items[self.selected_index][1]()
+            # Trigger the action for current selection
+            if self.selected_index == 0:
+                self.action_new_game()
+            elif self.selected_index == 1:
+                self.action_continue()
+            elif self.selected_index == 2:
+                self.action_options()
+            elif self.selected_index == 3:
+                self.action_quit()
 
-    def _update_menu_display(self) -> None:
-        """Update the menu item display."""
-        for i, (_, _) in enumerate(self.menu_items):
-            widget = self.query_one(f"#menu_{i}", Static)
-            if i == self.selected_index:
-                widget.update(f"> {self.menu_items[i][0]}")
-            else:
-                widget.update(f"  {self.menu_items[i][0]}")
+    def _update_focus(self):
+        """Update button focus based on selected_index."""
+        btn_id = self.buttons[self.selected_index]
+        self.query_one(f"#{btn_id}").focus()
 
     def action_new_game(self) -> None:
         """Start a new game."""
         self.app.push_screen("character_creation")
+
+    def on_screen_dismissed(self, screen: Screen) -> None:
+        """Handle screen dismissal."""
+        if isinstance(screen, CharacterCreationScreen) and screen.character_data.get("name"):
+            data = screen.character_data
+            self.app.start_game(data["name"], data["character_class"], data["race"])
 
     def action_continue(self) -> None:
         """Continue a saved game."""
@@ -77,6 +92,18 @@ class MenuScreen(Screen):
     def action_quit(self) -> None:
         """Quit the game."""
         self.app.exit()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button presses."""
+        button_id = event.button.id
+        if button_id == "btn_new":
+            self.action_new_game()
+        elif button_id == "btn_continue":
+            self.action_continue()
+        elif button_id == "btn_options":
+            self.action_options()
+        elif button_id == "btn_quit":
+            self.action_quit()
 
 
 class CharacterCreationScreen(Screen):
@@ -101,6 +128,7 @@ class CharacterCreationScreen(Screen):
                 Static("", id="cc_prompt"),
                 Static("", id="cc_value"),
                 Static("", id="cc_options"),
+                Input("", id="name_input", placeholder="Type your name..."),
                 Static("\n[Enter] Next  [Escape] Back", id="cc_help"),
                 id="cc_content",
             ),
@@ -110,6 +138,14 @@ class CharacterCreationScreen(Screen):
     def on_mount(self) -> None:
         """Called when screen is mounted."""
         self._update_display()
+        self._focus_current_step()
+
+    def _focus_current_step(self) -> None:
+        """Focus the appropriate widget for the current step."""
+        if self.step == 0:
+            self.query_one("#name_input", Input).focus()
+        else:
+            self.query_one("#cc_options", Static).focus()
 
     def on_key(self, event: events.Key) -> None:
         """Handle key presses."""
@@ -117,10 +153,11 @@ class CharacterCreationScreen(Screen):
             self._next_step()
         elif event.key == "escape":
             self.app.pop_screen()
-        elif event.key == "up":
-            self._navigate(-1)
-        elif event.key == "down":
-            self._navigate(1)
+        elif self.step > 0:
+            if event.key == "up":
+                self._navigate(-1)
+            elif event.key == "down":
+                self._navigate(1)
 
     def _update_display(self) -> None:
         """Update the display based on current step."""
@@ -140,11 +177,14 @@ class CharacterCreationScreen(Screen):
 
         value = self.query_one("#cc_value", Static)
         opts = self.query_one("#cc_options", Static)
+        name_input = self.query_one("#name_input", Input)
 
         if self.step == 0:
             value.update(f"[b]{self.character_data['name']}[/b]")
-            opts.update("Type your name")
+            name_input.display = True
+            opts.update("Type your name and press Enter")
         else:
+            name_input.display = False
             current = [self.classes, self.races][self.step - 1]
             display = []
             for i, c in enumerate(current):
@@ -157,23 +197,35 @@ class CharacterCreationScreen(Screen):
     def _navigate(self, delta: int) -> None:
         """Navigate options."""
         if self.step == 0:
+            self._focus_current_step()
             return
 
         current_list = [self.classes, self.races][self.step - 1]
+        current_list = list(current_list) if not isinstance(current_list, list) else current_list
         current_val = self.character_data[["character_class", "race"][self.step - 1]]
         idx = current_list.index(current_val)
         idx = (idx + delta) % len(current_list)
         self.character_data[["character_class", "race"][self.step - 1]] = current_list[idx]
         self._update_display()
 
+    def on_input_changed(self, event: Input.Changed) -> None:
+        """Handle input changes for name entry."""
+        if self.step == 0:
+            self.character_data["name"] = event.value
+            self._update_display()
+
     def _next_step(self) -> None:
         """Move to the next step."""
+        if self.step == 0:
+            if not self.character_data["name"].strip():
+                self.notify("Please enter a name")
+                return
         if self.step < 2:
             self.step += 1
             self._update_display()
+            self._focus_current_step()
         else:
-            # Start the game
-            self.dismiss()
+            self.dismiss(self.character_data)
 
 
 class GameScreen(Screen):

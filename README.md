@@ -6,6 +6,14 @@ A roguelike CLI game combining D&D 5th Edition mechanics with procedural dungeon
 ![Textual](https://img.shields.io/badge/textual-4.x-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+<div align="center">
+  <a href="https://bit.ly/49t6aTh">
+    <img src="docs/minimax-banner.png" alt="Get 12% Discount Coding Plan" width="100%">
+  </a>
+  
+  **[Get 12% Discount →](https://bit.ly/49t6aTh)**
+</div>
+
 ## Features
 
 - **D&D 5e Mechanics**: Full attribute system, combat resolution, proficiency bonuses, critical hits

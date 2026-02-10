@@ -7,14 +7,6 @@ hypothesis>=6.100.0
 # TUI Framework
 textual>=4.0.0
 
-# Compression
-lz4>=4.3.0
-cramjam>=2.6.0
-
 # Type checking & Linting
 mypy>=1.15.0
 ruff>=0.8.0
-types-python-lz4>=0.1.0
-
-# Optional
-python-rapidjson>=1.20

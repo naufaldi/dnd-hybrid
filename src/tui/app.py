@@ -8,7 +8,14 @@ from textual.binding import Binding
 from textual.driver import Driver
 from textual.widgets import Header, Footer
 
-from .screens import GameScreen, MenuScreen, CharacterScreen, InventoryScreen, LogScreen
+from .screens import (
+    GameScreen,
+    MenuScreen,
+    CharacterScreen,
+    InventoryScreen,
+    LogScreen,
+    CharacterCreationScreen,
+)
 from .reactivity.state_store import StateStore
 from ..core.game_engine import GameEngine, GameState
 from ..core.event_bus import event_bus, GameEvents, Event
@@ -34,6 +41,7 @@ class DNDRoguelikeApp(App):
         "menu": MenuScreen,
         "game": GameScreen,
         "character": CharacterScreen,
+        "character_creation": CharacterCreationScreen,
         "inventory": InventoryScreen,
         "log": LogScreen,
     }
@@ -56,6 +64,12 @@ class DNDRoguelikeApp(App):
     def compose(self) -> ComposeResult:
         """Compose the application layout."""
         yield Header(show_clock=True)
+        yield MenuScreen(id="menu")
+        yield CharacterCreationScreen(id="character_creation")
+        yield GameScreen(id="game")
+        yield CharacterScreen(id="character")
+        yield InventoryScreen(id="inventory")
+        yield LogScreen(id="log")
         yield Footer()
 
     def on_mount(self) -> None:
