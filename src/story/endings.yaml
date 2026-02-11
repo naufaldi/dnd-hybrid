@@ -1,0 +1,70 @@
+endings:
+  hero:
+    title: "The Hero's Triumph"
+    description: |
+      You emerge from the dungeon victorious! The ancient evil has been defeated,
+      and songs will be sung of your bravery for generations to come.
+    requirements:
+      flags_required:
+        defeated_boss: true
+        saved_town: true
+      min_gold: 100
+      min_level: 3
+
+  survivor:
+    title: "The Reluctant Survivor"
+    description: |
+      You escape with your life, but the dungeon still stands. Perhaps someday
+      you'll be strong enough to return and finish what you started.
+    requirements:
+      flags_required:
+        escaped_dungeon: true
+      min_gold: 0
+      min_level: 1
+
+  fallen:
+    title: "Fallen in Darkness"
+    description: |
+      Your journey ends in the depths of the dungeon. Your name will be
+      remembered, if only as a warning to others who might follow.
+    requirements:
+      flags_required:
+        player_died: true
+      min_gold: 0
+      min_level: 1
+
+  corrupted:
+    title: "Corrupted by Power"
+    description: |
+      The dungeon's dark energies have twisted you. You emerge changed,
+      bearing the mark of the very evil you sought to destroy.
+    requirements:
+      flags_required:
+        accepted_dark_power: true
+      min_gold: 0
+      min_level: 2
+
+  legendary:
+    title: "The Legendary Hero"
+    description: |
+      Not only have you defeated the dungeon's master, but you've discovered
+      ancient secrets and become a legend in your own time.
+    requirements:
+      flags_required:
+        defeated_boss: true
+        found_treasure: true
+        saved_town: true
+      min_gold: 500
+      min_level: 5
+      choices_made:
+        - heroic_choice
+
+  mystery:
+    title: "The Mystery Unfolds"
+    description: |
+      Your adventure ends here, but the mysteries of the dungeon remain unsolved.
+      Perhaps another brave soul will follow in your footsteps...
+    requirements:
+      flags_required: {}
+      min_gold: 0
+      min_level: 1

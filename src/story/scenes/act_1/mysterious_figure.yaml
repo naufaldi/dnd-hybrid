@@ -1,0 +1,43 @@
+id: mysterious_figure
+act: 1
+title: "The Mysterious Stranger"
+ai_dialogue: true
+npc_name: "Stranger"
+npc_mood: "enigmatic"
+
+description: |
+  The hooded figure looks up as you approach. Deep-set eyes gleam in the shadow 
+  of the cowl. This is no ordinary traveler.
+  
+  "I've been expecting someone with your... talents," the stranger says, voice barely 
+  a whisper. "The dungeon below this town holds something ancient. Something dangerous."
+
+choices:
+  - id: ask_dungeon
+    text: "Ask about the dungeon"
+    shortcut: A
+    next_scene: dungeon_info
+    set_flags:
+      learned_dungeon_secret: true
+
+  - id: offer_help
+    text: "Offer to help"
+    shortcut: B
+    next_scene: offer_heroic
+    set_flags:
+      allied_with_stranger: true
+
+  - id: demand_answers
+    text: "Demand answers"
+    shortcut: C
+    next_scene: confront_stranger
+    skill_check:
+      ability: cha
+      dc: 14
+      success_next_scene: confrontation_success
+      failure_next_scene: confrontation_fail
+
+  - id: walk_away
+    text: "Walk away"
+    shortcut: D
+    next_scene: tavern_entry

@@ -1,173 +1,247 @@
 # Product Requirements Document (PRD)
 
-## D&D Roguelike Hybrid CLI Game
+## AI Dungeon Chronicles - Narrative D&D Interactive Fiction
 
-**Version:** 1.0.0  
+**Version:** 2.0.0  
 **Status:** Draft  
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-10
 
 ---
 
 ## 1. Executive Summary
 
-A procedurally-generated roguelike CLI game combining D&D tabletop mechanics with traditional roguelike gameplay. Players explore randomly generated dungeons, engage in D20-based combat, manage character progression, and experience persistent campaigns with save compression.
+A terminal-based narrative D&D interactive fiction game with AI-enhanced storytelling. Players experience branching storylines with meaningful choices, explicit dice rolling with ASCII visuals, and multiple endings based on their decisions. Combines the storytelling depth of interactive fiction with D&D mechanics and AI generation.
 
 ## 2. Product Vision
 
-Create a technically demanding CLI game that serves dual purposes:
-- An engaging roguelike experience for players
-- A comprehensive benchmark for testing LLM model capabilities across coding, architecture, and edge case handling
+Create an engaging narrative RPG experience that showcases AI integration in interactive fiction:
+- **Text-first gameplay** - No graphics, pure storytelling
+- **Meaningful choices** - Every decision affects the story
+- **Visible dice** - ASCII dice rolls for transparency
+- **AI enhancement** - Dynamic content via OpenRouter
+- **Multiple endings** - Replayable with different outcomes
 
 ## 3. Target Audience
 
-- Developers testing LLM capabilities
-- Roguelike enthusiasts seeking D&D mechanics
-- CLI game players who enjoy procedurally generated content
+- Interactive fiction enthusiasts
+- D&D players who enjoy narrative storytelling
+- Players who prefer text adventures over graphics
+- Developers interested in AI integration examples
 
 ## 4. Core Features
 
-### 4.1 Character System
+### 4.1 Narrative System
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| Six Attributes | STR, DEX, CON, INT, WIS, CHA | Must Have |
-| Derived Stats | AC, HP, Saves, Skills from attributes | Must Have |
-| Class System | Fighter, Wizard, Rogue, Cleric, Paladin | Must Have |
-| Equipment Slots | Head, Body, Main Hand, Off Hand, Ring, Boots | Must Have |
-| Inventory | Weight-limited, stackable items | Must Have |
-| Abilities | Class-specific with cooldowns and resources | Should Have |
+| Scene Engine | Load/render story scenes from YAML | Must Have |
+| Choice System | 2-4 choices per scene, keyboard shortcuts | Must Have |
+| Branching Paths | Choices lead to different scenes | Must Have |
+| Story Flags | Track decisions and state | Must Have |
+| Ending Manager | Determine ending based on flags | Must Have |
 
-### 4.2 Procedural Generation
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| Dungeon Layout | BSP trees, cellular automata | Must Have |
-| Room Connection | Corridor generation algorithms | Must Have |
-| Loot Generation | Rarity tiers, stat scaling | Must Have |
-| Enemy Scaling | Difficulty increases with depth | Must Have |
-| Quest Generation | Procedural quest objectives | Could Have |
-
-### 4.3 Combat System
+### 4.2 AI Integration (OpenRouter)
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| D20 Attack Rolls | 1d20 + mods vs AC | Must Have |
-| Damage Formulas | Die-based with multipliers | Must Have |
-| Critical Hits | Expanded threat range, doubled damage | Must Have |
-| Status Effects | Buffs/debuffs with stacking | Should Have |
-| Initiative Tracker | Turn order management | Must Have |
+| API Client | OpenRouter wrapper for free models | Must Have |
+| Scene Enhancement | AI expands template descriptions | Must Have |
+| NPC Dialogue | AI generates conversational responses | Should Have |
+| Fallback System | Templates when AI unavailable | Must Have |
+| Rate Limiting | Respect API limits | Must Have |
 
-### 4.4 AI & Pathfinding
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| A* Pathfinding | Enemy navigation to player | Must Have |
-| Field of View | Shadow casting algorithm | Must Have |
-| Fog of War | Explored area persistence | Should Have |
-| Enemy AI | Aggro ranges, attack patterns | Must Have |
-
-### 4.5 Persistence & Storage
+### 4.3 Dice & Combat System
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| SQLite Database | Character, world state storage | Must Have |
-| Save Compression | zlib/LZ4 compressed save files | Must Have |
-| Auto-save | Periodic save on milestones | Should Have |
-| Multiple Save Slots | Backup and restore | Could Have |
+| ASCII Dice Display | Visual d4/d6/d8/d10/d12/d20 | Must Have |
+| Attack Rolls | d20 + modifiers vs AC | Must Have |
+| Skill Checks | Ability checks with DC | Must Have |
+| Damage Rolls | Explicit damage dice display | Must Have |
+| Combat Narrator | Describe outcomes textually | Must Have |
 
-### 4.6 Concurrency
-
-| Feature | Description | Priority |
-|---------|-------------|----------|
-| Background Spawner | Async enemy spawns | Must Have |
-| Tick System | Game loop with delta time | Must Have |
-| Event Queue | Asynchronous event processing | Should Have |
-
-### 4.7 User Experience
+### 4.4 Character System
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| ASCII Graphics | Traditional roguelike visuals | Must Have |
-| Color Output | ANSI color support | Should Have |
-| Command Interface | Intuitive input system | Must Have |
-| Help System | In-game documentation | Should Have |
+| 6 Attributes | STR, DEX, CON, INT, WIS, CHA | Must Have |
+| Derived Stats | AC, HP, Proficiency | Must Have |
+| Classes | Fighter, Wizard, Rogue, Cleric | Must Have |
+| Races | Human, Elf, Dwarf, Halfling | Must Have |
+| Backstory | Narrative character creation | Should Have |
+| Equipment | Items affect stats | Could Have |
 
-### 4.8 TUI Interface (Textual)
+### 4.5 Persistence
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
-| Panel-based Layout | Status, map, log, action panels | Must Have |
-| Rich ASCII Rendering | Colors, styles, gradients | Must Have |
-| Keyboard Navigation | Vim-style and arrow keys | Must Have |
-| Mouse Support | Click to select, context menus | Could Have |
-| Real-time Updates | Tick-based refresh without flicker | Must Have |
-| Scrollable Logs | Combat log, message history | Must Have |
-| Modal Dialogs | Character creation, inventory | Should Have |
-| Responsive Layout | Adapt to terminal resize | Should Have |
+| Save Character | Store character data | Must Have |
+| Save Progress | Track story flags/choices | Must Have |
+| Load Game | Resume from save | Must Have |
+| Multiple Saves | Save slots | Could Have |
 
-## 5. Non-Functional Requirements
+### 4.6 User Interface
 
-### 5.1 Performance
-- Save load time < 2 seconds for 100+ hour saves
-- Pathfinding < 10ms for 100+ enemies
-- Memory footprint < 100MB
-- TUI render time < 16ms (60fps target)
-- Map redraw < 5ms for 80x24 viewport
+| Feature | Description | Priority |
+|---------|-------------|----------|
+| Title Screen | ASCII art, menu options | Must Have |
+| Character Creation | Step-by-step with descriptions | Must Have |
+| Game Screen | Narrative text + choices | Must Have |
+| Combat Screen | Dice display + outcomes | Must Have |
+| Ending Screen | Show ending + stats | Must Have |
 
-### 5.2 Reliability
-- Save corruption handled gracefully
-- Input validation on all commands
-- No crashes from invalid game states
-- TUI handles terminal resize gracefully
-- No flicker or tearing on updates
+## 5. Game Flow
 
-### 5.3 Compatibility
-- macOS, Linux, Windows (via cross-platform libs)
-- Python 3.10+ or equivalent
+```
+[Title] → [New/Continue] → [Character Creation] → [Story Loop] → [Ending]
+                                                     ↓
+                                          Scene → Description → Choices
+                                                     ↓
+                                              [Roll Dice?]
+                                                     ↓
+                                              Outcome → Next Scene
+```
 
-## 6. Success Metrics
+## 6. AI Integration Points
 
-| Metric | Target |
-|--------|--------|
-| LLM Test Coverage | 100% features implemented |
-| Save Corruption Recovery | 100% graceful handling |
-| Edge Case Coverage | All identified cases handled |
-| Code Complexity | Maintainable module structure |
+| Point | Purpose | Fallback |
+|-------|---------|----------|
+| Scene Intro | Expand atmosphere | Static text |
+| NPC Response | Generate dialogue | Scripted |
+| Outcome Text | Describe results | Generic |
+| Flavor | Add atmosphere | None |
 
-## 7. Out of Scope
+## 7. Story Structure
 
-- Multiplayer/multiplayer
-- Audio/sound effects
-- Graphical UI (beyond TUI - native GUI/Web UI)
-- Mod support (v1)
+### Acts
+- **Act 1:** Introduction, first choices, initial adventure
+- **Act 2:** Rising action, major branches, NPCs
+- **Act 3:** Climax, final choices, endings
+
+### Endings (v1.0)
+1. **Hero** - Saved the realm
+2. **Tragic** - Self-sacrifice
+3. **Merchant** - Wealth achieved
+4. **Corrupted** - Fell to darkness
+5. **Mystery** - Discovered secret
+
+## 8. Non-Functional Requirements
+
+### Performance
+- Scene load time < 100ms
+- AI response timeout < 10s (fallback to template)
+- Memory footprint < 50MB
+- Terminal responsive at 60fps
+
+### Reliability
+- Graceful AI fallback
+- Save corruption handling
+- Input validation
+
+### Compatibility
+- Python 3.10+
+- macOS, Linux, Windows
+- Terminal width: min 80 cols
+
+## 9. Out of Scope
+
+- Multiplayer
+- Audio/sound
+- Graphical UI
+- Mod support
 - Network features
 
-## 8. Future Considerations
+## 10. Future Considerations
 
-- Modding API (v2)
-- Daily challenge leaderboards
-- Steam/cloud saves
-- Cross-platform persistent world
+- More AI models
+- User-created stories
+- Achievement system
+- Statistics tracking
 
 ---
 
-## Appendix A: Attribute System
+## Appendix A: Dice ASCII Reference
 
-| Attribute | Primary Use | Secondary Use |
-|-----------|-------------|---------------|
-| STR | Melee attack/damage | Carrying capacity |
-| DEX | Ranged attack, AC | Initiative |
-| CON | HP, Fortitude save | Poison resistance |
-| WIS | Perception, Will save | Spellcasting (Cleric) |
-| INT | Skills, Will save | Spellcasting (Wizard) |
-| CHA | Social checks | Spellcasting (Paladin) |
+### D20 (Natural 20)
+```
+    ╭─────────────╮
+    │  ★ 20 ★    │
+    ╰─────────────╯
+```
 
-## Appendix B: Rarity Tiers
+### D20 (Natural 1)
+```
+    ╭─────────────╮
+    │    1       │
+    ╰─────────────╯
+```
 
-| Rarity | Color | Drop Chance |
-|--------|-------|-------------|
-| Common | White | 60% |
-| Uncommon | Green | 25% |
-| Rare | Blue | 10% |
-| Epic | Purple | 4% |
-| Legendary | Orange | 1% |
+### Roll Animation
+```
+    ┌──────────────────┐
+    │   Rolling...     │
+    │   ╭─────────╮    │
+    │   │   ?    │    │
+    │   ╰─────────╯    │
+    └──────────────────┘
+```
+
+---
+
+## Appendix B: Screen Layouts
+
+### Title Screen
+```
+╔═══════════════════════════════════════════════════╗
+║                                                   ║
+║      ⚔️  AI DUNGEON CHRONICLES  ⚔️               ║
+║                                                   ║
+║          A Narrative D&D Adventure                ║
+║                                                   ║
+║     [N] New Game                                 ║
+║     [C] Continue                                 ║
+║     [L] Load Game                                ║
+║     [Q] Quit                                    ║
+║                                                   ║
+╚═══════════════════════════════════════════════════╝
+```
+
+### Game Screen
+```
+═══════════════════════════════════════════════════════════
+                     SCENE TITLE
+
+───────────────────────────────────────────────────────────
+Scene description text here. Can be multiple lines describing
+what's happening and what the player sees.
+
+What do you do?
+
+  [A] ▶ First choice option
+  [B]   Second choice option
+  [C]   Third choice option
+  [D]   Fourth choice option
+
+  ════════════════════════════════════════════════════════
+  STR 14  DEX 12  CON 16  HP: 12/12  Level 1 Fighter
+═══════════════════════════════════════════════════════════
+```
+
+### Combat Screen
+```
+═══════════════════════════════════════════════════════════
+                     ⚔️ COMBAT: Goblin ⚔️
+
+You swing your sword at the goblin!
+
+    ╭─────────────╮
+    │  ★ 18 ★    │
+    ╰─────────────╯
+    d20 = 18 + 5 = 23 vs AC 12 ✓ HIT!
+
+Damage: 1d8+3 = 6 + 3 = 9 slashing!
+
+The goblin stumbles back, bloodied but alive...
+
+═══════════════════════════════════════════════════════════
+```

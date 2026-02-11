@@ -1,0 +1,46 @@
+id: tavern_entry
+act: 1
+title: "The Prancing Pony"
+
+description: |
+  The warm glow of hearth fire spills onto the cobblestones as you push 
+  open the heavy oak door. The smell of roasting meat and ale fills your 
+  nostrils.
+  
+  A group of rough-looking adventurers argue in one corner. Near the bar, 
+  a hooded figure sits alone, nursing a drink.
+
+choices:
+  - id: approach_stranger
+    text: "Approach the mysterious hooded figure"
+    shortcut: A
+    next_scene: mysterious_figure
+    set_flags:
+      met_stranger: true
+
+  - id: talk_adventurers
+    text: "Join the adventurers' conversation"
+    shortcut: B
+    next_scene: adventurers
+    skill_check:
+      ability: cha
+      dc: 12
+      success_next_scene: adventurers
+      failure_next_scene: adventurers_rejected
+
+  - id: ask_barkeep
+    text: "Ask the barkeep about dungeon rumors"
+    shortcut: C
+    consequences:
+      - type: gold
+        target: player
+        value: -2
+    next_scene: barkeep_rumors
+
+  - id: leave_tavern
+    text: "Leave and head to the dungeon"
+    shortcut: D
+    next_scene: dungeon_entrance
+
+flags_set:
+  visited_tavern: true

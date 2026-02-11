@@ -2,7 +2,7 @@
 
 from typing import Optional
 from textual.screen import Screen
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Static, Input, Button, ListView, ListItem
 from textual.app import App
 from textual import events
@@ -11,6 +11,8 @@ from ..widgets import MapWidget, StatusWidget, CombatWidget, LogWidget
 from ...core.game_engine import GameState
 from ...core.event_bus import GameEvents, Event
 from ...world.dungeon_generator import DungeonGenerator, DungeonConfig
+from ...combat.dice_display import DiceDisplay
+from ...narrative.models import Scene, Choice, GameState as NarrativeGameState
 
 
 class MenuScreen(Screen):
@@ -73,13 +75,17 @@ class MenuScreen(Screen):
 
     def action_new_game(self) -> None:
         """Start a new game."""
-        self.app.push_screen("character_creation")
+
+        def on_character_created(data: dict) -> None:
+            self.app.call_later(
+                self.app.start_game, data["name"], data["character_class"], data["race"]
+            )
+
+        self.app.push_screen("character_creation", on_character_created)
 
     def on_screen_dismissed(self, screen: Screen) -> None:
         """Handle screen dismissal."""
-        if isinstance(screen, CharacterCreationScreen) and screen.character_data.get("name"):
-            data = screen.character_data
-            self.app.start_game(data["name"], data["character_class"], data["race"])
+        pass
 
     def action_continue(self) -> None:
         """Continue a saved game."""
@@ -129,6 +135,7 @@ class CharacterCreationScreen(Screen):
                 Static("", id="cc_value"),
                 Static("", id="cc_options"),
                 Input("", id="name_input", placeholder="Type your name..."),
+                Button("Start Game", id="btn_start", variant="primary"),
                 Static("\n[Enter] Next  [Escape] Back", id="cc_help"),
                 id="cc_content",
             ),
@@ -178,17 +185,31 @@ class CharacterCreationScreen(Screen):
         value = self.query_one("#cc_value", Static)
         opts = self.query_one("#cc_options", Static)
         name_input = self.query_one("#name_input", Input)
+        start_btn = self.query_one("#btn_start", Button)
 
         if self.step == 0:
             value.update(f"[b]{self.character_data['name']}[/b]")
             name_input.display = True
+            start_btn.display = False
             opts.update("Type your name and press Enter")
+        elif self.step == 1:
+            name_input.display = False
+            start_btn.display = False
+            current = self.classes
+            display = []
+            for c in current:
+                if c == self.character_data["character_class"]:
+                    display.append(f"> {c}")
+                else:
+                    display.append(f"  {c}")
+            opts.update("\n".join(display))
         else:
             name_input.display = False
-            current = [self.classes, self.races][self.step - 1]
+            start_btn.display = True
+            current = self.races
             display = []
-            for i, c in enumerate(current):
-                if c == self.character_data[["character_class", "race"][self.step - 1]]:
+            for c in current:
+                if c == self.character_data["race"]:
                     display.append(f"> {c}")
                 else:
                     display.append(f"  {c}")
@@ -213,6 +234,11 @@ class CharacterCreationScreen(Screen):
         if self.step == 0:
             self.character_data["name"] = event.value
             self._update_display()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button presses."""
+        if event.button.id == "btn_start":
+            self.dismiss(self.character_data)
 
     def _next_step(self) -> None:
         """Move to the next step."""
@@ -439,6 +465,11 @@ class LogScreen(Screen):
         widget.update("Game events will appear here.")
 
 
+from .narrative_game_screen import NarrativeGameScreen
+from .load_game_screen import LoadGameScreen
+from .ending_screen import EndingScreen
+
+
 # Export screens
 __all__ = [
     "MenuScreen",
@@ -447,4 +478,7 @@ __all__ = [
     "CharacterScreen",
     "InventoryScreen",
     "LogScreen",
+    "NarrativeGameScreen",
+    "LoadGameScreen",
+    "EndingScreen",
 ]

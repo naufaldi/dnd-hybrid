@@ -1,6 +1,7 @@
 """Main TUI application."""
 
 import asyncio
+from pathlib import Path
 from typing import Optional
 
 from textual.app import App, ComposeResult
@@ -15,6 +16,8 @@ from .screens import (
     InventoryScreen,
     LogScreen,
     CharacterCreationScreen,
+    NarrativeGameScreen,
+    LoadGameScreen,
 )
 from .reactivity.state_store import StateStore
 from ..core.game_engine import GameEngine, GameState

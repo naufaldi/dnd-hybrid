@@ -1,0 +1,34 @@
+id: traps_identified
+act: 1
+title: "The Safe Path"
+
+description: |
+  Your keen eyes spot the danger just in time. The floor ahead is trapped - pressure
+  plates that would trigger a hail of arrows or worse.
+  
+  You carefully navigate around the deadly mechanism, marking safe spots as you go.
+  Your thorough approach has paid off.
+  
+  Beyond the trap, the passage continues into darkness. You've gained valuable
+  knowledge about dungeon traps.
+
+choices:
+  - id: proceed_carefully
+    text: "Proceed through the safe path"
+    shortcut: A
+    next_scene: goblin_encounter
+    set_flags:
+      avoided_trap_skillfully: true
+
+  - id: study_trap
+    text: "Study the trap mechanism (DC 15)"
+    shortcut: B
+    next_scene: trap_disarmed
+    skill_check:
+      ability: int
+      dc: 15
+      success_next_scene: trap_disarmed
+      failure_next_scene: trap_near_miss
+
+flags_set:
+  identified_traps: true

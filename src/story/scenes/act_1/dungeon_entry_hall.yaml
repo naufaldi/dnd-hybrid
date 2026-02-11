@@ -1,0 +1,51 @@
+id: dungeon_entry_hall
+act: 1
+title: "The Entry Hall"
+
+description: |
+  You step into the dungeon entrance and find yourself in a spacious hall. 
+  Ancient stone pillars line the walls, carved with runes that have long lost their meaning.
+  
+  The air is thick and stale. Faded tapestries hang from the walls, depicting battles
+  between armored knights and twisted creatures.
+  
+  Three passages branch off from here:
+  - To the NORTH, a narrow corridor stretches into darkness
+  - To the EAST, you hear the faint sound of dripping water
+  - To the WEST, a heavy wooden door stands slightly ajar
+
+choices:
+  - id: go_north
+    text: "Take the northern passage"
+    shortcut: A
+    next_scene: goblin_encounter
+    set_flags:
+      entered_dungeon_properly: true
+
+  - id: go_east
+    text: "Follow the sound of water"
+    shortcut: B
+    next_scene: underground_lake
+    skill_check:
+      ability: wis
+      dc: 10
+      success_next_scene: underground_lake
+      failure_next_scene: trap_pit
+
+  - id: go_west
+    text: "Investigate the wooden door"
+    shortcut: C
+    next_scene: old_armory
+
+  - id: search_room
+    text: "Search the room thoroughly"
+    shortcut: D
+    next_scene: secret_compartment
+    skill_check:
+      ability: int
+      dc: 14
+      success_next_scene: secret_compartment
+      failure_next_scene: nothing_found
+
+flags_set:
+  entered_entry_hall: true

@@ -1,0 +1,30 @@
+id: goblin_victory
+act: 1
+title: "Victory!"
+
+description: |
+  The last goblin falls with a gurgling cry. You stand amid the defeated foes,
+  breathing heavily but victorious.
+  
+  Looking over the bodies, you find a few coins and a crude map scratched onto
+  parchment. The map shows additional passages deeper into the dungeon.
+
+choices:
+  - id: search_bodies
+    text: "Search the bodies for loot"
+    shortcut: A
+    next_scene: loot_collection
+    set_flags:
+      defeated_goblins: true
+
+  - id: take_map
+    text: "Take the map and move on"
+    shortcut: B
+    next_scene: dungeon_entry_hall
+    set_flags:
+      found_map: true
+      defeated_goblins: true
+
+flags_set:
+  defeated_goblins: true
+  combat_victory: true

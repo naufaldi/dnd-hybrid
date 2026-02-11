@@ -1,0 +1,44 @@
+id: underground_lake
+act: 1
+title: "The Underground Lake"
+
+description: |
+  You follow the sound of water through a winding passage. The tunnel opens
+  into a vast underground cavern containing a black, still lake.
+  
+  Bioluminescent mushrooms cling to the cavern walls, casting an eerie blue-green
+  glow across the water's surface. The air here is noticeably cooler and fresher.
+  
+  Near the water's edge, you notice:
+  - A small, rusted lockbox caught on a rock
+  - Tracks leading to and from the water
+  - A rickety wooden dock in poor condition
+
+choices:
+  - id: examine_lockbox
+    text: "Examine the lockbox"
+    shortcut: A
+    next_scene: lockbox_contents
+    skill_check:
+      ability: dex
+      dc: 10
+      success_next_scene: lockbox_contents
+      failure_next_scene: broken_lockbox
+
+  - id: follow_tracks
+    text: "Follow the tracks"
+    shortcut: B
+    next_scene: creature_lair
+
+  - id: cross_lake
+    text: "Take the dock to cross the lake"
+    shortcut: C
+    next_scene: dock_collapse
+    skill_check:
+      ability: dex
+      dc: 12
+      success_next_scene: far_shore
+      failure_next_scene: dock_collapse
+
+flags_set:
+  found_underground_lake: true

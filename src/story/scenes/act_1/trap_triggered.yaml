@@ -1,0 +1,35 @@
+id: trap_triggered
+act: 1
+title: "A Deadly Trap"
+
+description: |
+  Your bold entrance triggers a deadly mechanism! The floor beneath you gives way,
+  and you tumble into a spike pit below.
+  
+  Pain shoots through your body as the spikes pierce your armor. You manage to
+  pull yourself up, grievously wounded but alive.
+  
+  Above, you can see the trap door you fell through. You'll need to find another
+  way out of this pit.
+
+choices:
+  - id: climb_out
+    text: "Attempt to climb out (DC 12 Athletics)"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    skill_check:
+      ability: str
+      dc: 12
+      success_next_scene: dungeon_entry_hall
+      failure_next_scene: exhausted_climb
+
+  - id: call_help
+    text: "Call out for help"
+    shortcut: B
+    next_scene: pit_dwelling
+    set_flags:
+      met_pit_dweller: true
+
+flags_set:
+  triggered_trap: true
+  took_damage: true

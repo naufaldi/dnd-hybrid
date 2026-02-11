@@ -1,0 +1,38 @@
+id: goblin_encounter
+act: 1
+title: "Goblin Ambush!"
+
+description: |
+  The passage narrows as you press forward into the dark. Suddenly, you hear
+  high-pitched cackling from ahead.
+  
+  A group of goblins leaps from the shadows! Their green skin is mottled with
+  scars and crude tattoos. One carries a jagged scimitar, another a gnarled bow.
+  
+  "Die, intruder!" the lead goblin shrieks, charging at you!
+
+choices:
+  - id: fight
+    text: "Stand and fight!"
+    shortcut: A
+    combat_encounter: goblins
+
+  - id: negotiate
+    text: "Try to negotiate (DC 14 Charisma)"
+    shortcut: B
+    next_scene: goblin_negotiation
+    skill_check:
+      ability: cha
+      dc: 14
+      success_next_scene: goblin_bribe
+      failure_next_scene: goblin_attack
+
+  - id: flee
+    text: "Retreat to the entry hall"
+    shortcut: C
+    next_scene: dungeon_entry_hall
+    set_flags:
+      fled_combat: true
+
+flags_set:
+  encountered_goblins: true

@@ -1,0 +1,46 @@
+id: dungeon_entrance
+act: 1
+title: "The Dungeon Awaits"
+
+description: |
+  You stand before the gaping entrance of the ancient dungeon. A cold wind escapes 
+  from within, carrying the scent of earth and something else... something old.
+  
+  Torches flicker on either side of the entrance, casting dancing shadows on the 
+  moss-covered stones.
+
+choices:
+  - id: enter_boldly
+    text: "Enter the dungeon boldly, weapon drawn"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    skill_check:
+      ability: dex
+      dc: 10
+      success_next_scene: dungeon_entry_hall
+      failure_next_scene: trap_triggered
+
+  - id: examine_entrance
+    text: "Carefully examine the entrance for traps"
+    shortcut: B
+    next_scene: entrance_examined
+    skill_check:
+      ability: int
+      dc: 12
+      success_next_scene: traps_identified
+      failure_next_scene: traps_missed
+
+  - id: call_out
+    text: "Call out to see if anyone responds"
+    shortcut: C
+    next_scene: call_out_response
+
+  - id: return_town
+    text: "Return to town for more preparation"
+    shortcut: D
+    next_scene: tavern_entry
+    set_flags:
+      returned_unprepared: true
+
+flags_set:
+  visited_dungeon_entrance: true
