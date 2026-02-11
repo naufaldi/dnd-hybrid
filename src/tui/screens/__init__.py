@@ -77,9 +77,10 @@ class MenuScreen(Screen):
         """Start a new game."""
 
         def on_character_created(data: dict) -> None:
-            self.app.call_later(
-                self.app.start_game, data["name"], data["character_class"], data["race"]
-            )
+            if data:
+                self.app.call_later(
+                    self.app.start_game, data["name"], data["character_class"], data["race"]
+                )
 
         self.app.push_screen("character_creation", on_character_created)
 

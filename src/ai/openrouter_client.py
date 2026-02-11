@@ -72,7 +72,7 @@ class OpenRouterClient:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        timeout: int = 5,
+        timeout: int = 15,
         retry_config: Optional[RetryConfig] = None,
     ):
         self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY", "")
@@ -93,6 +93,15 @@ class OpenRouterClient:
         """Close HTTP session."""
         if self._session and not self._session.closed:
             await self._session.close()
+            self._session = None
+
+    async def __aenter__(self):
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        await self.close()
 
     async def generate(
         self,
