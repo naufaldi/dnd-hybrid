@@ -1,11 +1,34 @@
 """ASCII art dice display for terminal."""
 
+import random
 from typing import List
 from ..narrative.models import DiceRollResult
 
 
 class DiceDisplay:
     """Generates ASCII art for dice rolls."""
+
+    @staticmethod
+    def roll_d20(modifier: int = 0) -> DiceRollResult:
+        """Roll a d20 and return DiceRollResult."""
+        natural = random.randint(1, 20)
+        total = natural + modifier
+        is_critical = natural == 20
+        is_fumble = natural == 1
+        return DiceRollResult(
+            dice_type="d20",
+            rolls=[natural],
+            modifier=modifier,
+            total=total,
+            natural=natural,
+            is_critical=is_critical,
+            is_fumble=is_fumble,
+        )
+
+    @staticmethod
+    def format_d20_roll(result: DiceRollResult) -> str:
+        """Format d20 roll as string for display."""
+        return DiceDisplay.display_d20(result)
 
     @staticmethod
     def display_d20(result: DiceRollResult) -> str:
@@ -42,6 +65,19 @@ class DiceDisplay:
 ╰───────────────────────────────────╯"""
 
     @staticmethod
+    def display_pre_roll(skill_name: str, dc: int, modifier: int) -> str:
+        """Display pre-roll context: DC and modifier before rolling."""
+        mod_str = f"+{modifier}" if modifier >= 0 else str(modifier)
+        return f"""
+╭───────────────────────────────────╮
+│    🔍 {skill_name.upper()} CHECK          │
+│                                   │
+│        DC {dc} · {skill_name} ({mod_str})   │
+│                                   │
+│         Rolling... ?              │
+╰───────────────────────────────────╯"""
+
+    @staticmethod
     def display_damage(dice: str, rolls: List[int], total: int) -> str:
         """Generate ASCII art for damage roll."""
         rolls_str = str(rolls)[1:-1]
@@ -56,14 +92,22 @@ Damage: {dice} = [{rolls_str}] = {total}
         modifier = result.modifier
         total = result.total
 
-        status = "✓ SUCCESS!" if success else "✗ FAILED"
+        if result.is_critical:
+            face = f"★ {natural} ★"
+            status = "★ CRITICAL ★"
+        elif result.is_fumble:
+            face = f"  {natural}  "
+            status = "✗ FUMBLE ✗"
+        else:
+            face = f"  {natural}  "
+            status = "✓ SUCCESS!" if success else "✗ FAILED"
 
         return f"""
 ╭───────────────────────────────────╮
 │    🔍 {skill_name.upper()} CHECK ({result.dice_type})   │
 │                                   │
 │        ╭─────────────╮            │
-│        │  {natural:>2}       │            │
+│        │{face:^13}│            │
 │        ╰─────────────╯            │
 │         d20 = {natural}                   │
 │       +{modifier} ({skill_name[:3].upper()}) = {total:>2}              │

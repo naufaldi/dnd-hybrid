@@ -1,5 +1,6 @@
 """Narrative game screen for story-driven gameplay."""
 
+import asyncio
 from textual.screen import Screen
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Static, Button
@@ -49,7 +50,17 @@ class NarrativeGameScreen(Screen):
         import time
 
         self._start_time = time.time()
-        self._update_display()
+        if not self.game_state and hasattr(self.app, "narrative_game_state"):
+            self.game_state = self.app.narrative_game_state
+        if not self.current_scene and hasattr(self.app, "narrative_initial_scene"):
+            scene_id = self.app.narrative_initial_scene
+            if scene_id and hasattr(self.app, "scene_manager"):
+                try:
+                    self.current_scene = self.app.scene_manager.get_scene(scene_id)
+                except ValueError:
+                    pass
+        if self.current_scene:
+            self._update_display()
 
     def set_game_state(self, state: GameState) -> None:
         """Set the game state."""
@@ -195,38 +206,87 @@ class NarrativeGameScreen(Screen):
             return
 
         skill_check = choice.skill_check
-        dice_widget = self.query_one("#dice_display", Static)
-
-        ability_mods = {
-            "str": 0,
-            "dex": 0,
-            "con": 0,
-            "int": 0,
-            "wis": 0,
-            "cha": 0,
+        modifier = self._get_skill_modifier(skill_check.ability)
+        ability_names = {
+            "str": "Strength",
+            "dex": "Dexterity",
+            "con": "Constitution",
+            "int": "Intelligence",
+            "wis": "Wisdom",
+            "cha": "Charisma",
         }
+        skill_name = ability_names.get(skill_check.ability, skill_check.ability.upper())
+        self.app.run_worker(
+            self._animate_and_reveal_skill_check(choice, skill_check, modifier, skill_name)
+        )
 
-        if hasattr(self.game_state.character, "strength_mod"):
-            ability_mods["str"] = getattr(self.game_state.character, "strength_mod", 0)
-        if hasattr(self.game_state.character, "dexterity_mod"):
-            ability_mods["dex"] = getattr(self.game_state.character, "dexterity_mod", 0)
-        if hasattr(self.game_state.character, "constitution_mod"):
-            ability_mods["con"] = getattr(self.game_state.character, "constitution_mod", 0)
-        if hasattr(self.game_state.character, "intelligence_mod"):
-            ability_mods["int"] = getattr(self.game_state.character, "intelligence_mod", 0)
-        if hasattr(self.game_state.character, "wisdom_mod"):
-            ability_mods["wis"] = getattr(self.game_state.character, "wisdom_mod", 0)
-        if hasattr(self.game_state.character, "charisma_mod"):
-            ability_mods["cha"] = getattr(self.game_state.character, "charisma_mod", 0)
+    def _get_skill_modifier(self, ability: str) -> int:
+        """Get modifier for an ability from character."""
+        ability_mods = {
+            "str": "strength_mod",
+            "dex": "dexterity_mod",
+            "con": "constitution_mod",
+            "int": "intelligence_mod",
+            "wis": "wisdom_mod",
+            "cha": "charisma_mod",
+        }
+        attr = ability_mods.get(ability, "strength_mod")
+        if self.game_state and hasattr(self.game_state.character, attr):
+            return getattr(self.game_state.character, attr, 0)
+        return 0
 
-        modifier = ability_mods.get(skill_check.ability, 0)
+    async def _animate_and_reveal_skill_check(
+        self, choice: Choice, skill_check, modifier: int, skill_name: str
+    ) -> None:
+        """Animate rolling, then reveal result."""
+        try:
+            dice_widget = self.query_one("#dice_display", Static)
+        except Exception:
+            return
+
+        pre_roll = DiceDisplay.display_pre_roll(skill_name, skill_check.dc, modifier)
+        dice_widget.update(pre_roll)
+        await asyncio.sleep(0.2)
+
+        mod_str = f"+{modifier}" if modifier >= 0 else str(modifier)
+        for i in range(4):
+            try:
+                q = "?" * ((i % 3) + 1)
+                rolling = f"""
+╭───────────────────────────────────╮
+│    🔍 {skill_name.upper()} CHECK          │
+│                                   │
+│        DC {skill_check.dc} · {skill_name} ({mod_str})   │
+│                                   │
+│         Rolling... {q:<3}              │
+╰───────────────────────────────────╯"""
+                dice_widget.update(rolling)
+            except Exception:
+                return
+            await asyncio.sleep(0.15)
+
         result = DiceDisplay.roll_d20(modifier)
+        success = result.total >= skill_check.dc
 
-        display = DiceDisplay.format_d20_roll(result)
-        display += f"\n\nDC: {skill_check.dc} | Ability: {skill_check.ability.upper()}"
-        dice_widget.update(display)
+        if result.is_critical:
+            try:
+                import sys
+                sys.stdout.write("\a")
+                sys.stdout.flush()
+            except Exception:
+                pass
 
-        if result.total >= skill_check.dc:
+        try:
+            display = DiceDisplay.display_skill_check(
+                skill_name, result, skill_check.dc, success
+            )
+            dice_widget.update(display)
+        except Exception:
+            return
+
+        await asyncio.sleep(0.5)
+
+        if success:
             self._transition_to_scene(skill_check.success_next_scene)
         else:
             self._transition_to_scene(skill_check.failure_next_scene)
@@ -264,13 +324,36 @@ class NarrativeGameScreen(Screen):
             return
 
         ending_manager = getattr(self.app, "ending_manager", None)
-        if ending_manager:
-            ending = ending_manager.determine_ending(self.game_state)
-            if ending:
-                self.game_state.ending_determined = ending.id
+        if not ending_manager:
+            return
+
+        ending = ending_manager.determine_ending(self.game_state)
+        if not ending:
+            return
+
+        self.game_state.ending_determined = ending.id
+
+        import time
+        from .ending_screen import EndingScreen
+
+        stats = {
+            "Choices Made": str(len(self.game_state.choices_made)),
+            "Scenes Visited": str(len(self.game_state.scene_history)),
+            "Play Time": f"{int((time.time() - self._start_time) / 60) if self._start_time else 0} minutes",
+        }
+        ending_screen = EndingScreen()
+        ending_screen.set_ending(ending.title, ending.description, stats)
+        self.app.push_screen(ending_screen)
 
     def on_key(self, event: events.Key) -> None:
         """Handle key presses for quick choice selection."""
+        if event.key.lower() == "s":
+            self._save_game()
+            return
+        if event.key == "escape":
+            self.app.action_show_menu()
+            return
+
         if not self.current_scene:
             return
 
@@ -279,6 +362,3 @@ class NarrativeGameScreen(Screen):
             if choice.shortcut.upper() == key and self._is_choice_available(choice):
                 self._handle_choice(choice.id)
                 break
-
-        if event.key == "escape":
-            self.app.action_show_menu()

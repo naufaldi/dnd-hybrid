@@ -21,15 +21,15 @@ class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.selected_index = 0
-        self.menu_options = ["New Game", "Continue", "Options", "Quit"]
-        self.buttons = ["btn_new", "btn_continue", "btn_options", "btn_quit"]
+        self.menu_options = ["New Game", "Continue", "Load Game", "Quit"]
+        self.buttons = ["btn_new", "btn_continue", "btn_load", "btn_quit"]
 
     def compose(self):
         """Compose the menu screen."""
         yield Container(
             Vertical(
-                Static("D&D ROGUELIKE", id="title"),
-                Static("A roguelike with D&D 5e mechanics", id="subtitle"),
+                Static("AI DUNGEON CHRONICLES", id="title"),
+                Static("A Narrative D&D Adventure", id="subtitle"),
                 Static("\n" * 5),
                 Static("  Use UP/DOWN arrows to select", id="hint"),
                 Static("\n"),
@@ -37,7 +37,7 @@ class MenuScreen(Screen):
                 Static("\n"),
                 Button("Continue", id="btn_continue"),
                 Static("\n"),
-                Button("Options", id="btn_options"),
+                Button("Load Game", id="btn_load"),
                 Static("\n"),
                 Button("Quit", id="btn_quit"),
                 id="menu_content",
@@ -64,7 +64,7 @@ class MenuScreen(Screen):
             elif self.selected_index == 1:
                 self.action_continue()
             elif self.selected_index == 2:
-                self.action_options()
+                self.action_load_game()
             elif self.selected_index == 3:
                 self.action_quit()
 
@@ -79,7 +79,10 @@ class MenuScreen(Screen):
         def on_character_created(data: dict) -> None:
             if data:
                 self.app.call_later(
-                    self.app.start_game, data["name"], data["character_class"], data["race"]
+                    self.app.start_narrative_game,
+                    data["name"],
+                    data["character_class"],
+                    data["race"],
                 )
 
         self.app.push_screen("character_creation", on_character_created)
@@ -90,11 +93,11 @@ class MenuScreen(Screen):
 
     def action_continue(self) -> None:
         """Continue a saved game."""
-        self.notify("No saved games found")
+        self.app.push_screen("load_game", self.app._on_load_game_dismissed)
 
-    def action_options(self) -> None:
-        """Open options menu."""
-        self.notify("Options not yet implemented")
+    def action_load_game(self) -> None:
+        """Show load game screen."""
+        self.app.push_screen("load_game", self.app._on_load_game_dismissed)
 
     def action_quit(self) -> None:
         """Quit the game."""
@@ -107,8 +110,8 @@ class MenuScreen(Screen):
             self.action_new_game()
         elif button_id == "btn_continue":
             self.action_continue()
-        elif button_id == "btn_options":
-            self.action_options()
+        elif button_id == "btn_load":
+            self.action_load_game()
         elif button_id == "btn_quit":
             self.action_quit()
 

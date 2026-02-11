@@ -115,4 +115,4 @@ class TestCharacterCreationComplete:
             await pilot.click("#btn_start")
             await pilot.pause()
             screen_name = type(app.screen).__name__
-            assert "Game" in screen_name
+            assert "Game" in screen_name or "Narrative" in screen_name

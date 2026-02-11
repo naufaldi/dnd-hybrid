@@ -21,12 +21,12 @@ choices:
   - id: talk_adventurers
     text: "Join the adventurers' conversation"
     shortcut: B
-    next_scene: adventurers
+    next_scene: mysterious_figure
     skill_check:
       ability: cha
       dc: 12
-      success_next_scene: adventurers
-      failure_next_scene: adventurers_rejected
+      success_next_scene: mysterious_figure
+      failure_next_scene: dungeon_entrance
 
   - id: ask_barkeep
     text: "Ask the barkeep about dungeon rumors"
@@ -35,7 +35,7 @@ choices:
       - type: gold
         target: player
         value: -2
-    next_scene: barkeep_rumors
+    next_scene: dungeon_entrance
 
   - id: leave_tavern
     text: "Leave and head to the dungeon"

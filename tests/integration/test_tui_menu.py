@@ -49,11 +49,11 @@ class TestMenuScreen:
             btn = app.screen.query_one("#btn_continue")
             assert btn is not None
 
-    async def test_menu_has_options_button(self, app):
-        """Menu should have an Options button."""
+    async def test_menu_has_load_game_button(self, app):
+        """Menu should have a Load Game button."""
         async with app.run_test() as pilot:
             await pilot.pause()
-            btn = app.screen.query_one("#btn_options")
+            btn = app.screen.query_one("#btn_load")
             assert btn is not None
 
     async def test_menu_has_quit_button(self, app):
@@ -75,45 +75,39 @@ class TestMenuScreen:
             screen_name = type(app.screen).__name__
             assert "CharacterCreation" in screen_name
 
-    async def test_clicking_continue_shows_notification(self, app):
-        """Clicking Continue should show a notification."""
+    async def test_clicking_continue_opens_load_game(self, app):
+        """Clicking Continue should open Load Game screen."""
         async with app.run_test() as pilot:
             await pilot.pause()
 
-            # Click Continue button
             await pilot.click("#btn_continue")
             await pilot.pause()
 
-            # Should still be on menu (notification shown)
             screen_name = type(app.screen).__name__
-            assert "Menu" in screen_name
+            assert "LoadGame" in screen_name
 
-    async def test_clicking_options_shows_notification(self, app):
-        """Clicking Options should show a notification."""
+    async def test_clicking_load_game_opens_load_screen(self, app):
+        """Clicking Load Game should open Load Game screen."""
         async with app.run_test() as pilot:
             await pilot.pause()
 
-            # Use keyboard navigation - down to reach Options (3rd item)
             await pilot.press("down")
             await pilot.press("down")
             await pilot.press("enter")
             await pilot.pause()
 
-            # Should still be on menu (notification shown)
             screen_name = type(app.screen).__name__
-            assert "Menu" in screen_name
+            assert "LoadGame" in screen_name
 
     async def test_quit_exits_app(self, app):
         """Pressing Quit should exit the app."""
         async with app.run_test() as pilot:
             await pilot.pause()
 
-            # Use keyboard navigation - down to reach Quit (4th item)
             await pilot.press("down")
             await pilot.press("down")
             await pilot.press("down")
             await pilot.press("enter")
             await pilot.pause()
 
-            # App should have exited
             assert not app.is_running

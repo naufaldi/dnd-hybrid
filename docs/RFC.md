@@ -4,13 +4,16 @@
 
 **RFC Number:** 002  
 **Status:** Draft  
-**Created:** 2026-02-10
+**Created:** 2026-02-10  
+**Updated:** 2026-02-11
 
 ---
 
 ## 1. Overview
 
 This RFC describes the technical architecture for a Narrative D&D Interactive Fiction game with AI integration. The implementation transforms the original roguelike into a text-based adventure where players make meaningful choices that shape the story, experience explicit dice rolling with ASCII visuals, and encounter AI-generated narratives.
+
+**Design Approach:** BG3-style feel in terminal—dice drama (animated rolls), choice weight (NPC relationships, flags), narrative flow (rich prose, scene transitions). See [docs/PRD.md](docs/PRD.md) User Stories and Appendix B for screen layouts.
 
 ## 2. Architecture Overview
 
@@ -168,6 +171,9 @@ class Choice:
     failed_next_scene: Optional[str]  # Scene if check fails
     required_flags: Dict[str, bool]   # Flags needed
     set_flags: Dict[str, bool]        # Flags this choice sets
+    # BG3-style: optional relationship gates
+    relationship_required: Optional[Dict[str, int]]  # npc_id -> min_score
+    relationship_change: Optional[Dict[str, int]]   # npc_id -> delta
 ```
 
 ### 4.3 Consequence
@@ -323,41 +329,31 @@ class ChoiceSystem:
         ...
 ```
 
-### 5.4 ASCII Dice Display
+### 5.4 ASCII Dice Display (BG3-Style)
+
+**Animated Roll Sequence:**
+1. `display_rolling(ability: str, dc: int, modifier: int)` - Pre-roll + "Rolling..." + "?"
+2. After delay (~0.5–1s): `display_skill_check(ability, result, dc, success)`
+3. Nat 20: `★ CRITICAL ★` frame; optional `sys.stdout.write('\a')`
+4. Nat 1: Distinct fumble frame
 
 ```python
 class DiceDisplay:
-    D20_ART = {
-        20: r"""
-    ╭─────────────╮
-    │  ★ 20 ★    │
-    ╰─────────────╯
-""",
-        1: r"""
-    ╭─────────────╮
-    │    1       │
-    ╰─────────────╯
-""",
-    }
-    
+    @staticmethod
+    def display_rolling(ability: str, dc: int, modifier: int) -> str:
+        """Pre-roll context + rolling placeholder."""
+        return f"DC {dc} · {ability.upper()} (+{modifier})\n\nRolling...\n  [?]"
+
     @staticmethod
     def display_d20(result: DiceRollResult) -> str:
         """Generate ASCII art for d20 roll."""
         ...
-    
-    @staticmethod
-    def display_damage(dice: str, rolls: List[int], total: int) -> str:
-        """Generate ASCII art for damage roll."""
-        ...
-    
+
     @staticmethod
     def display_skill_check(
-        ability: str, 
-        result: DiceRollResult, 
-        dc: int,
-        success: bool
+        ability: str, result: DiceRollResult, dc: int, success: bool
     ) -> str:
-        """Generate ASCII art for skill check."""
+        """Generate ASCII art for skill check. Nat 20/1 get special frames."""
         ...
 ```
 
@@ -530,7 +526,59 @@ Narration:
 
 ## 9. TUI Screen Specifications
 
-### 9.1 Title Screen
+### 9.1 Screen Layout Architecture
+
+Target: 80x24 terminal. All screens use Textual Widgets with Header/Footer.
+
+| Screen | Layout | Widgets |
+|--------|--------|---------|
+| Title | Centered Vertical | Static(title), Static(subtitle), Button(New/Continue/Load/Quit) |
+| Character Creation | Vertical | Static(prompt), Input/Static(options), Button(Start) |
+| Narrative Game | Horizontal | Left: ScrollableContainer(scene_title, scene_description); Right: Vertical(choices, dice_display, status_info) |
+| Load Game | Vertical | ListView(saves) |
+
+### 9.2 Narrative Game Screen (Two-Column)
+
+```python
+# Layout: Horizontal
+# Left panel (70%): ScrollableContainer
+#   - scene_title (Static)
+#   - scene_description (Static, markup=True)
+# Right panel (30%): Vertical
+#   - choices_header (Static)
+#   - choices_container (Vertical of Buttons)
+#   - dice_display (Static)  # "Rolling...", result, or empty
+#   - status_info (Static)   # Character stats
+#   - action_buttons (Static) # [S] Save
+```
+
+### 9.3 Dice Roll Animation (BG3-Style)
+
+**Sequence:**
+1. Pre-roll: Show "DC {dc} · {ability} (+{mod})" in dice_display
+2. Rolling: Show "Rolling..." with cycling "?" for ~0.5–1s (`set_interval`)
+3. Reveal: Roll d20, display result via DiceDisplay
+4. Nat 20: Special frame `★ CRITICAL ★`; optional terminal bell `\a`
+5. Nat 1: Distinct fumble frame
+
+```python
+# In narrative_game_screen._handle_skill_check():
+# 1. dice_widget.update("DC 12 · Persuasion (+3)\n\n[Press to roll]")
+# 2. await asyncio.sleep(0.1); dice_widget.update("Rolling...\n  [?]")
+# 3. set_interval(0.15, cycle_question_mark) for 3-5 ticks
+# 4. result = DiceDisplay.roll_d20(modifier)
+# 5. dice_widget.update(DiceDisplay.display_skill_check(...))
+```
+
+### 9.4 Scene Title Formatting
+
+Use `═══ {title} ═══` for scene headers (e.g., `═══ The Prancing Pony ═══`).
+
+### 9.5 Choice Display with DC Hint
+
+Choices with skill_check show DC: `[B] Join adventurers (DC 12 CHA)`
+
+### 9.6 Screen Classes (Reference)
 
 ```python
 class TitleScreen(Screen):
@@ -541,37 +589,19 @@ class TitleScreen(Screen):
         yield Button("Continue", id="btn_continue")
         yield Button("Load Game", id="btn_load")
         yield Button("Quit", id="btn_quit")
-```
 
-### 9.2 Game Screen
-
-```python
-class GameScreen(Screen):
+class NarrativeGameScreen(Screen):
     def compose(self):
-        yield Static("", id="scene-title")
-        yield Static("", id="scene-description")
-        yield Static("", id="choices-display")
-        yield Static("", id="character-stats")
-    
-    def update_scene(self, scene: Scene, game_state: GameState):
-        """Update display with new scene."""
-        ...
-    
-    def display_dice_roll(self, result: DiceRollResult):
-        """Show dice roll animation/result."""
-        ...
+        yield Horizontal(
+            ScrollableContainer(Static(id="scene_title"), Static(id="scene_description")),
+            Vertical(Static("CHOICES"), Vertical(id="choices_container"),
+                     Static(id="dice_display"), Static(id="status_info"))
+        )
 ```
 
-### 9.3 Combat Screen
+### 9.7 ASCII Wireframes
 
-```python
-class CombatScreen(Screen):
-    def compose(self):
-        yield Static("", id="combat-title")
-        yield Static("", id="narrative-text")
-        yield Static("", id="dice-display")
-        yield Static("", id="combat-result")
-```
+Full ASCII mockups: see [docs/PRD.md](docs/PRD.md) Appendix B.
 
 ## 10. Game Flow State Machine
 

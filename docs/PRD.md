@@ -2,9 +2,9 @@
 
 ## AI Dungeon Chronicles - Narrative D&D Interactive Fiction
 
-**Version:** 2.0.0  
+**Version:** 2.1.0  
 **Status:** Draft  
-**Last Updated:** 2026-02-10
+**Last Updated:** 2026-02-11
 
 ---
 
@@ -20,17 +20,31 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 - **Visible dice** - ASCII dice rolls for transparency
 - **AI enhancement** - Dynamic content via OpenRouter
 - **Multiple endings** - Replayable with different outcomes
+- **BG3-style feel** - Dice drama, choice weight, narrative flow in terminal
 
-## 3. Target Audience
+## 3. User Stories
+
+| ID | As a... | I want... | so that... | Priority |
+|----|---------|-----------|------------|----------|
+| US-1 | player | New Game to take me into the narrative story (tavern entry) | I experience the D&D interactive fiction | High |
+| US-2 | player | to load saved narrative games from Continue/Load | I can resume my story | High |
+| US-3 | player | character creation to produce a character with attributes for skill checks | my class/race choices matter | High |
+| US-4 | player | the main menu to reflect "AI Dungeon Chronicles" | the branding matches the experience | Medium |
+| US-5 | player | dice rolls to animate (Rolling... → reveal) | they feel dramatic like BG3 | High |
+| US-6 | player | NPCs to remember my choices and unlock different dialogue | choices have weight and consequences | Medium |
+| US-7 | player | to see DC and modifier before rolling | I know the stakes of each check | High |
+| US-8 | player | scene transitions and rich prose | the story feels like a light novel | Medium |
+
+## 4. Target Audience
 
 - Interactive fiction enthusiasts
 - D&D players who enjoy narrative storytelling
 - Players who prefer text adventures over graphics
 - Developers interested in AI integration examples
 
-## 4. Core Features
+## 5. Core Features
 
-### 4.1 Narrative System
+### 5.1 Narrative System
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -40,7 +54,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Story Flags | Track decisions and state | Must Have |
 | Ending Manager | Determine ending based on flags | Must Have |
 
-### 4.2 AI Integration (OpenRouter)
+### 5.2 AI Integration (OpenRouter)
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -50,7 +64,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Fallback System | Templates when AI unavailable | Must Have |
 | Rate Limiting | Respect API limits | Must Have |
 
-### 4.3 Dice & Combat System
+### 5.3 Dice & Combat System
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -60,7 +74,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Damage Rolls | Explicit damage dice display | Must Have |
 | Combat Narrator | Describe outcomes textually | Must Have |
 
-### 4.4 Character System
+### 5.4 Character System
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -71,7 +85,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Backstory | Narrative character creation | Should Have |
 | Equipment | Items affect stats | Could Have |
 
-### 4.5 Persistence
+### 5.5 Persistence
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -80,7 +94,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Load Game | Resume from save | Must Have |
 | Multiple Saves | Save slots | Could Have |
 
-### 4.6 User Interface
+### 5.6 User Interface
 
 | Feature | Description | Priority |
 |---------|-------------|----------|
@@ -90,7 +104,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Combat Screen | Dice display + outcomes | Must Have |
 | Ending Screen | Show ending + stats | Must Have |
 
-## 5. Game Flow
+## 6. Game Flow
 
 ```
 [Title] → [New/Continue] → [Character Creation] → [Story Loop] → [Ending]
@@ -102,7 +116,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
                                               Outcome → Next Scene
 ```
 
-## 6. AI Integration Points
+## 7. AI Integration Points
 
 | Point | Purpose | Fallback |
 |-------|---------|----------|
@@ -111,7 +125,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Outcome Text | Describe results | Generic |
 | Flavor | Add atmosphere | None |
 
-## 7. Story Structure
+## 8. Story Structure
 
 ### Acts
 - **Act 1:** Introduction, first choices, initial adventure
@@ -125,7 +139,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 4. **Corrupted** - Fell to darkness
 5. **Mystery** - Discovered secret
 
-## 8. Non-Functional Requirements
+## 9. Non-Functional Requirements
 
 ### Performance
 - Scene load time < 100ms
@@ -143,7 +157,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 - macOS, Linux, Windows
 - Terminal width: min 80 cols
 
-## 9. Out of Scope
+## 10. Out of Scope
 
 - Multiplayer
 - Audio/sound
@@ -151,7 +165,7 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 - Mod support
 - Network features
 
-## 10. Future Considerations
+## 11. Future Considerations
 
 - More AI models
 - User-created stories
@@ -188,60 +202,145 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 
 ---
 
-## Appendix B: Screen Layouts
+## Appendix B: ASCII Screen Layouts (80x24 Terminal)
 
-### Title Screen
+### B.1 Title Screen
+
 ```
-╔═══════════════════════════════════════════════════╗
-║                                                   ║
-║      ⚔️  AI DUNGEON CHRONICLES  ⚔️               ║
-║                                                   ║
-║          A Narrative D&D Adventure                ║
-║                                                   ║
-║     [N] New Game                                 ║
-║     [C] Continue                                 ║
-║     [L] Load Game                                ║
-║     [Q] Quit                                    ║
-║                                                   ║
-╚═══════════════════════════════════════════════════╝
-```
-
-### Game Screen
-```
-═══════════════════════════════════════════════════════════
-                     SCENE TITLE
-
-───────────────────────────────────────────────────────────
-Scene description text here. Can be multiple lines describing
-what's happening and what the player sees.
-
-What do you do?
-
-  [A] ▶ First choice option
-  [B]   Second choice option
-  [C]   Third choice option
-  [D]   Fourth choice option
-
-  ════════════════════════════════════════════════════════
-  STR 14  DEX 12  CON 16  HP: 12/12  Level 1 Fighter
-═══════════════════════════════════════════════════════════
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  AI Dungeon Chronicles                                           21:45      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│              ╔═══════════════════════════════════════════╗                   │
+│              ║   ⚔ AI DUNGEON CHRONICLES ⚔             ║                   │
+│              ║   A Narrative D&D Adventure               ║                   │
+│              ╚═══════════════════════════════════════════╝                   │
+│                                                                             │
+│                             [N] New Game                                    │
+│                             [C] Continue                                    │
+│                             [L] Load Game                                   │
+│                             [Q] Quit                                        │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  escape: Back    q: Quit                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Combat Screen
+### B.2 Character Creation Screen
+
 ```
-═══════════════════════════════════════════════════════════
-                     ⚔️ COMBAT: Goblin ⚔️
-
-You swing your sword at the goblin!
-
-    ╭─────────────╮
-    │  ★ 18 ★    │
-    ╰─────────────╯
-    d20 = 18 + 5 = 23 vs AC 12 ✓ HIT!
-
-Damage: 1d8+3 = 6 + 3 = 9 slashing!
-
-The goblin stumbles back, bloodied but alive...
-
-═══════════════════════════════════════════════════════════
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  AI Dungeon Chronicles                                           21:46      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                    ═══ Create Your Character ═══                            │
+│                    Enter your name: [_______________]                        │
+│                    Choose your class: > fighter  wizard  rogue  cleric      │
+│                    Choose your race:  > human  elf  dwarf  halfling          │
+│                    [Start Game]                                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  enter: Next    escape: Back                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### B.3 Narrative Game Screen (Two-Column Layout)
+
+Left: story + scene title. Right: choices + stats.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  AI Dungeon Chronicles                                           21:47      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  ═══ The Prancing Pony ═══                                                  │
+│                                                                             │
+│  The warm glow of hearth fire spills onto the cobblestones...               │
+│  A group of rough-looking adventurers argue in one corner.                  │
+│  Near the bar, a hooded figure sits alone, nursing a drink.                  │
+│                                                                             │
+├───────────────────────────────────────┬─────────────────────────────────────┤
+│  What do you do?                       │  CHOICES                            │
+│                                        │  [A] Approach the mysterious figure  │
+│                                        │  [B] Join adventurers (DC 12 CHA)   │
+│                                        │  [C] Ask barkeep about rumors       │
+│                                        │  [D] Leave for the dungeon         │
+│                                        │  ─────────────────────────────────  │
+│                                        │  Cynux | Lv1 Fighter                │
+│                                        │  HP: 12/12  AC: 10                  │
+│                                        │  [S] Save                           │
+├───────────────────────────────────────┴─────────────────────────────────────┤
+│  A-D: Choose    S: Save    escape: Menu                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### B.4 Dice Roll (Phase 1: Rolling)
+
+```
+│                                        │     ┌─────────────────────┐         │
+│  Persuasion (CHA) check. DC 12. +3     │     │    Rolling...        │         │
+│                                        │     │    ╭───────────╮     │         │
+│                                        │     │    │     ?     │     │         │
+│                                        │     │    ╰───────────╯     │         │
+│                                        │     │  DC 12 · CHA (+3)    │         │
+│                                        │     └─────────────────────┘         │
+```
+
+### B.5 Dice Roll (Phase 2: Reveal - Nat 20)
+
+```
+│                                        │     ┌─────────────────────┐         │
+│                                        │     │   ★ CRITICAL! ★     │         │
+│                                        │     │    ╭───────────╮     │         │
+│                                        │     │    │  ★ 20 ★  │     │         │
+│                                        │     │    ╰───────────╯     │         │
+│                                        │     │  d20 = 20 + 3 = 23   │         │
+│                                        │     │  vs DC 12 ✓ SUCCESS! │         │
+│                                        │     └─────────────────────┘         │
+```
+
+### B.6 Combat Screen
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  ═══ ⚔ Combat: Goblin ⚔ ═══                                                │
+│  The goblin snarls and lunges! You raise your sword—                        │
+│     ┌─────────────────────┐   d20 = 18 + 5 = 23 vs AC 12 ✓ HIT!             │
+│     │    Attack Roll      │   Damage: 1d8+3 = 9 slashing!                    │
+│     │    ╭───────────╮    │   The goblin stumbles back, bloodied...          │
+│     │    │    18     │    │   [A] Attack  [B] Defend  [C] Item  [D] Flee     │
+│     │    ╰───────────╯    │   HP: 12/12  vs  Goblin HP: 3/12                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### B.7 Ending Screen
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ═══ THE HERO'S TRIUMPH ═══                                │
+│  With the dark lord defeated and the realm saved, you stand victorious.      │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  Your Journey: Scenes: 24  Choices: 18  Playtime: 28 min                    │
+│                    [Return to Title]                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### B.8 Load Game Screen
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ═══ Load Game ═══                                         │
+│  > save_001.json  Cynux · Tavern Entry · 2026-02-11 21:40                   │
+│    save_002.json  Elara · Dungeon Hall · 2026-02-10 18:22                    │
+│  Enter: Load    escape: Back                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### B.9 Screen Layout Summary
+
+| Screen | Layout | Key Elements |
+|--------|--------|---------------|
+| Title | Centered | New Game, Continue, Load, Quit |
+| Character Creation | Single column | Name → Class → Race → Start |
+| Narrative Game | Two columns | Left: story; Right: choices + stats |
+| Dice Roll | Story + dice box | Pre-roll (DC) → Rolling → Reveal |
+| Combat | Single column | Narrative + dice + choices |
+| Ending | Single column | Ending text + journey stats |
+| Load | Single column | Save list with character/scene |

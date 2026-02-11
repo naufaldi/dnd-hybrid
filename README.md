@@ -1,6 +1,6 @@
-# D&D Roguelike Hybrid
+# AI Dungeon Chronicles
 
-A roguelike CLI game combining D&D 5th Edition mechanics with procedural dungeon generation. Built with Python and Textual TUI.
+A narrative D&D interactive fiction game combining D&D 5th Edition mechanics with story-driven gameplay. Built with Python and Textual TUI.
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![Textual](https://img.shields.io/badge/textual-4.x-purple)
@@ -16,18 +16,17 @@ A roguelike CLI game combining D&D 5th Edition mechanics with procedural dungeon
 
 ## Features
 
-- **D&D 5e Mechanics**: Full attribute system, combat resolution, proficiency bonuses, critical hits
-- **Procedural Dungeons**: BSP-based room generation with connected corridors
-- **Turn-Based Combat**: Strategic combat with initiative, attacks, and damage
-- **Field of View**: Shadow casting visibility system
-- **Save/Load System**: Compressed game saves with SQLite backend
-- **ASCII Graphics**: Classic roguelike visuals in the terminal
+- **Narrative-Driven Story**: Branching story scenes with choices and consequences
+- **D&D 5e Mechanics**: Skill checks, dice rolls, attribute modifiers
+- **Character Creation**: Choose class and race for your adventurer
+- **Save/Load System**: Compressed narrative saves
+- **Multiple Endings**: Your choices determine how the story concludes
 
 ## Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/dnd-hybrid.git
+git clone https://github.com/naufaldi/dnd-hybrid.git
 cd dnd-hybrid
 
 # Create virtual environment
@@ -53,15 +52,9 @@ python -m src.main
 
 | Key | Action |
 |-----|--------|
-| `↑↓←→` or `nsew` | Move |
-| `y u b j` | Diagonal movement |
-| `.` or `space` | Wait (skip turn) |
-| `,` or `g` | Pick up item |
-| `i` | Open inventory |
-| `c` | View character sheet |
-| `l` | View game log |
+| `1-9` or letter shortcuts | Select choice |
 | `s` | Save game |
-| `escape` | Back/Menu |
+| `escape` | Back to menu |
 | `q` | Quit |
 
 ### Character Creation
@@ -78,18 +71,13 @@ And 4 races:
 - **Dwarf** - Tough and resilient
 - **Halfling** - Lucky and stealthy
 
-### Combat
+### Narrative Gameplay
 
-- Attack rolls use d20 + ability modifier + proficiency
-- Natural 20 = critical hit (double damage dice)
-- Natural 1 = automatic miss
-- Damage = weapon dice + ability modifier
-
-### Progression
-
-- Gain XP by defeating enemies (100 × CR)
-- Level up at specific XP thresholds
-- Each level increases HP and proficiency bonus
+- Read scene descriptions and choose your path
+- Skill checks use d20 + ability modifier
+- Natural 20 = critical success
+- Natural 1 = automatic failure
+- Your choices affect the story and lead to different endings
 
 ## Project Structure
 
@@ -139,11 +127,9 @@ ruff format src/
 The game follows a layered architecture:
 
 1. **TUI Layer** - Textual widgets and screens
-2. **Interface Bridge** - State sync and action queue
-3. **Game Engine** - Core game loop and events
-4. **World Manager** - Dungeon generation, FOV
-5. **Combat Engine** - Attack resolution, initiative
-6. **Persistence Layer** - Save/load with compression
+2. **Narrative Layer** - Scene manager, endings, story flow
+3. **Character Layer** - Attributes, skill checks
+4. **Persistence Layer** - Save/load with compression
 
 ## Known Issues
 
