@@ -1,0 +1,29 @@
+id: goblin_attack
+act: 1
+title: "Goblins Don't Negotiate"
+
+description: |
+  Your negotiation attempt fails. The lead goblin's face twists into a
+  malicious grin.
+
+  "Stupid human think goblins stupid? NO! We smart! We take your gold
+  AND your stuff!"
+
+  The goblins charge! The first swings its scimitar at you while the
+  second readies its bow.
+
+choices:
+  - id: fight_back
+    text: "Fight them!"
+    shortcut: A
+    combat_encounter: goblins
+
+  - id: dodge
+    text: "Try to dodge past and run"
+    shortcut: B
+    next_scene: goblin_flee
+    skill_check:
+      ability: dex
+      dc: 12
+      success_next_scene: goblin_escape
+      failure_next_scene: goblin_flee_fail

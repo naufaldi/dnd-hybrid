@@ -128,9 +128,235 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 ## 8. Story Structure
 
 ### Acts
-- **Act 1:** Introduction, first choices, initial adventure
-- **Act 2:** Rising action, major branches, NPCs
-- **Act 3:** Climax, final choices, endings
+- **Act 1:** Introduction, first choices, initial adventure (MVP - playable)
+- **Act 2:** Rising action, major branches, NPCs (future)
+- **Act 3:** Climax, final choices, endings (future)
+
+---
+
+## 8.1 Act 1 MVP - Complete Story Flow
+
+### Overview
+**Goal:** A complete, playable experience from tavern start to satisfying ending (~15-20 scenes)
+
+**Story Premise:** A mysterious dungeon has appeared outside a small town. A hooded stranger in the local tavern knows its secrets. The player must explore the dungeon, defeat (or ally with) its creatures, and discover the truth behind the ancient evil within.
+
+### Scene Map
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         TAVERN ENTRY (START)                                │
+│                   "The Prancing Pony"                                      │
+│         A → Mysterious Figure    C → Ask Barkeep (-2g)                     │
+│         B → Skill Check → Dungeon's Secret OR Return to Town              │
+│         D → Dungeon Entrance                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        DUNGEON ENTRANCE                                     │
+│         A → Entry Hall (DEX check trap trigger)                            │
+│         B → Skill Check → Identify Traps OR Miss                          │
+│         C → Call Out Response (treasure goblin encounter)                 │
+│         D → Return to Tavern                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ENTRY HALL                                          │
+│         A → Goblin Encounter (combat path)                                 │
+│         B → Underground Lake (exploration path)                            │
+│         C → Old Armory (loot path)                                         │
+│         D → Search Room → Secret Compartment                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+          │                       │                        │
+          ▼                       ▼                        ▼
+   ┌─────────────┐      ┌─────────────────┐    ┌─────────────────┐
+   │   GOBLIN    │      │ UNDERGROUND LAKE│    │  OLD ARMORY     │
+   │  ENCOUNTER  │      │                 │    │                 │
+   │ (combat)    │      │ A → Lockbox    │    │ A → Find Weapon│
+   │             │      │ B → Creature   │    │ B → Trap        │
+   │ A → Fight  │      │ C → Dock Cross  │    │ C → Search      │
+   │ B → Negoti │      │                 │    │                 │
+   │ C → Flee   │      │                 │    │                 │
+   └──────┬──────┘      └────────┬────────┘    └────────┬────────┘
+          │                       │                        │
+          ▼                       ▼                        ▼
+   ┌─────────────┐      ┌─────────────────┐    ┌─────────────────┐
+   │   VICTORY  │      │  CREATURE LAIR  │    │   TREASURE      │
+   │  or DEATH  │      │  (Plesiosaur)   │    │   (Magic Item) │
+   │            │      │                 │    │                 │
+   │ +XP +Gold │      │ A → Fight       │    │ Set flag:       │
+   │ +Flag:     │      │ B → Negotiate   │    │ found_weapon    │
+   │ defeated_  │      │                 │    │                 │
+   │  goblins   │      └────────┬────────┘    └────────┬────────┘
+   └──────┬──────┘               │                      │
+          │                      ▼                      ▼
+          │            ┌─────────────────┐    ┌─────────────────┐
+          │            │    VICTORY     │    │    VICTORY     │
+          │            │  +XP +Gold    │    │  +XP +Gold     │
+          │            │  +Flag:       │    │ +Flag:         │
+          │            │  befriended_  │    │ found_magic_   │
+          │            │  creature     │    │   item         │
+          │            └─────────────────┘    └────────┬────────┘
+          │                                             │
+          └─────────────────────┬───────────────────────┘
+                                │
+                                ▼
+                   ┌─────────────────────────┐
+                   │    ACT 1 CLIMAX         │
+                   │   "The Dark Shrine"      │
+                   │                         │
+                   │  Mini-boss: cultist     │
+                   │  leader +2 goblins     │
+                   │                         │
+                   │ A → Fight (combat)      │
+                   │ B → Sneak past         │
+                   │ C → Diplomatic         │
+                   │ D → Search for secret  │
+                   └────────────┬────────────┘
+                                │
+                                ▼
+                   ┌─────────────────────────┐
+                   │    ACT 1 CONCLUSION     │
+                   │   "Escape from Dark"   │
+                   │                         │
+                   │ Returns to tavern      │
+                   │ Sets flags:            │
+                   │ - escaped_dungeon      │
+                   │ - defeated_cultist     │
+                   │ - found_treasure (if)  │
+                   │                         │
+                   └────────────┬────────────┘
+                                │
+                                ▼
+                   ┌─────────────────────────┐
+                   │      ENDINGS            │
+                   │                         │
+                   │ HERO: defeated_cultist  │
+                   │     + escaped_dungeon   │
+                   │     + saved_town       │
+                   │                         │
+                   │ SURVIVOR: escaped      │
+                   │     _dungeon only      │
+                   │                         │
+                   │ MYSTERY: default       │
+                   └─────────────────────────┘
+```
+
+### Scene Inventory
+
+#### Total Act 1 MVP Scenes: 39
+
+| Scene ID | File | Status |
+|----------|------|--------|
+| tavern_entry | tavern_entry.yaml | ✅ Complete |
+| mysterious_figure | mysterious_figure.yaml | ✅ Complete |
+| dungeon_entrance | dungeon_entrance.yaml | ✅ Complete |
+| dungeon_entry_hall | dungeon_entry_hall.yaml | ✅ Complete |
+| goblin_encounter | goblin_encounter.yaml | ✅ Complete |
+| underground_lake | underground_lake.yaml | ✅ Complete |
+| trap_triggered | trap_triggered.yaml | ✅ Complete |
+| traps_identified | traps_identified.yaml | ✅ Complete |
+| goblin_victory | goblin_victory.yaml | ✅ Complete |
+| dungeon_info | dungeon_info.yaml | ✅ Complete |
+| offer_heroic | offer_heroic.yaml | ✅ Complete |
+| confrontation_success | confrontation_success.yaml | ✅ Complete |
+| confrontation_fail | confrontation_fail.yaml | ✅ Complete |
+| call_out_response | call_out_response.yaml | ✅ Complete |
+| traps_missed | traps_missed.yaml | ✅ Complete |
+| entrance_examined | entrance_examined.yaml | ✅ Complete |
+| goblin_negotiation | goblin_negotiation.yaml | ✅ Complete |
+| goblin_bribe | goblin_bribe.yaml | ✅ Complete |
+| goblin_attack | goblin_attack.yaml | ✅ Complete |
+| goblin_flee | goblin_flee.yaml | ✅ Complete |
+| goblin_escape | goblin_escape.yaml | ✅ Complete |
+| lockbox_contents | lockbox_contents.yaml | ✅ Complete |
+| broken_lockbox | broken_lockbox.yaml | ✅ Complete |
+| creature_lair | creature_lair.yaml | ✅ Complete |
+| dock_collapse | dock_collapse.yaml | ✅ Complete |
+| far_shore | far_shore.yaml | ✅ Complete |
+| old_armory | old_armory.yaml | ✅ Complete |
+| secret_compartment | secret_compartment.yaml | ✅ Complete |
+| trap_pit | trap_pit.yaml | ✅ Complete |
+| dark_shrine | dark_shrine.yaml | ✅ Complete |
+| cultist_boss | cultist_boss.yaml | ✅ Complete |
+| act1_conclusion | act1_conclusion.yaml | ✅ Complete |
+| death_in_dungeon | death_in_dungeon.yaml | ✅ Complete |
+| hero_ending | hero_ending.yaml | ✅ Complete |
+| survivor_ending | survivor_ending.yaml | ✅ Complete |
+| pit_escaped | pit_escaped.yaml | ✅ Complete |
+| pit_exhausted | pit_exhausted.yaml | ✅ Complete |
+| loot_collection | loot_collection.yaml | ✅ Complete |
+| nothing_found | nothing_found.yaml | ✅ Complete |
+
+#### New Scenes Needed (MVP)
+| Priority | Scene ID | Purpose | Path From |
+|----------|----------|---------|-----------|
+| **P0** | dungeon_info | Stranger tells about dungeon | mysterious_figure:A |
+| **P0** | offer_heroic | Stranger offers quest | mysterious_figure:B |
+| **P0** | confrontation_success | Intimidate stranger (pass) | mysterious_figure:C→success |
+| **P0** | confrontation_fail | Intimidate stranger (fail) | mysterious_figure:C→fail |
+| **P0** | call_out_response | Goblin responds to call | dungeon_entrance:C |
+| **P0** | traps_missed | Failed trap check | dungeon_entrance:B→fail |
+| **P0** | entrance_examined | Successful trap ID | dungeon_entrance:B→success |
+| **P1** | goblin_negotiation | CHA check to negotiate | goblin_encounter:B |
+| **P1** | goblin_bribe | Pay goblins to pass | goblin_encounter:B→success |
+| **P1** | goblin_attack | Negotiation fails | goblin_encounter:B→fail |
+| **P1** | goblin_flee | Run from goblins | goblin_encounter:C |
+| **P1** | lockbox_contents | Success: get gold/items | underground_lake:A→success |
+| **P1** | broken_lockbox | Fail: nothing | underground_lake:A→fail |
+| **P1** | creature_lair | Find underwater creature | underground_lake:B |
+| **P1** | dock_collapse | Dock breaks | underground_lake:C→fail |
+| **P1** | far_shore | Cross lake safely | underground_lake:C→success |
+| **P2** | old_armory | Find old weapons | dungeon_entry_hall:C |
+| **P2** | secret_compartment | Secret room | dungeon_entry_hall:D→success |
+| **P2** | nothing_found | Search fails | dungeon_entry_hall:D→fail |
+| **P2** | trap_pit | Fall into pit | dungeon_entry_hall:B→fail |
+| **P2** | dark_shrine | Act 1 climax location | Entry Hall OR Goblin OR Lake |
+| **P2** | cultist_battle | Fight cultist leader | dark_shrine:A |
+| **P2** | sneak_past | Sneak through shrine | dark_shrine:B |
+| **P3** | act1_conclusion | Return to town | cultist OR sneak |
+| **P3** | death_in_dungeon | Player dies | Any combat |
+
+### Flags Used in Act 1
+
+| Flag | Set When | Used For |
+|------|----------|----------|
+| visited_tavern | tavern_entry | Track player started |
+| met_stranger | Approach stranger | Unlock dialogue |
+| learned_dungeon_secret | Ask about dungeon | Bonus in ending |
+| allied_with_stranger | Offer help | Special ending |
+| visited_dungeon_entrance | Enter dungeon | Branching |
+| identified_traps | Pass trap check | Safe passage |
+| defeated_goblins | Kill goblins | XP + gold |
+| befriended_goblins | Pass CHA check | Alternative path |
+| found_treasure | Find loot | Better ending |
+| found_magic_item | Get magic weapon | Bonus stats |
+| escaped_dungeon | Complete Act 1 | Survivor ending |
+| defeated_cultist | Beat boss | Hero ending |
+| player_died | HP <= 0 | Death ending |
+
+### Endings (Act 1 MVP)
+
+| Ending | Requirements | Description |
+|--------|--------------|-------------|
+| **Hero** | defeated_cultist + escaped_dungeon | Defeated the cult leader, saved town |
+| **Survivor** | escaped_dungeon (no cultist) | Escaped but didn't finish |
+| **Mystery** | default (no flags) | Left with questions unanswered |
+| **Fallen** | player_died | Died in the dungeon |
+
+### Act 1 Quest Summary
+
+**Main Quest:** Investigate the mysterious dungeon threatening the town
+
+**Side Opportunities:**
+- Help the mysterious stranger → ally ending
+- Befriend goblins → alternate path
+- Find treasure → richer ending
+- Discover secret lore → mystery ending
+
+---
 
 ### Endings (v1.0)
 1. **Hero** - Saved the realm
@@ -138,6 +364,348 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 3. **Merchant** - Wealth achieved
 4. **Corrupted** - Fell to darkness
 5. **Mystery** - Discovered secret
+
+---
+
+## 8.2 AI-Enhanced Storytelling
+
+### Overview
+The game uses OpenRouter API to dynamically generate narrative content, making each playthrough unique. AI enhances:
+- Scene descriptions
+- NPC dialogue
+- Outcome narration
+- Branching story extensions
+
+### AI Integration Points
+
+| Point | Trigger | AI Role | Fallback |
+|-------|---------|---------|----------|
+| **Scene Intro** | Every scene | Expand base description with atmospheric detail | Static YAML text |
+| **NPC Dialogue** | When `ai_dialogue: true` | Generate contextual NPC responses | "The stranger says nothing." |
+| **Choice Outcomes** | When `ai_outcome: true` | Describe success/failure in narrative | Generic pass/fail text |
+| **Dynamic Branches** | When `ai_branches: true` | Generate 2-3 new choices based on context | Fixed choices only |
+| **Ending Epilogue** | Ending determination | Personalized ending narration | Static ending text |
+
+### AI Configuration (per scene)
+
+```yaml
+# Scene YAML example with AI
+id: mysterious_figure
+ai_dialogue: true        # Enable AI NPC responses
+ai_branches: false       # Don't generate new choices
+ai_outcome: true        # AI describes skill check results
+npc_name: "Stranger"
+npc_mood: "enigmatic"
+
+# AI generates response based on:
+# - player character (name, class, race)
+# - story flags set
+# - previous choices
+# - game state
+```
+
+### AI-Generated Endings
+
+When enabled, AI can generate personalized endings based on:
+- Player's choices throughout game
+- Flags accumulated
+- Character class/race
+- Items collected
+
+```yaml
+# endings.yaml - AI-generated ending
+legendary_ai:
+  title: "The [Title Generated by AI]"
+  description: "[AI generates personalized epilogue]"
+  ai_generated: true
+  requirements:
+    flags_required:
+      discovered_secret: true
+      defeated_boss: true
+```
+
+### AI Safety & Fallbacks
+
+| Scenario | Behavior |
+|----------|----------|
+| API unavailable | Use static YAML content |
+| API timeout (10s) | Use fallback text |
+| API error | Log error, use fallback |
+| Empty response | Use fallback |
+| Rate limited | Queue for retry, use fallback |
+
+### Performance
+
+- Scene with AI: < 3 seconds (with timeout)
+- Cached responses: instant (same scene, same state)
+- Async generation: player can read while generating
+
+---
+
+## 8.3 AI-Controlled NPCs (Intelligent NPCs)
+
+### Overview
+NPCs are powered by AI to think, reason, and make contextual decisions - not just generate dialogue. This creates emergent storytelling where NPCs react authentically to player actions.
+
+### How It Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    AI NPC Decision Flow                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   Player Action                                                 │
+│        │                                                        │
+│        ▼                                                        │
+│   ┌─────────────────┐                                          │
+│   │  NPC "Thinks"   │  ← AI analyzes:                          │
+│   │  (reasoning)    │     - Player's class/race                │
+│   └────────┬────────┘     - Previous interactions              │
+│            │              - Current game state                  │
+│            ▼              - Story flags                         │
+│   ┌─────────────────┐     - NPC's personality                 │
+│   │  AI Decision    │                                          │
+│   │  Engine         │                                          │
+│   └────────┬────────┘                                          │
+│            │                                                     │
+│            ▼                                                     │
+│   ┌─────────────────┐                                          │
+│   │  Response +     │                                          │
+│   │  Action         │  ← AI generates:                         │
+│   │                 │     - What NPC says                      │
+│   └─────────────────┘     - What NPC does                      │
+│                           - How NPC reacts                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### NPC Personality System
+
+Each NPC has a defined personality that shapes AI decisions:
+
+```yaml
+npc:
+  id: mysterious_stranger
+  name: "Aldric"
+  personality:
+    # Core traits (affects decision-making)
+    alignment: "chaotic_good"
+    intelligence: "high"
+    mood: "enigmatic"
+
+    # Decision weights
+    decision_weights:
+      helps_player: 0.7      # 70% likely to help
+      reveals_secrets: 0.4   # 40% likely to share lore
+      attacks_if_threatened: 0.6
+
+    # Memory
+    memory:
+      - "player_approached"
+      - "player_refused_help"
+```
+
+### AI Reasoning Examples
+
+| Player Action | NPC "Thinking" (AI) | NPC Decision |
+|---------------|---------------------|--------------|
+| Player attacks goblin | "This fighter shows aggression. May be useful ally or potential threat." | Offer quest OR attack |
+| Player helps tavern patron | "Demonstrates compassion. Likely hero type." | Share dungeon secret |
+| Player steals from merchant | "Greedy. Untrustworthy." | Refuse to trade, alert guards |
+| Player is mage class | "Arcane user. May understand the ancient texts." | Give lore book |
+
+### NPC Decision Types
+
+| Decision | Description | Examples |
+|----------|-------------|----------|
+| **Dialogue** | What NPC says | Greeting, warning, quest offer |
+| **Action** | What NPC does | Attack, flee, give item |
+| **Reaction** | How NPC responds | Friendly, hostile, neutral |
+| **Relationship** | Change in NPC attitude | Trust +, hostility + |
+| **Memory** | NPC remembers player | Store for future encounters |
+
+### Dynamic Quest Generation
+
+AI NPCs can offer procedurally generated quests:
+
+```yaml
+npc_quest:
+  ai_generated: true
+  trigger: "player_approaches"
+  generation_prompt: |
+    NPC is a mysterious wizard.
+    Player is a {class} {race}.
+    Generate a short quest that:
+    - Relates to player's abilities
+    - Connects to main dungeon plot
+    - Has clear reward
+
+  # AI returns:
+  # - Quest text
+  # - Quest objectives
+  # - Rewards
+  # - Success/failure outcomes
+```
+
+### Technical Implementation
+
+| Component | Purpose |
+|-----------|---------|
+| `NPCBrain` | Manages NPC thinking, memory, decisions |
+| `PersonalityEngine` | Loads/defines NPC personalities |
+| `DecisionTree` | AI reasons through options |
+| `ActionResolver` | Executes NPC decisions in game |
+| `MemoryStore` | Persists NPC memories |
+
+### Example AI NPC Session
+
+```
+Player: "What do you know about the dungeon?"
+
+NPC (Aldric the Stranger):
+  [AI Thinking...]
+  "The player is a fighter who helped the tavern keeper.
+   They seem heroic but naive. I should test their worthiness."
+
+  [AI Decision: Share partial truth + test]
+
+  "The dungeon... yes. It calls to those with courage.
+   But courage alone won't suffice. Take this symbol.
+   Return when you've proven yourself worthy."
+
+  → Gives player "Amulet of Proof"
+  → Sets flag: "stranger_testing_player"
+```
+
+### NPC vs Static Content
+
+| Feature | Static | AI NPC |
+|---------|--------|--------|
+| Dialogue | Fixed text | Dynamic generation |
+| Reactions | Hardcoded | Contextual |
+| Memory | None | Full history |
+| Quests | Pre-written | Procedural |
+| Replayability | Same each time | Unique each play |
+
+---
+
+## 8.4 AI-Generated Story Branches
+
+### Overview
+AI can dynamically generate new story branches based on player actions, creating emergent narratives that go beyond pre-written content.
+
+### How Branch Generation Works
+
+```
+Player Action → AI Analyzes Context → Generate New Branches → Player Chooses
+                                              │
+                            ┌─────────────────┴─────────────────┐
+                            ▼                                   ▼
+                    2-4 AI-generated                   Original static
+                    choices with                   choices (fallback)
+                    narrative text
+```
+
+### Branch Generation Triggers
+
+| Trigger | When AI Generates | Example |
+|---------|-------------------|---------|
+| Dead end | No valid next scene | Player takes unmapped path |
+| Custom moment | `ai_branches: true` | Major story decision point |
+| Random event | 10% chance per scene | Unexpected encounter |
+| Player request | Player asks "what if..." | Speculative action |
+
+### Branch Structure
+
+```yaml
+# AI-generated branch example
+ai_branch:
+  generated: true
+  based_on:
+    - player_class: wizard
+    - flag: learned_dungeon_secret
+    - gold: 50
+
+  choices:
+    - id: ai_choice_1
+      text: "Search the ancient library for arcane knowledge"
+      shortcut: A
+      ai_generated: true
+      next_scene: arcane_library
+
+    - id: ai_choice_2
+      text: "Seek out the local mages' guild for intel"
+      shortcut: B
+      ai_generated: true
+      next_scene: mages_guild
+```
+
+### AI-Generated Endings
+
+Beyond branches, AI can create unique endings:
+
+```yaml
+# endings.yaml
+dynamic_endings:
+  ai_generated: true
+
+  # AI generates ending based on:
+  # - Total flags set
+  # - Choices made
+  # - Character stats
+  # - Playtime
+  # - Items collected
+
+  generation_template: |
+    The player has {flags_set} flags and made {choices_count} choices.
+    Their class is {class} and they have {gold} gold.
+
+    Generate a creative ending that:
+    - Reflects their choices
+    - Provides closure
+    - Is 2-3 sentences
+    - Has a fitting title
+```
+
+### Branch/Ending Quality Controls
+
+| Control | Purpose |
+|---------|---------|
+| Context window | AI sees relevant game state |
+| Prompt templates | Consistent style guide |
+| Validation | Check for inappropriate content |
+| Caching | Same context → same branches |
+| Max length | Prevent overly long text |
+
+### Emergent Story Example
+
+```
+Traditional Path:
+  Tavern → Dungeon → Goblins → Boss → Ending
+
+Emergent AI Path (Player: Wizard + Learned Secrets):
+  Tavern → Dungeon → [AI generates: "Search arcane ruins nearby"]
+      → Ancient Library (AI generated scene)
+      → [AI generates: "Discovered spellbook, attracted attention"]
+      → Boss (Alternative: Magical construct)
+      → [AI generates unique ending based on spellbook choice]
+```
+
+### Comparison
+
+| Feature | Static Story | AI-Enhanced |
+|---------|--------------|-------------|
+| Total scenes | ~20 | Unlimited |
+| Branching | Fixed tree | Emergent |
+| Endings | 4-6 fixed | Infinite unique |
+| Replayability | Low | High |
+| Consistency | Guaranteed | AI-dependent |
+
+### Performance Considerations
+
+- AI thinking: 2-5 seconds per NPC decision
+- Caching: Same situation → cached decision
+- Queue: Max 1 pending NPC thought
+- Fallback: Static response if AI unavailable
 
 ## 9. Non-Functional Requirements
 

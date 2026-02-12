@@ -22,6 +22,7 @@ from ..entities.character import Character
 from ..narrative.models import GameState
 from ..narrative.scene_manager import SceneManager
 from ..narrative.ending_manager import EndingManager
+from ..narrative.ai_service import create_ai_service
 
 
 class DNDRoguelikeApp(App):
@@ -60,6 +61,7 @@ class DNDRoguelikeApp(App):
 
         self.narrative_game_state: Optional[GameState] = None
         self.narrative_initial_scene: Optional[str] = None
+        self.ai_service = create_ai_service()
 
     def compose(self) -> ComposeResult:
         """Compose the application layout."""
@@ -75,7 +77,9 @@ class DNDRoguelikeApp(App):
 
     def action_show_menu(self) -> None:
         """Show the menu screen."""
-        self.pop_screen()
+        # Only pop if there's more than the default screen
+        if len(self._screen_stack) > 1:
+            self.pop_screen()
         self.push_screen("menu")
 
     def _on_load_game_dismissed(self, result) -> None:

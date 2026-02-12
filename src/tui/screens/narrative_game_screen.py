@@ -45,7 +45,7 @@ class NarrativeGameScreen(Screen):
             id="narrative_layout",
         )
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         """Called when screen is mounted."""
         import time
 
@@ -60,19 +60,19 @@ class NarrativeGameScreen(Screen):
                 except ValueError:
                     pass
         if self.current_scene:
-            self._update_display()
+            await self._update_display()
 
-    def set_game_state(self, state: GameState) -> None:
+    async def set_game_state(self, state: GameState) -> None:
         """Set the game state."""
         self.game_state = state
-        self._update_display()
+        await self._update_display()
 
-    def set_scene(self, scene: Scene) -> None:
+    async def set_scene(self, scene: Scene) -> None:
         """Set and display a new scene."""
         self.current_scene = scene
-        self._update_display()
+        await self._update_display()
 
-    def _update_display(self) -> None:
+    async def _update_display(self) -> None:
         """Update the narrative display."""
         if not self.current_scene:
             return
@@ -81,16 +81,66 @@ class NarrativeGameScreen(Screen):
         desc_widget = self.query_one("#scene_description", Static)
 
         title_widget.update(f"[b]{self.current_scene.title}[/b]")
-        desc_widget.update(self.current_scene.description)
 
-        self._update_choices()
+        # Check for AI-enhanced dialogue
+        description = self.current_scene.description
+
+        if self.current_scene.ai_dialogue and self.current_scene.npc_name:
+            # Get AI service from app
+            ai_service = self.app.ai_service
+
+            # Build context for AI
+            npc_context = self._build_npc_context()
+
+            # Generate AI dialogue
+            if ai_service and ai_service.is_enabled():
+                try:
+                    ai_dialogue = await ai_service.enhance_dialogue(
+                        npc_name=self.current_scene.npc_name,
+                        mood=self.current_scene.npc_mood or "neutral",
+                        context=npc_context,
+                        dialogue_type="greeting",
+                    )
+                    # Append AI dialogue to description
+                    description = f"{description}\n\n[i]{self.current_scene.npc_name}:[/i] \"{ai_dialogue}\""
+                except Exception as e:
+                    # Fallback silently - use static description
+                    pass
+
+        desc_widget.update(description)
+
+        await self._update_choices()
         self._update_status()
         self._update_action_buttons()
 
-    def _update_choices(self) -> None:
+    def _build_npc_context(self) -> str:
+        """Build context string for NPC AI."""
+        if not self.game_state or not self.game_state.character:
+            return "A new adventurer approaches."
+
+        char = self.game_state.character
+        flags = self.game_state.flags
+
+        context_parts = [
+            f"Player is a {char.race} {char.character_class} named {char.name}.",
+        ]
+
+        # Add notable flags
+        if flags.get("met_stranger"):
+            context_parts.append("The player has met me before.")
+        if flags.get("learned_dungeon_secret"):
+            context_parts.append("The player knows about the dungeon's secrets.")
+        if flags.get("allied_with_stranger"):
+            context_parts.append("The player is my ally in this quest.")
+        if flags.get("accepted_quest"):
+            context_parts.append("The player accepted my quest.")
+
+        return " ".join(context_parts)
+
+    async def _update_choices(self) -> None:
         """Update the choices display."""
         choices_container = self.query_one("#choices_container", Vertical)
-        choices_container.remove_children()
+        await choices_container.remove_children()
 
         if not self.current_scene or not self.current_scene.choices:
             return
@@ -138,7 +188,7 @@ class NarrativeGameScreen(Screen):
         buttons_container = self.query_one("#action_buttons", Static)
         buttons_container.update("[S] Save Game")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses for choices."""
         button_id = event.button.id
         if not button_id:
@@ -146,7 +196,7 @@ class NarrativeGameScreen(Screen):
 
         if button_id.startswith("choice_"):
             choice_id = button_id.replace("choice_", "")
-            self._handle_choice(choice_id)
+            await self._handle_choice(choice_id)
         elif button_id == "btn_save":
             self._save_game()
 
@@ -181,7 +231,7 @@ class NarrativeGameScreen(Screen):
 
         return SaveDataBuilder.build_full_save(self.game_state, metadata)
 
-    def _handle_choice(self, choice_id: str) -> None:
+    async def _handle_choice(self, choice_id: str) -> None:
         """Handle a player's choice."""
         if not self.current_scene or not self.game_state:
             return
@@ -198,7 +248,7 @@ class NarrativeGameScreen(Screen):
         if choice.skill_check:
             self._handle_skill_check(choice)
         else:
-            self._transition_to_scene(choice.next_scene)
+            await self._transition_to_scene(choice.next_scene)
 
     def _handle_skill_check(self, choice: Choice) -> None:
         """Handle a skill check for a choice."""
@@ -271,15 +321,14 @@ class NarrativeGameScreen(Screen):
         if result.is_critical:
             try:
                 import sys
+
                 sys.stdout.write("\a")
                 sys.stdout.flush()
             except Exception:
                 pass
 
         try:
-            display = DiceDisplay.display_skill_check(
-                skill_name, result, skill_check.dc, success
-            )
+            display = DiceDisplay.display_skill_check(skill_name, result, skill_check.dc, success)
             dice_widget.update(display)
         except Exception:
             return
@@ -287,11 +336,11 @@ class NarrativeGameScreen(Screen):
         await asyncio.sleep(0.5)
 
         if success:
-            self._transition_to_scene(skill_check.success_next_scene)
+            await self._transition_to_scene(skill_check.success_next_scene)
         else:
-            self._transition_to_scene(skill_check.failure_next_scene)
+            await self._transition_to_scene(skill_check.failure_next_scene)
 
-    def _transition_to_scene(self, scene_id: str) -> None:
+    async def _transition_to_scene(self, scene_id: str) -> None:
         """Transition to a new scene."""
         if not self.game_state:
             return
@@ -304,7 +353,7 @@ class NarrativeGameScreen(Screen):
             scene = scene_manager.get_scene(scene_id)
             self.game_state.current_scene = scene_id
             self.game_state.scene_history.append(scene_id)
-            self.set_scene(scene)
+            await self.set_scene(scene)
 
             for flag, value in scene.flags_set.items():
                 self.game_state.flags[flag] = value
@@ -345,7 +394,7 @@ class NarrativeGameScreen(Screen):
         ending_screen.set_ending(ending.title, ending.description, stats)
         self.app.push_screen(ending_screen)
 
-    def on_key(self, event: events.Key) -> None:
+    async def on_key(self, event: events.Key) -> None:
         """Handle key presses for quick choice selection."""
         if event.key.lower() == "s":
             self._save_game()
@@ -360,5 +409,5 @@ class NarrativeGameScreen(Screen):
         key = event.key.upper()
         for choice in self.current_scene.choices:
             if choice.shortcut.upper() == key and self._is_choice_available(choice):
-                self._handle_choice(choice.id)
+                await self._handle_choice(choice.id)
                 break

@@ -66,6 +66,8 @@ class EndingScreen(Screen):
             self._play_again()
         elif event.key == "q":
             self._quit_game()
+        elif event.key == "escape":
+            self.app.action_show_menu()
 
     def _play_again(self) -> None:
         """Start a new game."""

@@ -1,0 +1,44 @@
+id: goblin_negotiation
+act: 1
+title: "Parley with Goblins"
+
+description: |
+  You hold up your hands and step forward.
+
+  "Wait!" you call out. "I'm not here to fight!"
+
+  The lead goblin pauses, yellow eyes narrowing. Its scimitar still raised,
+  but curiosity wins over aggression.
+
+  "Not fight? Then why da goblins come? You got gold? Food? Shiny things?"
+
+  The other goblins exchange glances. They're listening.
+
+choices:
+  - id: offer_gold
+    text: "Offer 10 gold to pass"
+    shortcut: A
+    next_scene: goblin_bribe
+    consequences:
+      - type: gold
+        target: player
+        value: -10
+
+  - id: propose_trade
+    text: "Propose a trade - information for passage"
+    shortcut: B
+    next_scene: goblin_trade_info
+
+  - id: threaten
+    text: "Threaten to kill them all if they don't stand aside"
+    shortcut: C
+    next_scene: goblin_attack
+
+  - id: charm
+    text: "Try to charm them (DC 14 Charisma)"
+    shortcut: D
+    skill_check:
+      ability: cha
+      dc: 14
+      success_next_scene: goblin_charmed
+      failure_next_scene: goblin_attack

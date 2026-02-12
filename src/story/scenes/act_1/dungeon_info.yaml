@@ -1,0 +1,52 @@
+id: dungeon_info
+act: 1
+title: "The Dungeon's Secret"
+
+description: |
+  The stranger's eyes narrow thoughtfully as you ask about the dungeon.
+
+  "Very well," he whispers, leaning closer. "The dungeon below this town was once
+  a temple to an old god - one best left forgotten. Three weeks ago, the entrance
+  appeared overnight. No one knows why."
+
+  He slides a crude map across the table.
+
+  "The temple complex extends deep underground. I've heard whispers of cultists
+  performing rituals in the lower chambers. If something isn't done, the entire
+  region will be consumed by darkness."
+
+  The map shows three main areas: the entrance hall, the eastern passages
+  (marked "water danger"), and the western wing (marked "armory").
+
+choices:
+  - id: accept_quest
+    text: "Accept the quest"
+    shortcut: A
+    next_scene: offer_heroic
+    set_flags:
+      accepted_quest: true
+
+  - id: demand_more
+    text: "Demand more information"
+    shortcut: B
+    next_scene: confrontation_success
+    skill_check:
+      ability: cha
+      dc: 14
+      success_next_scene: confrontation_success
+      failure_next_scene: confrontation_fail
+
+  - id: leave_it
+    text: "This sounds too dangerous"
+    shortcut: C
+    next_scene: tavern_entry
+
+  - id: take_map
+    text: "Take the map and leave"
+    shortcut: D
+    next_scene: dungeon_entrance
+    set_flags:
+      has_dungeon_map: true
+
+flags_set:
+  learned_dungeon_secret: true

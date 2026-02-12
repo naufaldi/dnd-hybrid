@@ -1,0 +1,27 @@
+id: goblin_escape
+act: 1
+title: "Narrow Escape"
+
+description: |
+  You burst back into the entry hall, gasping for breath. The goblins
+  give chase, but their short legs can't match your speed.
+
+  After a moment, the cackling fades - they've given up the chase.
+
+  You're back at the entrance hall, safe for now.
+
+choices:
+  - id: catch_breath
+    text: "Rest and plan next move"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+
+  - id: try_again
+    text: "Go back and fight"
+    shortcut: B
+    next_scene: goblin_encounter
+
+  - id: different_path
+    text: "Take a different path"
+    shortcut: C
+    next_scene: underground_lake

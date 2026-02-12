@@ -1,0 +1,49 @@
+id: traps_missed
+act: 1
+title: "A Costly Oversight"
+
+description: |
+  You scan the entrance carefully, but your eyes deceive you. The ancient
+  traps of the temple are masterfully hidden - centuries of dust have
+  obscured their mechanisms.
+
+  Confident the path is safe, you step forward.
+
+  The floor gives way beneath your feet.
+
+  You plunge into a pit trap, landing hard on stone. Pain shoots through
+  your ankle as you hit the bottom - a twisted sprain, but nothing broken.
+
+  Above, you can see the entrance, now impossibly far above you.
+
+  The pit is about ten feet deep with smooth walls. You'll need to find
+  another way out.
+
+choices:
+  - id: climb_out
+    text: "Try to climb out"
+    shortcut: A
+    skill_check:
+      ability: str
+      dc: 12
+      success_next_scene: pit_escape
+      failure_next_scene: pit_exhausted
+
+  - id: call_help
+    text: "Call for help"
+    shortcut: B
+    next_scene: pit_calling
+
+  - id: search_pit
+    text: "Search the pit"
+    shortcut: C
+    next_scene: pit_discover
+
+  - id: wait
+    text: "Rest and recover"
+    shortcut: D
+    next_scene: pit_wait
+
+flags_set:
+  fell_in_trap: true
+  injured: true

@@ -2,10 +2,11 @@
 
 from pathlib import Path
 from typing import Dict, Optional, List
-from dataclasses import asdict
 import yaml
 from ..utils.logger import get_logger
 from .models import Scene, Choice, GameState, Consequence, SkillCheck
+from .validators import validate_scene
+from .fallbacks import get_fallback_scene
 from ..ai.openrouter_client import OpenRouterClient
 
 logger = get_logger(__name__)
@@ -18,6 +19,7 @@ class SceneManager:
         self.story_dir = story_dir
         self.ai_client = ai_client
         self.scenes: Dict[str, Scene] = {}
+        self.ai_scene_cache: Dict[str, Scene] = {}  # Cache for AI-generated scenes
         self._load_scenes()
 
     def _load_scenes(self) -> None:
@@ -31,13 +33,13 @@ class SceneManager:
                 with open(yaml_file, "r") as f:
                     scene_data = yaml.safe_load(f)
                     if scene_data:
-                        scene = self._parse_scene(scene_data)
+                        scene = self._parse_scene(scene_data, str(yaml_file))
                         self.scenes[scene.id] = scene
                         logger.info(f"Loaded scene: {scene.id}")
             except Exception as e:
                 logger.error(f"Error loading scene from {yaml_file}: {e}")
 
-    def _parse_scene(self, data: dict) -> Scene:
+    def _parse_scene(self, data: dict, source_path: str = None) -> Scene:
         """Parse scene data into Scene object."""
         choices = []
         for choice_data in data.get("choices", []):
@@ -63,6 +65,7 @@ class SceneManager:
                 ],
                 required_flags=choice_data.get("required_flags", {}),
                 set_flags=choice_data.get("set_flags", {}),
+                required_mechanics=choice_data.get("required_mechanics", []),
             )
             choices.append(choice)
 
@@ -81,17 +84,90 @@ class SceneManager:
             ai_dialogue=data.get("ai_dialogue", False),
             npc_name=data.get("npc_name"),
             npc_mood=data.get("npc_mood"),
+            required_mechanics=data.get("required_mechanics", []),
+            is_ai_generated=False,  # YAML scenes are manual
+            source_file=source_path,
         )
 
     def get_scene(self, scene_id: str) -> Scene:
-        """Get scene by ID."""
-        if scene_id not in self.scenes:
-            raise ValueError(f"Scene not found: {scene_id}")
-        return self.scenes[scene_id]
+        """
+        Get scene by ID with fallback support.
+
+        Tries in order:
+        1. Manual scenes (YAML files)
+        2. AI-generated scenes (cached)
+        3. Fallback generic scenes
+        """
+        # 1. Try manual scenes first
+        if scene_id in self.scenes:
+            return self.scenes[scene_id]
+
+        # 2. Try AI-generated scenes cache
+        if scene_id in self.ai_scene_cache:
+            scene = self.ai_scene_cache[scene_id]
+            # Validate before returning
+            is_valid, errors = validate_scene(scene)
+            if is_valid:
+                return scene
+            else:
+                logger.warning(f"AI scene '{scene_id}' has invalid mechanics: {errors}")
+                # Remove invalid scene from cache
+                del self.ai_scene_cache[scene_id]
+
+        # 3. Try to generate with AI (if available)
+        if self.ai_client:
+            ai_scene = self._generate_ai_scene(scene_id)
+            if ai_scene:
+                # Validate the AI scene
+                is_valid, errors = validate_scene(ai_scene)
+                if is_valid:
+                    self.ai_scene_cache[scene_id] = ai_scene
+                    return ai_scene
+                else:
+                    logger.warning(f"Generated AI scene '{scene_id}' has invalid mechanics: {errors}")
+
+        # 4. Fallback to generic scene
+        return self._get_fallback_for_scene(scene_id)
+
+    def _get_fallback_for_scene(self, scene_id: str) -> Scene:
+        """Get a fallback scene based on scene_id naming."""
+        # Try to infer scene type from ID
+        scene_type = "exploration"  # Default
+
+        if "combat" in scene_id.lower():
+            scene_type = "combat"
+        elif "puzzle" in scene_id.lower() or "door" in scene_id.lower():
+            scene_type = "puzzle"
+        elif "dialogue" in scene_id.lower() or "talk" in scene_id.lower():
+            scene_type = "dialogue"
+        elif "trap" in scene_id.lower():
+            scene_type = "trap"
+        elif "rest" in scene_id.lower():
+            scene_type = "rest"
+
+        logger.info(f"Using fallback scene for: {scene_id} (type: {scene_type})")
+        return get_fallback_scene(scene_type)
+
+    def _generate_ai_scene(self, scene_id: str) -> Optional[Scene]:
+        """Generate a scene using AI (placeholder - requires full AI integration)."""
+        # This would integrate with the AI client to generate scenes
+        # For now, return None to fall back to generic scenes
+        logger.info(f"AI scene generation requested for: {scene_id}")
+        return None
+
+    def add_ai_scene(self, scene: Scene) -> None:
+        """Add an AI-generated scene to the cache."""
+        is_valid, errors = validate_scene(scene)
+        if is_valid:
+            scene.is_ai_generated = True
+            self.ai_scene_cache[scene.id] = scene
+            logger.info(f"Added AI scene to cache: {scene.id}")
+        else:
+            logger.warning(f"Refused to add invalid AI scene: {errors}")
 
     def has_scene(self, scene_id: str) -> bool:
-        """Check if scene exists."""
-        return scene_id in self.scenes
+        """Check if scene exists (manual or AI cached)."""
+        return scene_id in self.scenes or scene_id in self.ai_scene_cache
 
     def add_scene(self, scene: Scene) -> None:
         """Add a scene to the manager."""

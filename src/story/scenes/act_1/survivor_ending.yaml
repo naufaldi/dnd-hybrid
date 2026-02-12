@@ -1,0 +1,20 @@
+id: survivor_ending
+act: 1
+title: "A Second Chance"
+
+description: |
+  You make your way back to town, exhausted but alive. The dungeon
+  entrance has sealed itself behind you - for now.
+
+  The adventure didn't go as planned, but you're alive. There's always
+  another chance.
+
+  THE END
+
+choices:
+  - id: play_again
+    text: "Play Again"
+    shortcut: A
+
+flags_set:
+  escaped_dungeon: true

@@ -1,0 +1,47 @@
+id: call_out_response
+act: 1
+title: "A Voice in the Dark"
+
+description: |
+  Your voice echoes into the darkness of the dungeon entrance.
+
+  For a long moment, nothing responds.
+
+  Then - a high-pitched cackling sound emerges from the depths.
+
+  "More foolish adventurers!" a nasally voice shrieks. "The master will be pleased!
+  Come down, come down! We'll have FUN!"
+
+  The voice is joined by another, then another - goblins, at least a dozen
+  by the sound of it.
+
+  They know you're coming.
+
+choices:
+  - id: charge_in
+    text: "Charge in fighting!"
+    shortcut: A
+    next_scene: goblin_encounter_mass
+
+  - id: set_ambush
+    text: "Set an ambush at the entrance"
+    shortcut: B
+    next_scene: entrance_ambush
+    skill_check:
+      ability: int
+      dc: 12
+      success_next_scene: ambush_success
+      failure_next_scene: ambush_fail
+
+  - id: retreat
+    text: "Retreat and find another way in"
+    shortcut: C
+    next_scene: dungeon_entry_hall
+
+  - id: parley
+    text: "Try to negotiate"
+    shortcut: D
+    next_scene: goblin_nego_early
+
+flags_set:
+  goblins_aware: true

@@ -1,0 +1,50 @@
+id: dark_shrine
+act: 1
+title: "The Dark Shrine"
+
+description: |
+  You enter the heart of the ancient temple. The chamber is vast, lit by
+  unnatural purple flames that cast writhing shadows on the walls.
+
+  At the center stands a shrine - a twisted altar of black stone. Behind it,
+  a hooded figure conducts a ritual around a pulsing orb of darkness.
+
+  The Void Heart.
+
+  The cultist leader turns as you enter. His eyes burn with fanatical zeal.
+
+  "ANOTHER HERO!" he screams. "Kill him!"
+
+  Two goblin guards charge at you! The cultist returns to his ritual -
+  if you don't stop him soon, the Void Heart will awaken.
+
+choices:
+  - id: fight_all
+    text: "Fight everyone!"
+    shortcut: A
+    combat_encounter: cultist_boss
+
+  - id: sneak_cultist
+    text: "Sneak past the guards to attack the cultist"
+    shortcut: B
+    next_scene: sneak_to_cultist
+    skill_check:
+      ability: dex
+      dc: 14
+      success_next_scene: cultist_surprise
+      failure_next_scene: cultist_boss
+
+  - id: distract
+    text: "Distract them with a shout"
+    shortcut: C
+    next_scene: cultist_distracted
+
+  - id: charge_altar
+    text: "Charge directly at the altar"
+    shortcut: D
+    combat_encounter: cultist_boss
+    set_flags:
+      direct_assault: true
+
+flags_set:
+  reached_shrine: true

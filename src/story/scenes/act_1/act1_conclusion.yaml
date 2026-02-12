@@ -1,0 +1,39 @@
+id: act1_conclusion
+act: 1
+title: "Return to Light"
+
+description: |
+  You emerge from the dungeon into daylight. The entrance glows with the
+  first rays of dawn.
+
+  Behind you, the dungeon entrance shudders - the collapsing temple
+  seals itself once more. The cultists are no more, the Void Heart
+  destroyed. The darkness that threatened the region has been banished.
+
+  You made it.
+
+  As you walk back toward town, you see figures approaching - the
+  townspeople, alerted by your victory. Among them, you spot the
+  mysterious stranger from the tavern.
+
+  He nods solemnly.
+
+  "You did what I could not," he says. "Thank you."
+
+  The townspeople cheer as you approach. You are a hero.
+
+choices:
+  - id: accept_glory
+    text: "Accept the people's gratitude"
+    shortcut: A
+    next_scene: hero_ending
+
+  - id: find_stranger
+    text: "Speak with the stranger privately"
+    shortcut: B
+    next_scene: stranger_thanks
+
+  - id: rest
+    text: "Rest - you'll deal with fame later"
+    shortcut: C
+    next_scene: survivor_ending

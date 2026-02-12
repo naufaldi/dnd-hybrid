@@ -1,0 +1,15 @@
+id: pit_escaped
+act: 1
+title: "Freedom"
+
+description: |
+  With a final effort, you pull yourself over the edge of the pit.
+  You lie on the cold stone, gasping for breath.
+
+  You're free - but the climb took its toll.
+
+choices:
+  - id: continue
+    text: "Continue exploring"
+    shortcut: A
+    next_scene: dungeon_entry_hall

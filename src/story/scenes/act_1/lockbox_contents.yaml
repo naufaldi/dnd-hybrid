@@ -1,0 +1,50 @@
+id: lockbox_contents
+act: 1
+title: "A Lucky Find"
+
+description: |
+  Your fingers work the rusted lock mechanism. With a satisfying click,
+  it opens!
+
+  Inside, you find:
+  - 25 gold pieces (an adventurer's hoard, long forgotten)
+  - A potion of healing
+  - A small brass key with strange markings
+
+  The key bears the symbol of the old temple - it may open something
+  deeper in the dungeon.
+
+choices:
+  - id: take_all
+    text: "Take everything"
+    shortcut: A
+    next_scene: underground_lake
+    set_flags:
+      found_treasure: true
+    consequences:
+      - type: gold
+        target: player
+        value: 25
+      - type: item
+        target: player
+        value: "potion_healing"
+      - type: item
+        target: player
+        value: "brass_key"
+
+  - id: leave_key
+    text: "Take gold and potion, leave the key"
+    shortcut: B
+    next_scene: underground_lake
+    consequences:
+      - type: gold
+        target: player
+        value: 25
+      - type: item
+        target: player
+        value: "potion_healing"
+
+  - id: study_key
+    text: "Study the key before taking it"
+    shortcut: C
+    next_scene: key_inspection

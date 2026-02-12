@@ -1,0 +1,48 @@
+id: entrance_examined
+act: 1
+title: "The Hidden Dangers"
+
+description: |
+  Your keen eyes catch the telltale signs - a slight irregularity in the
+  stonework, dust disturbed in an unnatural pattern.
+
+  You crouch low and examine the floor carefully. Yes - pressure plates,
+  connected to blade traps. The old temple's defenders still function.
+
+  More importantly, you spot a safe path through - a narrow strip along
+  the eastern wall where the traps don't reach.
+
+choices:
+  - id: follow_path
+    text: "Follow the safe path"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    set_flags:
+      safe_entry: true
+
+  - id: disarm_trap
+    text: "Try to disarm the traps for later"
+    shortcut: B
+    next_scene: trap_disarm_attempt
+    skill_check:
+      ability: dex
+      dc: 14
+      success_next_scene: trap_disarmed
+      failure_next_scene: trap_triggered
+
+  - id: mark_path
+    text: "Mark the path for safe retreat"
+    shortcut: C
+    next_scene: dungeon_entry_hall
+    set_flags:
+      marked_escape_route: true
+
+  - id: ignore
+    text: "Just go through carefully"
+    shortcut: D
+    next_scene: dungeon_entry_hall
+    set_flags:
+      identified_traps: true
+
+flags_set:
+  identified_traps: true

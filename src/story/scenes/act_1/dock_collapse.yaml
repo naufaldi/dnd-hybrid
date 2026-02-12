@@ -1,0 +1,39 @@
+id: dock_collapse
+act: 1
+title: "Collapse!"
+
+description: |
+  You step onto the rickety dock. Wood groans beneath your weight...
+
+  CRACK!
+
+  The ancient timber gives way. You plunge into the cold, dark water!
+
+  The lake is deeper than you expected - and something moves in the
+  darkness below.
+
+choices:
+  - id: swim_surface
+    text: "Swim back to the surface"
+    shortcut: A
+    next_scene: lake_emerges
+    skill_check:
+      ability: str
+      dc: 10
+      success_next_scene: lake_emerges
+      failure_next_scene: lake_struggle
+
+  - id: dive_deep
+    text: "Dive deeper to explore"
+    shortcut: B
+    next_scene: underwater_cave
+    skill_check:
+      ability: con
+      dc: 12
+      success_next_scene: underwater_cave
+      failure_next_scene: lake_emerges
+
+  - id: call_help
+    text: "Call for help"
+    shortcut: C
+    next_scene: lake_emerges

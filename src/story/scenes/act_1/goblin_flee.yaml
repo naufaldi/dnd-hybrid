@@ -1,0 +1,25 @@
+id: goblin_flee
+act: 1
+title: "Retreat!"
+
+description: |
+  You turn and sprint back toward the entry hall, goblins shouting
+  and cursing behind you.
+
+  Arrows whiz past your head as you run!
+
+choices:
+  - id: keep_running
+    text: "Keep running"
+    shortcut: A
+    next_scene: goblin_escape
+    skill_check:
+      ability: dex
+      dc: 10
+      success_next_scene: goblin_escape
+      failure_next_scene: goblin_flee_fail
+
+  - id: turn_fight
+    text: "Stop and fight!"
+    shortcut: B
+    combat_encounter: goblins

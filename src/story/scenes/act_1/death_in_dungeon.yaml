@@ -1,0 +1,27 @@
+id: death_in_dungeon
+act: 1
+title: "Darkness Falls"
+
+description: |
+  Your vision fades as your wounds prove too severe. The last thing
+  you see is the cold, indifferent stone of the dungeon ceiling...
+
+  ...and a figure standing over you. The cultist leader smiles.
+
+  "Another soul for the Void Heart," he whispers.
+
+  Your adventure ends here.
+
+choices:
+  - id: restart
+    text: "Try again"
+    shortcut: A
+    next_scene: tavern_entry
+
+  - id: load
+    text: "Load previous save"
+    shortcut: B
+    next_scene: load_game
+
+flags_set:
+  player_died: true

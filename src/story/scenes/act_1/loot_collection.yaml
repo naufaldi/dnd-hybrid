@@ -1,0 +1,31 @@
+id: loot_collection
+act: 1
+title: "Victor's Prize"
+
+description: |
+  You search through the goblins' belongings.
+
+  Among the meager possessions, you find:
+  - 15 gold coins
+  - A crude but functional dagger
+  - The goblins' crude map of the dungeon
+
+choices:
+  - id: take_all
+    text: "Take everything"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    set_flags:
+      defeated_goblins: true
+      found_map: true
+    consequences:
+      - type: gold
+        target: player
+        value: 15
+
+  - id: leave
+    text: "Leave the rest"
+    shortcut: B
+    next_scene: dungeon_entry_hall
+    set_flags:
+      defeated_goblins: true

@@ -1,0 +1,28 @@
+id: hero_ending
+act: 1
+title: "The Hero's Welcome"
+
+description: |
+  The townspeople of the nearby village gather to celebrate your victory.
+  Banners hang from every window, and a feast is prepared in your honor.
+
+  The mysterious stranger - Aldric - stands beside you.
+
+  "You've done what I could not," he says quietly. "The darkness is gone.
+  Perhaps now I can finally find peace."
+
+  He hands you a pouch of gold - your reward.
+
+  You are a hero.
+
+  THE END
+
+choices:
+  - id: play_again
+    text: "Play Again"
+    shortcut: A
+
+flags_set:
+  escaped_dungeon: true
+  defeated_cultist: true
+  saved_town: true

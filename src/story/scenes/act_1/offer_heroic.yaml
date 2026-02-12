@@ -1,0 +1,47 @@
+id: offer_heroic
+act: 1
+title: "The Stranger's Offer"
+
+description: |
+  The stranger nods slowly, a hint of relief crossing his weathered features.
+
+  "I knew you were different," he says. "The dungeon has attracted many would-be
+  heroes - all dead within a day. But you... you have a certain quality."
+
+  He reaches into his cloak and produces a small, glowing amulet.
+
+  "Take this. It will protect you from the dungeon's darker influences. But know
+  this - the temple below holds an artifact of great power. The cultists seek
+  to awaken it."
+
+  He leans back.
+
+  "If you succeed in stopping them, return to me. I have a reward worthy of
+  a true hero."
+
+choices:
+  - id: accept_amulet
+    text: "Accept the amulet and head to the dungeon"
+    shortcut: A
+    next_scene: dungeon_entrance
+    set_flags:
+      allied_with_stranger: true
+      has_protection_amulet: true
+
+  - id: ask_reward
+    text: "What exactly is the reward?"
+    shortcut: B
+    next_scene: reward_revealed
+
+  - id: refuse_amulet
+    text: "I don't need trinkets. I'll handle this my way"
+    shortcut: C
+    next_scene: dungeon_entrance
+
+  - id: more_questions
+    text: "Tell me about the artifact"
+    shortcut: D
+    next_scene: artifact_lore
+
+flags_set:
+  allied_with_stranger: true

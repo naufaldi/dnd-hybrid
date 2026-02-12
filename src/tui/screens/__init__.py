@@ -2,6 +2,7 @@
 
 from typing import Optional
 from textual.screen import Screen
+from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
 from textual.widgets import Static, Input, Button, ListView, ListItem
 from textual.app import App
@@ -119,6 +120,13 @@ class MenuScreen(Screen):
 class CharacterCreationScreen(Screen):
     """Character creation screen."""
 
+    BINDINGS = [
+        Binding("up", "navigate_up", "Up"),
+        Binding("down", "navigate_down", "Down"),
+        Binding("enter", "confirm", "Enter"),
+        Binding("escape", "back", "Back"),
+    ]
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.step = 0
@@ -159,16 +167,27 @@ class CharacterCreationScreen(Screen):
             self.query_one("#cc_options", Static).focus()
 
     def on_key(self, event: events.Key) -> None:
-        """Handle key presses."""
-        if event.key == "enter":
-            self._next_step()
-        elif event.key == "escape":
-            self.app.pop_screen()
-        elif self.step > 0:
-            if event.key == "up":
-                self._navigate(-1)
-            elif event.key == "down":
-                self._navigate(1)
+        """Handle key presses when Input has focus (step 0); BINDINGS handle step 1+."""
+        if self.step == 0:
+            if event.key == "enter":
+                self.action_confirm()
+            elif event.key == "escape":
+                self.action_back()
+        # Note: up/down keys for steps > 0 are handled by BINDINGS
+
+    def action_navigate_up(self) -> None:
+        if self.step > 0:
+            self._navigate(-1)
+
+    def action_navigate_down(self) -> None:
+        if self.step > 0:
+            self._navigate(1)
+
+    def action_confirm(self) -> None:
+        self._next_step()
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
 
     def _update_display(self) -> None:
         """Update the display based on current step."""
@@ -194,10 +213,12 @@ class CharacterCreationScreen(Screen):
         if self.step == 0:
             value.update(f"[b]{self.character_data['name']}[/b]")
             name_input.display = True
+            name_input.can_focus = True
             start_btn.display = False
             opts.update("Type your name and press Enter")
         elif self.step == 1:
             name_input.display = False
+            name_input.can_focus = False
             start_btn.display = False
             current = self.classes
             display = []
@@ -209,6 +230,7 @@ class CharacterCreationScreen(Screen):
             opts.update("\n".join(display))
         else:
             name_input.display = False
+            name_input.can_focus = False
             start_btn.display = True
             current = self.races
             display = []
@@ -250,6 +272,9 @@ class CharacterCreationScreen(Screen):
             if not self.character_data["name"].strip():
                 self.notify("Please enter a name")
                 return
+        if self.step == 1 and self.character_data["character_class"] == "fighter":
+            self.dismiss(self.character_data)
+            return
         if self.step < 2:
             self.step += 1
             self._update_display()

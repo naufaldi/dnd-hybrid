@@ -1,0 +1,16 @@
+id: pit_exhausted
+act: 1
+title: "Trapped"
+
+description: |
+  You're too exhausted to climb. The pit is deep, and your muscles
+  refuse to cooperate.
+
+  Eventually, you find another way - a tunnel in the wall that leads
+  back to the main dungeon.
+
+choices:
+  - id: continue
+    text: "Continue through tunnel"
+    shortcut: A
+    next_scene: dungeon_entry_hall

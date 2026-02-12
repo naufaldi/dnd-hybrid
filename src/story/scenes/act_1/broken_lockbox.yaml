@@ -1,0 +1,15 @@
+id: broken_lockbox
+act: 1
+title: "Nothing Left"
+
+description: |
+  The rusted lockbox crumbles in your hands - centuries of moisture
+  have rotted through the mechanism.
+
+  Nothing inside. Just rust and disappointment.
+
+choices:
+  - id: continue
+    text: "Continue"
+    shortcut: A
+    next_scene: underground_lake

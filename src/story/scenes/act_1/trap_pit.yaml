@@ -1,0 +1,33 @@
+id: trap_pit
+act: 1
+title: "The Pit"
+
+description: |
+  The floor gives way beneath your feet! You tumble down into darkness...
+
+  THUD.
+
+  You land on soft earth - a pit trap, but padded with years of debris.
+  You can stand, but the walls are smooth - climbing out won't be easy.
+
+  Above, you can hear water dripping. You're somewhere near the underground lake.
+
+choices:
+  - id: climb_out
+    text: "Try to climb out"
+    shortcut: A
+    skill_check:
+      ability: str
+      dc: 12
+      success_next_scene: pit_escaped
+      failure_next_scene: pit_exhausted
+
+  - id: look_around
+    text: "Look for another way out"
+    shortcut: B
+    next_scene: pit_tunnel
+
+  - id: call_out
+    text: "Call for help"
+    shortcut: C
+    next_scene: pit_wait

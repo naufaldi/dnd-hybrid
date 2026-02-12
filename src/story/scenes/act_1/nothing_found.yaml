@@ -1,0 +1,13 @@
+id: nothing_found
+act: 1
+title: "Nothing Here"
+
+description: |
+  You search thoroughly but find nothing of value. The room is empty -
+  or perhaps something was already taken.
+
+choices:
+  - id: continue
+    text: "Continue"
+    shortcut: A
+    next_scene: dungeon_entry_hall

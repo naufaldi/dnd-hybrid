@@ -32,35 +32,20 @@ class TestNarrativeGameFlow:
             await pilot.click("#btn_new")
             await pilot.pause()
 
-            # Complete character creation
+            # Complete character creation (wizard to reach race step)
             for char in "Hero":
                 await pilot.press(char)
             await pilot.press("enter")
             await pilot.pause()
-            await pilot.press("enter")  # class
+            await pilot.press("down")
             await pilot.pause()
-            await pilot.press("enter")  # race
+            await pilot.press("enter")
             await pilot.pause()
             await pilot.click("#btn_start")
             await pilot.pause()
 
             # Should be on game screen
             assert app.screen is not None
-
-    @pytest.mark.skip(reason="Narrative mode has no character screen")
-    async def test_can_open_character_from_game(self, app):
-        """Test pressing 'c' opens character screen from game (roguelike only)."""
-        pass
-
-    @pytest.mark.skip(reason="Narrative mode has no inventory screen")
-    async def test_can_open_inventory_from_game(self, app):
-        """Test pressing 'i' opens inventory screen from game (roguelike only)."""
-        pass
-
-    @pytest.mark.skip(reason="Narrative mode has no log screen")
-    async def test_can_open_log_from_game(self, app):
-        """Test pressing 'l' opens log screen from game (roguelike only)."""
-        pass
 
     async def test_can_save_from_game(self, app):
         """Test pressing 's' saves the game."""
@@ -73,7 +58,7 @@ class TestNarrativeGameFlow:
                 await pilot.press(char)
             await pilot.press("enter")
             await pilot.pause()
-            await pilot.press("enter")
+            await pilot.press("down")
             await pilot.pause()
             await pilot.press("enter")
             await pilot.pause()

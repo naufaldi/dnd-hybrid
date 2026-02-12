@@ -1,0 +1,34 @@
+id: creature_lair
+act: 1
+title: "The Creature's Lair"
+
+description: |
+  You follow the tracks along the underground lake shore. They lead to a
+  cavern opening on the far side of the water...
+
+  ...where a massive shape stirs.
+
+  A plesiosaur - an ancient aquatic reptile the size of a small boat -
+  rises from the dark waters. Its long neck swivels, and cold eyes fix
+  upon you.
+
+  This creature has been here for centuries - a guardian of the old temple,
+  awakened by the cultists' rituals.
+
+choices:
+  - id: fight_creature
+    text: "Fight the guardian!"
+    shortcut: A
+    combat_encounter: guardian
+
+  - id: talk_creature
+    text: "Try to communicate with it"
+    shortcut: B
+    next_scene: creature_parley
+
+  - id: retreat_slowly
+    text: "Back away slowly"
+    shortcut: C
+    next_scene: underground_lake
+    set_flags:
+      guardian_aware: true

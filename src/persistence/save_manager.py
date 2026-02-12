@@ -105,6 +105,48 @@ class SaveManager:
         """Delete a save file."""
         (self.save_dir / filename).unlink(missing_ok=True)
 
+    def save_minimal(
+        self,
+        scene_id: str,
+        character: Any,
+        flags: Dict[str, bool],
+        filename: Optional[str] = None,
+    ) -> Path:
+        """
+        Save only essential progress data.
+
+        This is much smaller than a full save - just scene ID, flags, and basic
+        character stats. Map/inventory are regenerated on load.
+
+        Args:
+            scene_id: Current scene ID
+            character: Character object with essential attributes
+            flags: Game flags
+            filename: Optional custom filename
+
+        Returns:
+            Path to saved file
+        """
+        # Extract only essential character data
+        character_essentials = {
+            "name": getattr(character, "name", "Unknown"),
+            "level": getattr(character, "level", 1),
+            "hp": getattr(character, "hit_points", 0),
+            "max_hp": getattr(character, "max_hp", 0),
+            "position": list(getattr(character, "position", (0, 0))),
+            "floor": getattr(character, "current_floor", 1),
+        }
+
+        minimal_state = create_minimal_game_state(
+            scene_id=scene_id,
+            character_essentials=character_essentials,
+            flags=flags,
+            floor=character_essentials.get("floor", 1),
+        )
+
+        # Use same save mechanism but with minimal data
+        return self.save_game(minimal_state, filename)
+
     def get_latest_save(self) -> Optional[Path]:
         """Get the most recent save file."""
         saves = self.list_saves()
@@ -118,3 +160,35 @@ def create_save_manager(save_dir: Optional[Path] = None) -> SaveManager:
     if save_dir is None:
         save_dir = Path.home() / ".dnd_roguelike" / "saves"
     return SaveManager(save_dir)
+
+
+def create_minimal_game_state(
+    scene_id: str,
+    character_essentials: Dict[str, Any],
+    flags: Dict[str, bool],
+    floor: int = 1,
+    current_act: int = 1,
+) -> Dict[str, Any]:
+    """
+    Create a minimal game state for saving.
+
+    This saves only essential progress data - the scene ID and flags.
+    Map and inventory are regenerated on load.
+
+    Args:
+        scene_id: Current scene ID
+        character_essentials: Minimal character data (name, level, hp, position)
+        flags: Game flags state
+        floor: Current dungeon floor
+        current_act: Current story act
+
+    Returns:
+        Minimal game state dict
+    """
+    return {
+        "scene_id": scene_id,
+        "character_essentials": character_essentials,
+        "flags": flags,
+        "floor": floor,
+        "current_act": current_act,
+    }

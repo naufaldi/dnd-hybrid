@@ -1,0 +1,54 @@
+id: confrontation_success
+act: 1
+title: "Pressing for Answers"
+
+description: |
+  You lean forward, fixing the stranger with an intense stare.
+
+  "I've come too far to be met with riddles," you say firmly. "Tell me everything.
+  Now."
+
+  The stranger's expression shifts from surprise to grudging respect.
+
+  "Very well," he admits. "I am Aldric - once a temple priest, now a fugitive
+  from my own order. The dungeon below was sealed for centuries until..."
+
+  He sighs deeply.
+
+  "...until I made a terrible mistake. I attempted to contact the old god's
+  spirit. Instead, I inadvertently broke the seal. The cultists followed."
+
+  He meets your eyes.
+
+  "I cannot undo what I've done. But I can help you end it. The artifact they
+  seek - the Void Heart - must be destroyed. Only then will the darkness stop
+  spreading."
+
+choices:
+  - id: forgive_him
+    text: "We all make mistakes. Let's fix this."
+    shortcut: A
+    next_scene: dungeon_entrance
+    set_flags:
+      allied_with_stranger: true
+      learned_aldric_secret: true
+
+  - id: blame_him
+    text: "This is your fault! You should face the consequences."
+    shortcut: B
+    next_scene: aldric_defends
+
+  - id: practical
+    text: "How do we destroy the Void Heart?"
+    shortcut: C
+    next_scene: artifact_destruction
+
+  - id: leave
+    text: "Too much responsibility. I'm out."
+    shortcut: D
+    next_scene: tavern_entry
+    set_flags:
+      abandoned_quest: true
+
+flags_set:
+  learned_full_truth: true

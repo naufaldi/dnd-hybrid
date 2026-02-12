@@ -61,7 +61,7 @@ class TestCharacterCreation:
             assert app.screen.step == 1
 
     async def test_enter_advances_from_class_to_race(self, app):
-        """Pressing Enter on class should advance to race selection."""
+        """Pressing Enter on class should advance to race selection (wizard, not fighter)."""
         async with app.run_test() as pilot:
             await pilot.pause()
             await pilot.click("#btn_new")
@@ -69,13 +69,15 @@ class TestCharacterCreation:
             for char in "Test":
                 await pilot.press(char)
             await pilot.press("enter")
+            await pilot.pause()
+            await pilot.press("down")
             await pilot.pause()
             await pilot.press("enter")
             await pilot.pause()
             assert app.screen.step == 2
 
-    async def test_has_start_button(self, app):
-        """Character creation should have a Start button when complete."""
+    async def test_fighter_auto_starts_game(self, app):
+        """Selecting fighter and pressing Enter should skip race and start game."""
         async with app.run_test() as pilot:
             await pilot.pause()
             await pilot.click("#btn_new")
@@ -84,7 +86,24 @@ class TestCharacterCreation:
                 await pilot.press(char)
             await pilot.press("enter")
             await pilot.pause()
+            await pilot.click("#cc_options")
+            await pilot.pause()
             await pilot.press("enter")
+            await pilot.pause()
+            screen_name = type(app.screen).__name__
+            assert "Game" in screen_name or "Narrative" in screen_name
+
+    async def test_has_start_button(self, app):
+        """Character creation should have a Start button when on race step."""
+        async with app.run_test() as pilot:
+            await pilot.pause()
+            await pilot.click("#btn_new")
+            await pilot.pause()
+            for char in "Test":
+                await pilot.press(char)
+            await pilot.press("enter")
+            await pilot.pause()
+            await pilot.press("down")
             await pilot.pause()
             await pilot.press("enter")
             await pilot.pause()
@@ -97,7 +116,7 @@ class TestCharacterCreationComplete:
     """Test completing character creation."""
 
     async def test_full_creation_flow(self):
-        """Complete flow: name -> class -> race -> start game."""
+        """Complete flow: name -> class (wizard) -> race -> start game."""
         app = DNDRoguelikeApp()
 
         async with app.run_test() as pilot:
@@ -108,7 +127,7 @@ class TestCharacterCreationComplete:
                 await pilot.press(char)
             await pilot.press("enter")
             await pilot.pause()
-            await pilot.press("enter")
+            await pilot.press("down")
             await pilot.pause()
             await pilot.press("enter")
             await pilot.pause()

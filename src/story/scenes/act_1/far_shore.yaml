@@ -1,0 +1,26 @@
+id: far_shore
+act: 1
+title: "Crossing the Lake"
+
+description: |
+  You move carefully across the weathered boards, testing each step before
+  committing your weight. The dock creaks ominously but holds.
+
+  On the far shore, you find an ancient door set into the rock face.
+  The brass lock catches your eye - the same symbol as the temple.
+
+  This passage leads directly into the deeper levels of the dungeon.
+
+choices:
+  - id: enter_door
+    text: "Enter the ancient door"
+    shortcut: A
+    next_scene: dark_shrine
+    set_flags:
+      secret_passage: true
+
+  - id: unlock_it
+    text: "Try the brass key"
+    shortcut: B
+    next_scene: shrine_unlocked
+    requires_item: brass_key

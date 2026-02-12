@@ -35,6 +35,8 @@ class Choice:
     skill_check: Optional[SkillCheck] = None
     required_flags: Dict[str, bool] = field(default_factory=dict)
     set_flags: Dict[str, bool] = field(default_factory=dict)
+    # NEW: Track required mechanics for this choice
+    required_mechanics: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -55,6 +57,10 @@ class Scene:
     ai_dialogue: bool = False
     npc_name: Optional[str] = None
     npc_mood: Optional[str] = None
+    # NEW: Mechanic tracking for validation
+    required_mechanics: List[str] = field(default_factory=list)
+    is_ai_generated: bool = False
+    source_file: Optional[str] = None
 
 
 @dataclass

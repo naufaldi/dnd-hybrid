@@ -1,0 +1,42 @@
+id: goblin_bribe
+act: 1
+title: "Greedy Goblins"
+
+description: |
+  You hold up ten gold coins. The goblins' eyes go wide with greed.
+
+  "GOLD! Real gold!" The lead goblin snatches the coins from your hand,
+  biting one to test its authenticity.
+
+  "Okay, okay! You pass! But only you - not follow us!"
+  He gestures for the other goblins to part.
+
+  "We guard here for master. You go deep, you find master. He be VERY
+  angry if we let you pass... but we never saw you!"
+
+  The path ahead clears.
+
+choices:
+  - id: thank_them
+    text: "Thank them and proceed"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    set_flags:
+      bribed_goblins: true
+
+  - id: ask_about_master
+    text: "Ask about their 'master'"
+    shortcut: B
+    next_scene: goblin_master_info
+
+  - id: offer_more
+    text: "Offer more gold for information"
+    shortcut: C
+    next_scene: goblin_deep_info
+
+  - id: attack
+    text: "Attack while they're distracted"
+    shortcut: D
+    next_scene: goblin_victory
+    set_flags:
+      ambushed_goblins: true

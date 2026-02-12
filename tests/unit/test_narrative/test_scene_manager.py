@@ -57,9 +57,16 @@ class TestSceneManager:
         assert scene is not None
         assert scene.id == "start"
 
-    def test_get_scene_not_found(self, scene_manager):
-        with pytest.raises(ValueError, match="Scene not found"):
-            scene_manager.get_scene("nonexistent")
+    def test_get_scene_not_found_uses_fallback(self, scene_manager):
+        # When scene is not found, it should return a fallback scene instead of raising
+        scene = scene_manager.get_scene("nonexistent")
+        assert scene is not None
+        assert scene.id == "exploration_generic"  # Default fallback type
+
+    def test_has_scene_returns_false_for_missing(self, scene_manager):
+        # has_scene should return False for scenes not in manual or AI cache
+        assert scene_manager.has_scene("nonexistent") is False
+        assert scene_manager.has_scene("start") is True
 
     def test_get_valid_choices(self, scene_manager):
         state = GameState(character=None, current_scene="start")

@@ -132,3 +132,20 @@ class CombatEngine:
             damage += attacker.damage_mod
 
         return damage
+
+    def validate_mechanic(self, mechanic_name: str) -> tuple[bool, str]:
+        """
+        Validate that a mechanic is available for combat actions.
+
+        Args:
+            mechanic_name: The name of the mechanic to validate
+
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
+        from src.narrative.mechanics import AVAILABLE_MECHANICS
+
+        if mechanic_name not in AVAILABLE_MECHANICS:
+            return (False, f"{mechanic_name}_not_available")
+
+        return (True, "")

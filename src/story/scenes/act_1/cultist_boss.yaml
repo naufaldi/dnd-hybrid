@@ -1,0 +1,11 @@
+id: cultist_boss
+act: 1
+title: "Battle at the Shrine"
+
+description: |
+  You charge into battle! The cultist leader screeches orders as his goblin
+  guards attack. But with the Void Heart's power, he is formidable.
+
+combat_encounter: cultist_boss
+
+choices: []

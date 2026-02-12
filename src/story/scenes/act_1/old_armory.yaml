@@ -1,0 +1,35 @@
+id: old_armory
+act: 1
+title: "The Old Armory"
+
+description: |
+  You push open the heavy wooden door. Inside, you find what was once
+  an armory - racks of weapons, now corroded with age.
+
+  Most are beyond saving, but among the ruins, you spot something:
+  A longsword with a crystal pommel. Despite centuries underground,
+  it gleams as if recently polished.
+
+  The blade hums with magical energy.
+
+choices:
+  - id: take_sword
+    text: "Take the magical sword"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    set_flags:
+      found_magic_weapon: true
+    consequences:
+      - type: item
+        target: player
+        value: "crystal_longsword"
+
+  - id: search_more
+    text: "Search for other items"
+    shortcut: B
+    next_scene: armory_find
+
+  - id: leave
+    text: "Leave without taking anything"
+    shortcut: C
+    next_scene: dungeon_entry_hall

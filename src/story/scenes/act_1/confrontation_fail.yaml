@@ -1,0 +1,42 @@
+id: confrontation_fail
+act: 1
+title: "Stone-Cold Silence"
+
+description: |
+  You attempt to press for more information, but the stranger's expression
+  hardens instantly.
+
+  "I offered you a gift," he says coldly. "Not an interrogation. If you cannot
+  trust a simple question answered in good faith, perhaps you are not the hero
+  this town needs."
+
+  He stands, pocketing the map.
+
+  "Forget the dungeon. Some secrets are better left buried."
+
+  Before you can respond, he disappears into the crowd, leaving you alone
+  with your questions.
+
+choices:
+  - id: chase_him
+    text: "Run after the stranger"
+    shortcut: A
+    next_scene: stranger_escapes
+
+  - id: go_alone
+    text: "Go to the dungeon anyway"
+    shortcut: B
+    next_scene: dungeon_entrance
+
+  - id: wait
+    text: "Stay in the tavern and think"
+    shortcut: C
+    next_scene: tavern_entry
+
+  - id: ask_barkeep
+    text: "Ask the barkeep about the stranger"
+    shortcut: D
+    next_scene: barkeep_info
+
+flags_set:
+  offended_stranger: true
