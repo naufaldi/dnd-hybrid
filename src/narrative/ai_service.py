@@ -294,7 +294,9 @@ Outcome:"""
 
 def create_ai_service(api_key: Optional[str] = None) -> AIService:
     """Factory function to create an AI service."""
+    # Use provided api_key or fall back to environment variable
+    effective_key = api_key or os.environ.get("OPENROUTER_API_KEY")
     client = None
-    if api_key or os.environ.get("OPENROUTER_API_KEY"):
-        client = OpenRouterClient(api_key=api_key)
+    if effective_key:
+        client = OpenRouterClient(api_key=effective_key)
     return AIService(client=client)

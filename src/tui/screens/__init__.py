@@ -497,6 +497,7 @@ class LogScreen(Screen):
 from .narrative_game_screen import NarrativeGameScreen
 from .load_game_screen import LoadGameScreen
 from .ending_screen import EndingScreen
+from .combat_screen import CombatScreen
 
 
 # Export screens
@@ -510,4 +511,5 @@ __all__ = [
     "NarrativeGameScreen",
     "LoadGameScreen",
     "EndingScreen",
+    "CombatScreen",
 ]

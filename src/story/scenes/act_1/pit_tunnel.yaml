@@ -1,0 +1,25 @@
+id: pit_tunnel
+act: 1
+title: "Hidden Passage"
+
+description: |
+  Following the sound of dripping water, you discover a narrow tunnel hidden
+  in the corner of the pit. It's a tight squeeze, but it leads upward.
+
+  After what feels like hours of crawling through the darkness, you emerge
+  into a small chamber. Moonlight streams through a crack in the ceiling—
+  you're back near the surface!
+
+  But this chamber holds more than just an exit. Ancient markings cover the
+  walls, and a pedestal stands in the center with something resting upon it.
+
+choices:
+  - id: examine_pedestal
+    text: "Examine the pedestal"
+    shortcut: A
+    next_scene: secret_compartment
+
+  - id: leave_quickly
+    text: "Leave through the exit"
+    shortcut: B
+    next_scene: underground_lake

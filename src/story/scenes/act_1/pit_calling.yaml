@@ -1,0 +1,26 @@
+id: pit_calling
+act: 1
+title: "Echoes in the Dark"
+
+description: |
+  Your voice carries through the darkness of the pit. The damp walls seem to
+  absorb most of the sound, but somewhere in the distance, you hear a response.
+
+  "Who... dares... disturb... the depths?" A hollow, echoing voice drifts up
+  from somewhere below. Then silence.
+
+  Moments later, you hear shuffling footsteps above. The trap door opens,
+  and a rope is tossed down.
+
+  "The master will want to know about this one..."
+
+choices:
+  - id: climb_up
+    text: "Climb up the rope"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+
+  - id: stay_put
+    text: "Stay in the pit"
+    shortcut: B
+    next_scene: pit_wait

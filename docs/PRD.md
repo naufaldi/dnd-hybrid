@@ -74,6 +74,105 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | Damage Rolls | Explicit damage dice display | Must Have |
 | Combat Narrator | Describe outcomes textually | Must Have |
 
+### 5.3.1 Reusable Combat System
+
+The combat system is designed to be reusable for any enemy type through configuration.
+
+#### Architecture
+
+```
+Scene YAML                          Game Engine
+────────────                        ───────────
+combat_encounter: <enemy_type>  →  Load enemy from definitions
+                                  →  Run combat loop
+                                  →  On victory → victory_next_scene
+                                  →  On defeat → defeat_scene
+```
+
+#### Enemy Definitions
+
+Enemies are defined in `src/data/enemies.yaml` or `src/entities/enemies.py`:
+
+```yaml
+goblin:
+  name: Goblin
+  hp: 7
+  ac: 15
+  challenge: 1/4
+  speed: 30
+  abilities:
+    - Nimble Escape (disengage/hide as bonus action)
+  attacks:
+    - name: Scimitar
+      damage: 1d6+3
+      type: slashing
+      range: melee
+    - name: Shortbow
+      damage: 1d6+3
+      type: piercing
+      range: 80/320
+```
+
+#### Adding New Enemies
+
+To add a new enemy type (hobgoblin, ghost, bandit):
+
+1. Add enemy definition to `enemies.yaml`
+2. In scene YAML, use `combat_encounter: <enemy_type>`
+
+Example for new enemy:
+
+```yaml
+# enemies.yaml
+hobgoblin:
+  name: Hobgoblin
+  hp: 11
+  ac: 18
+  challenge: 1/2
+  attacks:
+    - name: Longsword
+      damage: 1d10+3
+      type: slashing
+
+# scene YAML
+choices:
+  - id: fight
+    text: "Stand and fight!"
+    combat_encounter: hobgoblin
+    victory_next_scene: hobgoblin_victory
+    defeat_scene: death_in_dungeon
+```
+
+#### Combat Flow
+
+1. Player selects combat choice in narrative scene
+2. System loads enemy definition by type
+3. Combat screen displays: enemy name, HP, player HP, action options
+4. Player chooses action (Attack, Defend, Item, Flee)
+5. System resolves action with dice rolls
+6. Enemy takes turn (AI-controlled)
+7. Repeat until victory or defeat
+8. Transition to appropriate scene
+
+#### Combat Actions
+
+| Action | Description |
+|--------|-------------|
+| Attack | Standard attack roll vs enemy AC |
+| Defend | Gain +2 AC until next turn |
+| Item | Use inventory item |
+| Flee | DEX check (DC 12) to escape |
+
+#### D&D 5e Combat Rules (Per RFC)
+
+| Rule | Implementation |
+|------|----------------|
+| Attack Roll | `d20 + ability_mod + proficiency` vs AC |
+| Critical Hit | Natural 20 = damage dice rolled twice |
+| Natural 1 | Automatic miss |
+| Ability Modifier | `(score - 10) // 2` |
+| Proficiency | Level 1-4: +2, 5-8: +3, 9-12: +4, 13-16: +5, 17-20: +6 |
+
 ### 5.4 Character System
 
 | Feature | Description | Priority |

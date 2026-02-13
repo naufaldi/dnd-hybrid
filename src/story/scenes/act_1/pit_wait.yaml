@@ -1,0 +1,22 @@
+id: pit_wait
+act: 1
+title: "Waiting in Darkness"
+
+description: |
+  You wait in the darkness of the pit. Time seems to stretch endlessly as
+  you sit in the damp darkness.
+
+  Eventually, you hear voices above—the guards have given up their search.
+  But you also hear something else: the sound of water dripping somewhere
+  nearby. There might be another way out.
+
+choices:
+  - id: search_tunnel
+    text: "Search for the water source"
+    shortcut: A
+    next_scene: pit_tunnel
+
+  - id: wait_longer
+    text: "Continue waiting"
+    shortcut: B
+    next_scene: pit_exhausted

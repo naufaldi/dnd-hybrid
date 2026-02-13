@@ -172,9 +172,11 @@ class NarrativeGameScreen(Screen):
         for choice in self.current_scene.choices:
             if self._is_choice_available(choice):
                 # Format: [A] Choice text - shortcut in yellow (NOT a hotkey)
+                # Use scene ID prefix to ensure unique button IDs across scenes
+                scene_id = self.current_scene.id if self.current_scene else "unknown"
                 btn = Button(
                     f"[yellow]{choice.shortcut.upper()}[/yellow] {choice.text}",
-                    id=f"choice_{choice.id}",
+                    id=f"choice_{scene_id}_{choice.id}",
                     variant="default",
                 )
                 choices_container.mount(btn)
@@ -220,7 +222,14 @@ class NarrativeGameScreen(Screen):
             return
 
         if button_id.startswith("choice_"):
-            choice_id = button_id.replace("choice_", "")
+            # Button ID format: choice_{scene_id}_{choice_id}
+            # Extract choice_id by removing the prefix
+            if self.current_scene:
+                prefix = f"choice_{self.current_scene.id}_"
+                choice_id = button_id.replace(prefix, "", 1)
+            else:
+                # Fallback: just remove "choice_" prefix
+                choice_id = button_id.replace("choice_", "")
             await self._handle_choice(choice_id)
         elif button_id == "btn_save":
             self._save_game()
@@ -270,10 +279,51 @@ class NarrativeGameScreen(Screen):
         for flag, value in choice.set_flags.items():
             self.game_state.flags[flag] = value
 
-        if choice.skill_check:
+        # Check for combat encounter first
+        if choice.combat_encounter:
+            await self._start_combat(choice)
+        elif choice.skill_check:
             self._handle_skill_check(choice)
         else:
             await self._transition_to_scene(choice.next_scene)
+
+    async def _start_combat(self, choice) -> None:
+        """Start a combat encounter with the specified enemy."""
+        from ...entities.enemy_definitions import get_enemy
+
+        enemy_type = choice.combat_encounter
+        enemy = get_enemy(enemy_type)
+
+        if not enemy:
+            # Fallback: enemy not found, just transition
+            self.notify(f"Unknown enemy: {enemy_type}")
+            await self._transition_to_scene(choice.next_scene or "dungeon_entry_hall")
+            return
+
+        # Set combat state
+        self.game_state.is_combat = True
+        self.game_state.current_enemy = enemy_type
+        self.game_state.victory_scene = choice.victory_next_scene
+        self.game_state.defeat_scene = choice.defeat_scene
+
+        # Import and show combat screen
+        try:
+            from .combat_screen import CombatScreen
+            combat_screen = CombatScreen(
+                enemy_name=enemy.name,
+                enemy_hp=enemy.hp,
+                enemy_ac=enemy.ac,
+                enemy_description=enemy.description,
+                enemy_attacks=enemy.attacks,
+                enemy_abilities=enemy.abilities,
+                victory_scene=choice.victory_next_scene or "dungeon_entry_hall",
+                defeat_scene=choice.defeat_scene or "death_in_dungeon",
+            )
+            self.app.push_screen(combat_screen)
+        except Exception as e:
+            # Fallback if combat screen not available
+            self.notify(f"Combat error: {e}, proceeding to next scene")
+            await self._transition_to_scene(choice.next_scene or "dungeon_entry_hall")
 
     def _handle_skill_check(self, choice: Choice) -> None:
         """Handle a skill check for a choice."""

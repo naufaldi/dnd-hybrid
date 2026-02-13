@@ -1,0 +1,35 @@
+id: pit_dwelling
+act: 1
+title: "The Pit Dweller"
+
+description: |
+  Your voice echoes in the darkness of the pit. For a long moment, nothing responds.
+
+  Then, a pair of glowing yellow eyes open in the shadows. A hunched figure emerges
+  from the gloom—an emaciated creature that has clearly lived in this pit for years.
+  Its rags hang in tatters, and its voice is like gravel scraping stone.
+
+  "More victims... or perhaps... salvation?" it rasps. "I am called the Pit Dweller.
+  I know these tunnels better than any living soul. Help me escape this place, and
+  I will show you the way to the dungeon's heart."
+
+choices:
+  - id: accept_help
+    text: "Accept the Pit Dweller's help"
+    shortcut: A
+    next_scene: creature_lair
+    set_flags:
+      allied_with_pit_dweller: true
+
+  - id: reject_help
+    text: "Refuse the creature's offer"
+    shortcut: B
+    next_scene: pit_exhausted
+
+  - id: ask_questions
+    text: "Ask about the dungeon"
+    shortcut: C
+    next_scene: dungeon_info
+
+flags_set:
+  met_pit_dweller: true

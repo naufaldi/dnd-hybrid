@@ -17,6 +17,12 @@ def validate_scene(scene: Scene) -> Tuple[bool, List[str]]:
     """
     errors = []
 
+    # Check for duplicate choice IDs within scene
+    choice_ids = [c.id for c in scene.choices]
+    if len(choice_ids) != len(set(choice_ids)):
+        duplicates = [x for x in choice_ids if choice_ids.count(x) > 1]
+        errors.append(f"Scene '{scene.id}': Duplicate choice IDs: {set(duplicates)}")
+
     # Validate scene-level required mechanics
     for mechanic in scene.required_mechanics:
         if mechanic not in AVAILABLE_MECHANICS:

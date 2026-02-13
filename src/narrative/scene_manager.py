@@ -66,6 +66,9 @@ class SceneManager:
                 required_flags=choice_data.get("required_flags", {}),
                 set_flags=choice_data.get("set_flags", {}),
                 required_mechanics=choice_data.get("required_mechanics", []),
+                combat_encounter=choice_data.get("combat_encounter"),
+                victory_next_scene=choice_data.get("victory_next_scene"),
+                defeat_scene=choice_data.get("defeat_scene"),
             )
             choices.append(choice)
 

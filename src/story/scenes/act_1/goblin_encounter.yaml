@@ -15,7 +15,9 @@ choices:
   - id: fight
     text: "Stand and fight!"
     shortcut: A
-    combat_encounter: goblins
+    combat_encounter: goblin
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
 
   - id: negotiate
     text: "Try to negotiate (DC 14 Charisma)"

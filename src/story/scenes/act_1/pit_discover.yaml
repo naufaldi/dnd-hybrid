@@ -1,0 +1,23 @@
+id: pit_discover
+act: 1
+title: "Hidden Discovery"
+
+description: |
+  Searching the pit carefully, your hands brush against something metallic
+  embedded in the wall. It's an old iron box, rusted but intact.
+
+  Inside, you find the remains of a previous adventurer—and their belongings.
+  A faded note reads: "The Pit Dweller knows the way out. Trust no one."
+
+choices:
+  - id: take_supplies
+    text: "Take the supplies"
+    shortcut: A
+    next_scene: pit_exhausted
+    set_flags:
+      found_adventurer_supplies: true
+
+  - id: leave_alone
+    text: "Leave the dead in peace"
+    shortcut: B
+    next_scene: pit_exhausted

@@ -1,0 +1,25 @@
+id: trap_disarm_attempt
+act: 1
+title: "Disarming the Trap"
+
+description: |
+  You carefully examine the trap mechanism, tracing the pressure plates and
+  their connecting wires. This is delicate work—the slightest mistake could
+  trigger the deadly blades.
+
+  Your fingers find the release mechanism...
+
+choices:
+  - id: attempt_disarm
+    text: "Attempt to disarm the trap"
+    shortcut: A
+    skill_check:
+      ability: dex
+      dc: 14
+      success_next_scene: trap_disarmed
+      failure_next_scene: trap_triggered
+
+  - id: give_up
+    text: "Decide it's too risky"
+    shortcut: B
+    next_scene: dungeon_entry_hall

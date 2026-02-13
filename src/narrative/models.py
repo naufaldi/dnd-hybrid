@@ -37,6 +37,11 @@ class Choice:
     set_flags: Dict[str, bool] = field(default_factory=dict)
     # NEW: Track required mechanics for this choice
     required_mechanics: List[str] = field(default_factory=list)
+    # NEW: Combat encounter - triggers combat with specified enemy type
+    combat_encounter: Optional[str] = None
+    # Scenes to transition to after combat
+    victory_next_scene: Optional[str] = None
+    defeat_scene: Optional[str] = None
 
 
 @dataclass
@@ -91,6 +96,10 @@ class GameState:
     is_combat: bool = False
     ending_determined: Optional[str] = None
     turns_spent: int = 0
+    # Combat tracking
+    current_enemy: Optional[str] = None  # Enemy type for current combat
+    victory_scene: Optional[str] = None  # Scene after winning
+    defeat_scene: Optional[str] = None  # Scene after losing
 
 
 @dataclass

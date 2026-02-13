@@ -1,5 +1,6 @@
 """Main TUI application."""
 
+import os
 import uuid
 from pathlib import Path
 from typing import Optional
@@ -15,6 +16,7 @@ from .screens import (
     NarrativeGameScreen,
     LoadGameScreen,
     EndingScreen,
+    CombatScreen,
 )
 from .reactivity.state_store import StateStore
 from ..core.config import config
@@ -24,6 +26,49 @@ from ..narrative.scene_manager import SceneManager
 from ..narrative.ending_manager import EndingManager
 from ..narrative.ai_service import create_ai_service
 from ..narrative.npc_memory import NPCMemoryManager
+
+
+def _load_api_key() -> Optional[str]:
+    """Load OpenRouter API key from common sources."""
+    # 1. Environment variable (already set)
+    if os.environ.get("OPENROUTER_API_KEY"):
+        return os.environ.get("OPENROUTER_API_KEY")
+
+    # 2. Check for .env file in project root or home directory
+    candidates = [
+        Path.cwd() / ".env",
+        Path.home() / ".dnd_roguelike" / ".env",
+        Path(__file__).parent.parent.parent / ".env",
+    ]
+
+    for env_path in candidates:
+        if env_path.exists():
+            try:
+                content = env_path.read_text()
+                for line in content.splitlines():
+                    line = line.strip()
+                    if line.startswith("OPENROUTER_API_KEY="):
+                        key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if key:
+                            return key
+            except Exception:
+                pass
+
+    # 3. Check config file
+    config_dir = Path.home() / ".dnd_roguelike"
+    config_file = config_dir / "config"
+    if config_file.exists():
+        try:
+            content = config_file.read_text()
+            for line in content.splitlines():
+                if line.startswith("openrouter_api_key="):
+                    key = line.split("=", 1)[1].strip()
+                    if key:
+                        return key
+        except Exception:
+            pass
+
+    return None
 
 
 class DNDRoguelikeApp(App):
@@ -48,6 +93,7 @@ class DNDRoguelikeApp(App):
         "narrative": NarrativeGameScreen,
         "load_game": LoadGameScreen,
         "ending": EndingScreen,
+        "combat": CombatScreen,
     }
 
     def __init__(self, driver_class: Optional[type[Driver]] = None, **kwargs):
@@ -62,7 +108,7 @@ class DNDRoguelikeApp(App):
 
         self.narrative_game_state: Optional[GameState] = None
         self.narrative_initial_scene: Optional[str] = None
-        self.ai_service = create_ai_service()
+        self.ai_service = create_ai_service(api_key=_load_api_key())
         self.npc_memory = NPCMemoryManager()
 
     def compose(self) -> ComposeResult:
