@@ -23,6 +23,7 @@ from ..narrative.models import GameState
 from ..narrative.scene_manager import SceneManager
 from ..narrative.ending_manager import EndingManager
 from ..narrative.ai_service import create_ai_service
+from ..narrative.npc_memory import NPCMemoryManager
 
 
 class DNDRoguelikeApp(App):
@@ -62,6 +63,7 @@ class DNDRoguelikeApp(App):
         self.narrative_game_state: Optional[GameState] = None
         self.narrative_initial_scene: Optional[str] = None
         self.ai_service = create_ai_service()
+        self.npc_memory = NPCMemoryManager()
 
     def compose(self) -> ComposeResult:
         """Compose the application layout."""

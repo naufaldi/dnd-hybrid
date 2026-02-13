@@ -1,0 +1,20 @@
+id: fall_in_again
+act: 1
+title: "Another Fall"
+
+description: |
+  Your foot slips on the wet rock! You tumble back into the water...
+
+  But this time, you manage to grab the ledge and pull yourself up.
+  You're soaked and exhausted, but back on the shore.
+
+choices:
+  - id: rest
+    text: "Rest and try again"
+    shortcut: A
+    next_scene: underground_lake
+
+  - id: leave
+    text: "Head back to safety"
+    shortcut: B
+    next_scene: dungeon_entry_hall

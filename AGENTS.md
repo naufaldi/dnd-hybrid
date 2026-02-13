@@ -61,36 +61,7 @@ Skill skill=systematic-debugging  # When bug found
 Skill skill=brainstorming  # Before adding new feature
 ```
 
-### 2. Subagent Usage (Use Sparingly)
-
-Subagents can help with parallel work, but excessive spawning causes memory leaks and context issues. Use with restraint.
-
-#### Available Subagents (Use Only When Needed)
-
-| Agent | Best For |
-|-------|----------|
-| `Explore` | Finding files, understanding codebase |
-| `code-reviewer` | Reviewing code quality |
-| `debugger` | Root cause analysis |
-| `performance-engineer` | Optimization, profiling |
-| `backend-engineer` | Game logic, persistence |
-| `ts-pro` | TypeScript (if applicable) |
-
-#### When to Use Subagents
-- **DO use** for one-time research or exploration tasks
-- **AVOID** spawning for every small task
-- **AVOID** parallelizing tasks that share significant context
-- **NEVER** spawn more than 2-3 subagents in a single session
-
-**Golden Rule:** If a subagent needs to read files you've already read, do it yourself instead.
-
-#### Guidelines
-1. Prefer working directly in the main conversation for most tasks
-2. Use subagents only for truly independent research
-3. Don't use subagents to parallelize related tasks - they lose shared context
-4. After a subagent returns, summarize key findings and continue working directly
-
-### 3. Superpowers Skills (Critical)
+### 2. Superpowers Skills (Critical)
 
 Special skills marked with `superpowers:*` provide enhanced workflows:
 

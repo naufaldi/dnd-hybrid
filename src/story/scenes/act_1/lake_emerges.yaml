@@ -1,0 +1,25 @@
+id: lake_emerges
+act: 1
+title: "Back to Surface"
+
+description: |
+  You surface near the shore, gasping for breath. The cold water has
+  left you shivering, but you're alive.
+
+  The dock is destroyed, but you can see another way across - a narrow
+  ledge along the cavern wall.
+
+choices:
+  - id: try_ledge
+    text: "Try the narrow ledge"
+    shortcut: A
+    skill_check:
+      ability: dex
+      dc: 10
+      success_next_scene: far_shore
+      failure_next_scene: fall_in_again
+
+  - id: go_back
+    text: "Return to entry hall"
+    shortcut: B
+    next_scene: dungeon_entry_hall

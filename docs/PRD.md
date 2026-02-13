@@ -2,9 +2,9 @@
 
 ## AI Dungeon Chronicles - Narrative D&D Interactive Fiction
 
-**Version:** 2.1.0  
-**Status:** Draft  
-**Last Updated:** 2026-02-11
+**Version:** 2.2.0
+**Status:** In Progress
+**Last Updated:** 2026-02-12
 
 ---
 
@@ -124,6 +124,149 @@ Create an engaging narrative RPG experience that showcases AI integration in int
 | NPC Response | Generate dialogue | Scripted |
 | Outcome Text | Describe results | Generic |
 | Flavor | Add atmosphere | None |
+
+---
+
+## Implementation Roadmap
+
+### Phase Overview
+
+| Phase | Focus | Description | Target |
+|-------|-------|-------------|--------|
+| **Phase 1** | Act 1 MVP | Full playable Act 1: tavern → dungeon → ending | 1-2 weeks |
+| **Phase 2** | Polish | Narrative prose + BG3-style dice drama | 1 week |
+| **Phase 3** | Act 2-3 | Outline + core scenes for full campaign | 2 weeks |
+| **Phase 4** | AI NPCs | Dialogue generation for NPCs | 1-2 weeks |
+| **Phase 5** | AI Branches | Dynamic story branches + endings | Ongoing |
+
+---
+
+### Phase 1: Act 1 MVP (Priority)
+
+**Goal:** Complete playable experience from tavern to ending
+
+#### 1.1 Screen Flow Wiring
+- [ ] Title Screen → New/Continue/Load/Quit
+- [ ] Character Creation flow (name → class → race)
+- [ ] Narrative Game Screen (story + choices + stats)
+- [ ] Combat Screen (if needed)
+- [ ] Ending Screen (determination + display)
+- [ ] Save/Load integration
+
+#### 1.2 Core Systems
+- [ ] Game state management (flags, character, inventory)
+- [ ] Scene navigation (next_scene, skill checks, consequences)
+- [ ] Flag-based choice filtering
+- [ ] Gold/inventory management
+- [ ] Character stats (HP, AC, attributes)
+
+#### 1.3 Missing Scenes (Act 1)
+- [ ] Pit scenarios (pit_escaped, pit_exhausted)
+- [ ] Loot collection scenes
+- [ ] Secret compartment outcomes
+- [ ] Dock collapse/far_shore continuation
+- [ ] Cultist boss continuation
+
+#### 1.4 Act 1 Completion Checklist
+- [ ] All 39 scenes implemented
+- [ ] All paths lead to ending (no dead ends)
+- [ ] 4 endings working (Hero, Survivor, Mystery, Fallen)
+- [ ] Victory/defeat paths complete
+
+---
+
+### Phase 2: Polish
+
+#### 2.1 Narrative Enhancement
+- [ ] Rich scene descriptions
+- [ ] Vivid prose for outcomes
+- [ ] Scene transitions
+
+#### 2.2 Dice Display
+- [ ] ASCII dice art (d4, d6, d8, d10, d12, d20)
+- [ ] Rolling animation (Rolling... → reveal)
+- [ ] Critical hit/miss visual drama
+- [ ] DC display before roll
+- [ ] Modifier display
+
+#### 2.3 UI Polish
+- [ ] Two-column layout (story | choices+stats)
+- [ ] Character info panel
+- [ ] Save prompt
+
+---
+
+### Phase 3: Act 2-3
+
+#### 3.1 Act 2: Rising Action
+**Premise:** Player returns to town with knowledge of dungeon. New threats emerge.
+
+**Key Elements:**
+- New location: Town + surrounding areas
+- New NPCs: Merchant, Guard Captain, local Mage
+- Branch continuation from Act 1 choices
+- Side quests available
+- Dungeon deeper levels accessible
+
+**Scene Count Target:** ~25 new scenes
+
+#### 3.2 Act 3: Climax
+**Premise:** Final confrontation with cultist leader + ancient evil.
+
+**Key Elements:**
+- Multiple final paths (combat, diplomatic, secret)
+- Culmination of all Act 1-2 choices
+- Extended ending sequence
+- New ending types based on full campaign
+
+**Scene Count Target:** ~20 new scenes
+
+#### 3.3 Endings (Full Campaign)
+| Ending | Requirements |
+|--------|--------------|
+| **Legendary** | All side quests + hero ending |
+| **Hero** | Defeated cultist + saved town |
+| **Survivor** | Escaped with answers |
+| **Martyr** | Self-sacrifice for greater good |
+| **Corrupted** | Fell to darkness |
+| **Mystery** | Left with questions |
+
+---
+
+### Phase 4: AI NPCs
+
+#### 4.1 Dialogue Generation
+- [ ] OpenRouter integration for NPC responses
+- [ ] Context: character class, race, past choices
+- [ ] NPC personality templates
+- [ ] Fallback to scripted dialogue
+
+#### 4.2 NPC Memory System
+- [ ] Track player interactions
+- [ ] Relationship values per NPC
+- [ ] Conditional dialogue based on history
+
+---
+
+### Phase 5: AI Branches
+
+#### 5.1 Dynamic Scene Generation
+- [ ] Generate new scenes on dead ends
+- [ ] Context-aware scene descriptions
+- [ ] Maintain narrative consistency
+
+#### 5.2 AI Story Branches
+- [ ] Generate choices at key decision points
+- [ ] Procedural quest generation
+- [ ] Unique endings per playthrough
+
+#### 5.3 Performance & Safety
+- [ ] Response caching
+- [ ] Timeout handling (10s max)
+- [ ] Fallback content always available
+- [ ] Rate limiting
+
+---
 
 ## 8. Story Structure
 

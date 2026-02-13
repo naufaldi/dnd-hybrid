@@ -80,11 +80,13 @@ class NarrativeGameScreen(Screen):
         title_widget = self.query_one("#scene_title", Static)
         desc_widget = self.query_one("#scene_description", Static)
 
-        title_widget.update(f"[b]{self.current_scene.title}[/b]")
+        # Format title with decoration per PRD
+        title_widget.update(f"[b]═══ {self.current_scene.title} ═══[/b]")
+
+        # Parse and format description - separate narration from dialogue
+        description = self._format_description(self.current_scene.description)
 
         # Check for AI-enhanced dialogue
-        description = self.current_scene.description
-
         if self.current_scene.ai_dialogue and self.current_scene.npc_name:
             # Get AI service from app
             ai_service = self.app.ai_service
@@ -101,8 +103,8 @@ class NarrativeGameScreen(Screen):
                         context=npc_context,
                         dialogue_type="greeting",
                     )
-                    # Append AI dialogue to description
-                    description = f"{description}\n\n[i]{self.current_scene.npc_name}:[/i] \"{ai_dialogue}\""
+                    # Append AI dialogue with distinct styling
+                    description += f"\n\n[cyan italic]{self.current_scene.npc_name}:[/cyan italic] \"[italic]{ai_dialogue}[/italic]\""
                 except Exception as e:
                     # Fallback silently - use static description
                     pass
@@ -112,6 +114,21 @@ class NarrativeGameScreen(Screen):
         await self._update_choices()
         self._update_status()
         self._update_action_buttons()
+
+    def _format_description(self, description: str) -> str:
+        """Format description - make NPC dialogue distinct with cyan color."""
+        import re
+
+        # Find dialogue in quotes - handle multi-line
+        # Match text between quotes (including newlines)
+        def replace_dialogue(match):
+            quote = match.group(0)
+            return f"[cyan italic]{quote}[/cyan italic]"
+
+        # Match text in double quotes (including multi-line)
+        formatted = re.sub(r'\"([^\"]*)\"', replace_dialogue, description)
+
+        return formatted
 
     def _build_npc_context(self) -> str:
         """Build context string for NPC AI."""
@@ -124,6 +141,13 @@ class NarrativeGameScreen(Screen):
         context_parts = [
             f"Player is a {char.race} {char.character_class} named {char.name}.",
         ]
+
+        # Get NPC memory context if available
+        npc_id = self.current_scene.npc_name if self.current_scene else None
+        if npc_id:
+            npc_context = self.app.npc_memory.get_npc_context(npc_id.lower())
+            if npc_context:
+                context_parts.append(npc_context)
 
         # Add notable flags
         if flags.get("met_stranger"):
@@ -147,8 +171,9 @@ class NarrativeGameScreen(Screen):
 
         for choice in self.current_scene.choices:
             if self._is_choice_available(choice):
+                # Format: [A] Choice text - shortcut in yellow (NOT a hotkey)
                 btn = Button(
-                    f"[{choice.shortcut}] {choice.text}",
+                    f"[yellow]{choice.shortcut.upper()}[/yellow] {choice.text}",
                     id=f"choice_{choice.id}",
                     variant="default",
                 )
