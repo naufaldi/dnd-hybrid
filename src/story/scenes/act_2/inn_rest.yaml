@@ -1,0 +1,24 @@
+id: inn_rest
+act: 2
+title: "A Night's Rest"
+
+description: |
+  The room is simple but clean - a bed, a washbasin, and a window
+  overlooking the town square. For the first time in weeks, you
+  sleep without nightmares.
+
+  You wake refreshed, your wounds healed and your spirits lifted.
+  Bess included a breakfast of bread and honey in the room rate.
+
+choices:
+  - id: fresh_start
+    text: "Start the day refreshed"
+    shortcut: A
+    next_scene: town_square
+    flags_set:
+      rested: true
+
+  - id: stay_longer
+    text: "Rest a bit longer"
+    shortcut: B
+    next_scene: extended_rest

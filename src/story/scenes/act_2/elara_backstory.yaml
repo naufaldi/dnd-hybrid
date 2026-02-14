@@ -1,0 +1,45 @@
+id: elara_backstory
+act: 2
+title: "Elara's Story"
+
+description: |
+  Elara's eyes grow distant, haunted by memories.
+
+  "I was Vexillion's apprentice for fifteen years. He was brilliant -
+  a scholar of ancient seals and binding magic. The cult in your dungeon?
+  They were trying to contact something he had sealed away long ago."
+
+  She grips her staff tighter. "When I realized what they were doing,
+  I tried to stop them. But I was too late. Vexillion... he sealed
+  himself with the entity to keep it contained. He's either dead or
+  trapped forever."
+
+  "But the seal weakens. And someone is directing those bandits -
+  I believe they're trying to weaken the seal from outside while
+  the cult tried to break it from within."
+
+  "Will you help me find a way to strengthen the seal?"
+
+choices:
+  - id: help_seal
+    text: "I'll help you strengthen the seal"
+    shortcut: A
+    next_scene: tower_floor_1
+    flags_set:
+      quest_seal: accepted
+
+  - id: need_prep
+    text: "I need to prepare first"
+    shortcut: B
+    next_scene: mages_tower_road
+
+  - id: more_info
+    text: "Tell me more about this entity"
+    shortcut: C
+    next_scene: entity_lore
+
+flags_set:
+  learned_about_entity: true
+
+npc_name: "Elara"
+npc_mood: "serious"

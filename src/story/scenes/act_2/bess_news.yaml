@@ -1,0 +1,38 @@
+id: bess_news
+act: 2
+title: "News from the Innkeeper"
+
+description: |
+  Bess wipes a mug as she talks, her voice low.
+
+  "It's been quiet since the dungeon, but quiet worries me more than
+  trouble. The farm raids to the north have folks scared. And there's
+  talk of strange lights near the old mages tower."
+
+  She sets down the mug. "That tower's been empty for years - since
+  Archmage Vexillion vanished. Some say he's still in there, mad with
+  arcane power. Others say something worse moved in."
+
+  "You being a hero and all - folks would feel safer if you looked
+  into it. But no pressure."
+
+choices:
+  - id: ask_about_aldric
+    text: "Have you seen the mysterious stranger - Aldric?"
+    shortcut: A
+    next_scene: bess_aldric
+
+  - id: ask_about_farms
+    text: "Tell me about the farm raids"
+    shortcut: B
+    next_scene: bess_farms
+
+  - id: just_drink
+    text: "Just give me an ale"
+    shortcut: C
+    next_scene: inn_drink
+
+  - id: return_main
+    text: "Thanks for the news"
+    shortcut: D
+    next_scene: iron_maiden_inn

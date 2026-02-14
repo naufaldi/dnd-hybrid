@@ -1,0 +1,41 @@
+id: elara_intro
+act: 2
+title: "The Tower Mage"
+
+description: |
+  The woman turns as you approach. She's younger than you expected - perhaps
+  thirty winters - with silver-streaked auburn hair and eyes that seem to
+  hold distant thunderstorms.
+
+  "I am Elara," she says, her voice carrying the cadence of scholarly
+  refinement. "Former apprentice to Archmage Vexillion, keeper of this tower's
+  legacy."
+
+  She studies you with unexpected intensity. "You are the one who defeated
+  the cultists in the dark dungeon. I felt the seal being placed - a
+  disturbance in the magical currents."
+
+  "This tower holds secrets that could help or harm Millbrook. Will you
+  help me explore it?"
+
+choices:
+  - id: help_elara
+    text: "I'll help you explore the tower"
+    shortcut: A
+    next_scene: tower_floor_1
+
+  - id: ask_background
+    text: "Tell me about yourself"
+    shortcut: B
+    next_scene: elara_backstory
+
+  - id: decline_help
+    text: "I've had enough of dungeons for now"
+    shortcut: C
+    next_scene: mages_tower_road
+
+flags_set:
+  met_elara: true
+
+npc_name: "Elara"
+npc_mood: "determined"

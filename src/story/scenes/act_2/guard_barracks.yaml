@@ -1,0 +1,43 @@
+id: guard_barracks
+act: 2
+title: "The Guard Barracks"
+
+description: |
+  The guard barracks is a sturdy stone building that has protected Millbrook for
+  generations. Shields and pikes line the walls, and the hearth in the corner
+  crackles warmly.
+
+  Sergeant Bron stands by the planning table, studying a map of the surrounding
+  countryside. He's a grizzled veteran with a magnificent gray beard and keen
+  eyes that have seen too much war.
+
+  "Ah, it's the hero of the dungeon," he says, looking up. "Good timing.
+  We have a problem."
+
+  He gestures to the map. "Bandits have been raiding the northern farms.
+  But there's something strange about them - they move too strategically
+  for simple outlaws."
+
+choices:
+  - id: accept_quest
+    text: "Ask about the bandit problem"
+    shortcut: A
+    next_scene: bandit_quest_intro
+
+  - id: decline_quest
+    text: "I'm not interested in more quests right now"
+    shortcut: B
+    next_scene: guard_barracks_declined
+
+  - id: ask_news
+    text: "Ask about recent news"
+    shortcut: C
+    next_scene: guard_news
+
+  - id: return_square
+    text: "Return to town square"
+    shortcut: D
+    next_scene: town_square
+
+flags_set:
+  visited_guard_barracks: true

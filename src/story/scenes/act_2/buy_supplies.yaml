@@ -1,0 +1,31 @@
+id: buy_supplies
+act: 2
+title: "Adventuring Supplies"
+
+description: |
+  Marcus pulls out various supplies: rope, torches, rations,
+  bedrolls, and other essentials for adventurers.
+
+  "Everything you need for the road ahead," he says. "These are
+  dangerous times. Best to be prepared."
+
+choices:
+  - id: buy_rations
+    text: "Buy rations (5 gold for 5 days)"
+    shortcut: A
+    next_scene: marcus_shop
+
+  - id: buy_torches
+    text: "Buy torches (2 gold for 10)"
+    shortcut: B
+    next_scene: marcus_shop
+
+  - id: buy_rope
+    text: "Buy rope (3 gold)"
+    shortcut: C
+    next_scene: marcus_shop
+
+  - id: done
+    text: "That's all for now"
+    shortcut: D
+    next_scene: marcus_shop

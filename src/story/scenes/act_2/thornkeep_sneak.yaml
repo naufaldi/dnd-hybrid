@@ -1,0 +1,31 @@
+id: thornkeep_sneak
+act: 2
+title: "Through the Shadows"
+
+description: |
+  You slip into the drainage ditch, the cold water soaking your clothes.
+  The darkness is absolute - you navigate by touch and memory.
+
+  After what feels like hours, you find a grate that leads into the fort's
+  interior. It's rusted but still solid.
+
+choices:
+  - id: force_grate
+    text: "Force the grate open"
+    shortcut: A
+    next_scene: thornkeep_inner
+    skill_check:
+      ability: str
+      dc: 10
+      success_next_scene: thornkeep_inner
+      failure_next_scene: thornkeep_grate_noise
+
+  - id: pick_lock
+    text: "Pick the lock"
+    shortcut: B
+    next_scene: thornkeep_inner
+    skill_check:
+      ability: dex
+      dc: 12
+      success_next_scene: thornkeep_inner
+      failure_next_scene: thornkeep_grate_noise

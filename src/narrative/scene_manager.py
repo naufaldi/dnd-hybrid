@@ -94,12 +94,14 @@ class SceneManager:
 
     def get_scene(self, scene_id: str) -> Scene:
         """
-        Get scene by ID with fallback support.
+        Get scene by ID with fallback support (sync version).
 
         Tries in order:
         1. Manual scenes (YAML files)
         2. AI-generated scenes (cached)
         3. Fallback generic scenes
+
+        Note: For AI generation with game state context, use get_scene_async()
         """
         # 1. Try manual scenes first
         if scene_id in self.scenes:
@@ -117,11 +119,58 @@ class SceneManager:
                 # Remove invalid scene from cache
                 del self.ai_scene_cache[scene_id]
 
-        # 3. Try to generate with AI (if available)
+        # 3. Try to generate with AI (sync - no game state)
         if self.ai_client:
-            ai_scene = self._generate_ai_scene(scene_id)
+            import asyncio
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    # Can't await in sync context, will use fallback
+                    pass
+                else:
+                    ai_scene = loop.run_until_complete(self._generate_ai_scene(scene_id))
+                    if ai_scene:
+                        is_valid, errors = validate_scene(ai_scene)
+                        if is_valid:
+                            self.ai_scene_cache[scene_id] = ai_scene
+                            return ai_scene
+            except Exception:
+                pass
+
+        # 4. Fallback to generic scene
+        return self._get_fallback_for_scene(scene_id)
+
+    async def get_scene_async(self, scene_id: str, game_state: Optional[GameState] = None) -> Scene:
+        """
+        Get scene by ID with AI generation (async version with game state).
+
+        This method can generate scenes dynamically using AI when no static
+        scene exists, using the game state for context-aware generation.
+
+        Args:
+            scene_id: The scene ID to retrieve
+            game_state: Current game state for context
+
+        Returns:
+            The Scene object
+        """
+        # 1. Try manual scenes first
+        if scene_id in self.scenes:
+            return self.scenes[scene_id]
+
+        # 2. Try AI-generated scenes cache
+        if scene_id in self.ai_scene_cache:
+            scene = self.ai_scene_cache[scene_id]
+            is_valid, errors = validate_scene(scene)
+            if is_valid:
+                return scene
+            else:
+                del self.ai_scene_cache[scene_id]
+
+        # 3. Try to generate with AI (async with game state)
+        if self.ai_client:
+            ai_scene = await self._generate_ai_scene(scene_id, game_state)
             if ai_scene:
-                # Validate the AI scene
                 is_valid, errors = validate_scene(ai_scene)
                 if is_valid:
                     self.ai_scene_cache[scene_id] = ai_scene
@@ -151,11 +200,125 @@ class SceneManager:
         logger.info(f"Using fallback scene for: {scene_id} (type: {scene_type})")
         return get_fallback_scene(scene_type)
 
-    def _generate_ai_scene(self, scene_id: str) -> Optional[Scene]:
-        """Generate a scene using AI (placeholder - requires full AI integration)."""
-        # This would integrate with the AI client to generate scenes
-        # For now, return None to fall back to generic scenes
-        logger.info(f"AI scene generation requested for: {scene_id}")
+    async def _generate_ai_scene(self, scene_id: str, game_state: Optional[GameState] = None) -> Optional[Scene]:
+        """Generate a scene using AI when no static scene exists.
+
+        This enables dynamic story generation - when a player reaches a
+        dead end or takes an unexpected path, AI generates a new scene.
+
+        Args:
+            scene_id: The requested scene ID
+            game_state: Current game state for context (optional)
+
+        Returns:
+            Generated Scene or None if generation fails
+        """
+        if not self.ai_client:
+            return None
+
+        logger.info(f"AI generating scene for: {scene_id}")
+
+        # Build context for the AI
+        char_info = ""
+        flags_info = ""
+        if game_state and game_state.character:
+            char = game_state.character
+            char_info = f"Player: {char.name} the {char.race} {char.character_class} (HP: {char.hit_points})"
+        if game_state and game_state.flags:
+            flags_info = f"Story progress: {', '.join([k for k, v in game_state.flags.items() if v])}"
+
+        prompt = f"""Generate a D&D narrative game scene in YAML format.
+
+Scene ID: {scene_id}
+{char_info}
+{flags_info}
+
+Generate a complete scene with:
+- id: {scene_id}
+- act: 2 (this is Act 2)
+- title: A fitting title
+- description: 3-5 sentences of atmospheric narrative in second person ("You see...", "You hear...")
+- choices: 3-4 choices with different approaches (combat, diplomatic, stealth, exploration)
+- Each choice should have a unique next_scene ID that continues the story
+
+The tone should be:
+- Atmospheric and immersive
+- Present tense, second person
+- Mix of danger and opportunity
+- Logical story progression
+
+Format as clean YAML. Include flags_set if appropriate.
+
+Example format:
+```yaml
+id: {scene_id}
+act: 2
+title: "Your Scene Title"
+description: |
+  Narrative description here. Present tense, second person.
+choices:
+  - id: choice_1
+    text: "First choice description"
+    shortcut: A
+    next_scene: scene_id_for_choice_1
+  - id: choice_2
+    text: "Second choice"
+    shortcut: B
+    next_scene: another_scene_id
+flags_set:
+  visited_generated_scene: true
+```
+
+Generate ONLY the YAML, no other text:"""
+
+        try:
+            import asyncio
+            response = await asyncio.wait_for(
+                self.ai_client.generate(prompt=prompt, max_tokens=800, temperature=0.8),
+                timeout=10.0
+            )
+
+            if response:
+                # Parse YAML response into Scene object
+                scene_data = yaml.safe_load(response)
+                if scene_data and isinstance(scene_data, dict):
+                    # Create Scene from parsed data
+                    choices = []
+                    for choice_data in scene_data.get("choices", []):
+                        skill_check = None
+                        if "skill_check" in choice_data:
+                            sk = choice_data["skill_check"]
+                            skill_check = SkillCheck(
+                                ability=sk.get("ability", "str"),
+                                dc=sk.get("dc", 10),
+                                success_next_scene=sk.get("success_next_scene", choice_data.get("next_scene", "")),
+                                failure_next_scene=sk.get("failure_next_scene", choice_data.get("next_scene", ""))
+                            )
+
+                        choice = Choice(
+                            id=choice_data.get("id", ""),
+                            text=choice_data.get("text", ""),
+                            shortcut=choice_data.get("shortcut", "A"),
+                            next_scene=choice_data.get("next_scene", ""),
+                            skill_check=skill_check
+                        )
+                        choices.append(choice)
+
+                    scene = Scene(
+                        id=scene_data.get("id", scene_id),
+                        act=scene_data.get("act", 2),
+                        title=scene_data.get("title", "Untitled"),
+                        description=scene_data.get("description", ""),
+                        choices=choices,
+                        flags_set=scene_data.get("flags_set", {})
+                    )
+
+                    logger.info(f"AI successfully generated scene: {scene_id}")
+                    return scene
+
+        except Exception as e:
+            logger.warning(f"AI scene generation failed for {scene_id}: {e}")
+
         return None
 
     def add_ai_scene(self, scene: Scene) -> None:

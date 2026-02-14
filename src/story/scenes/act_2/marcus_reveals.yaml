@@ -1,0 +1,28 @@
+id: marcus_reveals
+act: 2
+title: "The Summoning"
+
+description: |
+  Marcus glances around nervously before continuing.
+
+  "The cult in your dungeon - they weren't trying to summon something.
+  They were trying to UN-summon. To release whatever Vexillion
+  locked away."
+
+  He lowers his voice. "Folk are saying that the old wizard sealed
+  himself with the entity - that he's still alive, somewhere between
+  worlds. And now that the seal is weakened..."
+
+  He shakes his head. "Forget I said anything. Keep your weapons
+  sharp and your eyes open."
+
+choices:
+  - id: press_more
+    text: "Tell me more about Vexillion"
+    shortcut: A
+    next_scene: marcus_vaxillion
+
+  - id: thanks
+    text: "Thank you for the warning"
+    shortcut: B
+    next_scene: marcus_shop

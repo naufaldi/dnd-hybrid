@@ -17,5 +17,12 @@ choices:
     shortcut: A
     next_scene: tavern_entry
 
+  - id: continue_act2
+    text: "Continue to Act 2"
+    shortcut: B
+    next_scene: town_square
+    flags_required:
+      visited_dungeon_entrance: true
+
 flags_set:
   escaped_dungeon: true

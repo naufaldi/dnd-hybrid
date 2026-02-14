@@ -1,0 +1,33 @@
+id: marcus_rumors
+act: 2
+title: "Merchant Rumors"
+
+description: |
+  Marcus leans in conspiratorially.
+
+  "Well, I hear things. Merchant's privilege, you know. There's talk of
+  strange lights in the hills to the north - not bandits, something else.
+  And the scholars at the tower have been very interested in what came
+  out of that dungeon of yours."
+
+  He pauses, weighing whether to say more.
+
+  "Between us? I think the bigger threat isn't the cultists - it's what
+  they were trying to summon. And if what they were calling truly
+  exists..."
+
+  He shakes his head. "But that's just old merchant's gossip. Ignore me."
+
+choices:
+  - id: press_for_info
+    text: "What do you mean, what they were trying to summon?"
+    shortcut: A
+    next_scene: marcus_reveals
+
+  - id: enough_rumors
+    text: "Thanks for the info"
+    shortcut: B
+    next_scene: marcus_shop
+
+flags_set:
+  heard_summoning_rumors: true

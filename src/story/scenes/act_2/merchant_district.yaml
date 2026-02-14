@@ -1,0 +1,38 @@
+id: merchant_district
+act: 2
+title: "Merchant District"
+
+description: |
+  The merchant district is a feast for the senses. Rugs from distant lands hang
+  from tent poles, exotic spices perfume the air, and merchants call out their
+  deals in a dozen different accents.
+
+  Marcus's Trading Post stands out - a sturdy wagon converted into a permanent
+  shop. The portly halfling merchant counts his coins behind the counter,
+  his sharp eyes watching for potential customers - or thieves.
+
+  Other vendors sell weapons, armor, potions, and curious trinkets.
+
+choices:
+  - id: visit_marcus
+    text: "Visit Marcus's Trading Post"
+    shortcut: A
+    next_scene: marcus_shop
+
+  - id: browse_weapons
+    text: "Browse the weapon vendor"
+    shortcut: B
+    next_scene: weapon_vendor
+
+  - id: browse_potions
+    text: "Check the potion seller's wares"
+    shortcut: C
+    next_scene: potion_vendor
+
+  - id: return_square
+    text: "Return to town square"
+    shortcut: D
+    next_scene: town_square
+
+flags_set:
+  visited_merchant_district: true

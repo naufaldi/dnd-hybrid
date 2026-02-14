@@ -1,0 +1,40 @@
+id: entity_lore
+act: 2
+title: "The Shadow Entity"
+
+description: |
+  Elara speaks in hushed tones, as if the walls themselves might hear.
+
+  "The entity is old - older than the kingdom. Vexillion called it
+  the Hollow King. It's a being of shadow and hunger, trapped between
+  dimensions. The cult wanted to use its power. I wanted to keep it
+  sealed forever."
+
+  "But seals require maintenance. The dungeon where you fought - it's
+  a focal point of the seal. When the cult disrupted it, I felt the
+  balance shift. The Hollow King stirs in its prison."
+
+  "To truly strengthen the seal, we'd need artifacts from three locations:
+  the tower archives, the old shrine in the northern woods, and...
+  from the heart of the dungeon itself."
+
+choices:
+  - id: accept_quest
+    text: "I'll help you gather the artifacts"
+    shortcut: A
+    next_scene: seal_quest_intro
+    flags_set:
+      quest_seal: accepted
+
+  - id: dangerous
+    text: "This sounds too dangerous"
+    shortcut: B
+    next_scene: mages_tower_road
+
+  - id: prepare
+    text: "I need to prepare"
+    shortcut: C
+    next_scene: mages_tower_road
+
+npc_name: "Elara"
+npc_mood: "worried"

@@ -24,7 +24,12 @@ from src.character.leveling import (
     XP_THRESHOLDS,
 )
 
+# Re-export Character from entities for compatibility
+from src.entities.character import Character as Character
+
 __all__ = [
+    # Character (re-exported from entities)
+    "Character",
     # Attributes
     "AttributeSet",
     "attribute_modifier",

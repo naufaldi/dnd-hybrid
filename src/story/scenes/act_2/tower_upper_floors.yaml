@@ -1,0 +1,41 @@
+id: tower_upper_floors
+act: 2
+title: "The Tower's Peak"
+
+description: |
+  The spiral stairs lead up, up, into the tower's highest reaches.
+  Here, the windows are intact, and moonlight streams through,
+  illuminating dust and debris.
+
+  This was Vexillion's private study. A desk holds papers,
+  a telescope points at the stars, and a mirror on the wall
+  shows... nothing. The reflection seems delayed.
+
+  "His scrying mirror," Elara says. "It's broken now. But look -
+  there's a hidden compartment."
+
+choices:
+  - id: open_compartment
+    text: "Open the hidden compartment"
+    shortcut: A
+    next_scene: compartment_discovery
+
+  - id: study_mirror
+    text: "Examine the broken mirror"
+    shortcut: B
+    next_scene: mirror_study
+    skill_check:
+      ability: int
+      dc: 10
+      success_next_scene: mirror_vision
+      failure_next_scene: mirror_nothing
+
+  - id: examine_papers
+    text: "Read the papers on the desk"
+    shortcut: C
+    next_scene: desk_papers
+
+  - id: go_down
+    text: "Return downstairs"
+    shortcut: D
+    next_scene: tower_floor_1

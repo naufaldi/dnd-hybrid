@@ -1,0 +1,35 @@
+id: sell_loot
+act: 2
+title: "Selling Loot"
+
+description: |
+  Marcus examines the items you brought from the dungeon - cultist
+  robes, strange artifacts, gems from the creature's hoard.
+
+  His eyes widen. "These are worth a pretty penny. I'll give you
+  fair value - 200 gold for the lot."
+
+choices:
+  - id: accept_offer
+    text: "Accept 200 gold"
+    shortcut: A
+    next_scene: marcus_shop
+    consequences:
+      - type: gold
+        target: player
+        value: 200
+
+  - id: negotiate
+    text: "Try to negotiate for more"
+    shortcut: B
+    next_scene: marcus_negotiate
+    skill_check:
+      ability: cha
+      dc: 14
+      success_next_scene: marcus_better_deal
+      failure_next_scene: marcus_shop
+
+  - id: keep_items
+    text: "Keep the items"
+    shortcut: C
+    next_scene: marcus_shop

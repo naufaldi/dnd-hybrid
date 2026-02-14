@@ -1,0 +1,32 @@
+id: compartment_discovery
+act: 2
+title: "The Hidden Compartment"
+
+description: |
+  Behind the mirror, you find a hidden compartment. Inside is a
+  small crystal orb that pulses with inner light - and a note in
+  Vexillion's hand:
+
+  "To whoever finds this: the seal cannot be maintained forever.
+  The Hollow King grows stronger. If you read this, the final
+  ritual must be performed at the original seal site. May the gods
+  forgive us for what we've unleashed."
+
+  Elara takes the orb carefully. "A scrying crystal. It will help
+  us find the other artifacts we need."
+
+choices:
+  - id: take_orb
+    text: "Take the orb"
+    shortcut: A
+    next_scene: tower_floor_1
+    flags_set:
+      has_scrying_orb: true
+
+  - id: study_more
+    text: "Search for more hidden things"
+    shortcut: B
+    next_scene: tower_upper_floors
+
+flags_set:
+  found_vaxillion_note: true

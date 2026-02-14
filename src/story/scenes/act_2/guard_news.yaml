@@ -1,0 +1,28 @@
+id: guard_news
+act: 2
+title: "News from the Guards"
+
+description: |
+  Bron strokes his beard thoughtfully.
+
+  "Well, aside from the bandit problem, things have been quiet. The
+  farm raids started about three weeks ago. Before that, it was
+  just... normal. Whatever that means in these times."
+
+  He leans in slightly. "Between us? I don't think the cult in your
+  dungeon was working alone. There are echoes of old magic in the
+  bandit camps - arcane symbols our scouts found. Someone with power
+  is directing them."
+
+  "Keep your eyes open out there, hero. The fight might not be over."
+
+choices:
+  - id: accept_quest
+    text: "I'll look into the bandit leader"
+    shortcut: A
+    next_scene: bandit_quest_intro
+
+  - id: return_square
+    text: "Thanks for the information"
+    shortcut: B
+    next_scene: town_square

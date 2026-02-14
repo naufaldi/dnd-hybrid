@@ -1,0 +1,28 @@
+id: guard_barracks_declined
+act: 2
+title: "The Guard Barracks"
+
+description: |
+  Sergeant Bron nods understandingly.
+
+  "A fair answer. The life of a hero isn't about fighting every battle.
+  When you're ready, I'll be here. The offer stands."
+
+  He returns to his map, plotting strategies against enemies he cannot
+  see.
+
+choices:
+  - id: accept_quest
+    text: "Actually, tell me about the bandit problem"
+    shortcut: A
+    next_scene: bandit_quest_intro
+
+  - id: ask_news
+    text: "Ask about recent news"
+    shortcut: B
+    next_scene: guard_news
+
+  - id: return_square
+    text: "Return to town square"
+    shortcut: C
+    next_scene: town_square

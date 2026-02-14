@@ -30,10 +30,13 @@ class TestSceneLoading:
         assert scene.title is not None
         assert len(scene.choices) > 0
 
-    def test_scene_not_found_returns_none(self, scene_manager):
-        """Test that non-existent scenes return None."""
+    def test_scene_not_found_returns_fallback(self, scene_manager):
+        """Test that non-existent scenes return fallback scene (not None)."""
         scene = scene_manager.get_scene("nonexistent_scene_xyz")
-        assert scene is None
+        # Scene manager returns fallback scene instead of None
+        assert scene is not None
+        # Fallback scenes have generic IDs
+        assert "generic" in scene.id
 
     def test_all_scenes_load_without_errors(self, scene_manager):
         """Test that all scenes in the directory load successfully."""

@@ -1,0 +1,43 @@
+id: iron_maiden_inn
+act: 2
+title: "The Iron Maiden Inn"
+
+description: |
+  The Iron Maiden Inn is warm with firelight and the sound of lute music.
+  Townsfolk gather at heavy wooden tables, sharing tales and ale. The smell
+  of roasting mutton makes your stomach growl.
+
+  The innkeeper, a sturdy woman named Bess, moves between tables with practiced
+  ease. A bard in the corner sings of distant adventures - perhaps your
+  own exploits will grace such songs one day.
+
+  In a quiet booth, a hooded figure sits alone, nursing a drink.
+
+choices:
+  - id: talk_bess
+    text: "Speak with Bess about recent events"
+    shortcut: A
+    next_scene: bess_news
+
+  - id: talk_bard
+    text: "Listen to the bard's song"
+    shortcut: B
+    next_scene: bard_song
+
+  - id: rest
+    text: "Rent a room for the night (5 gold)"
+    shortcut: C
+    next_scene: inn_rest
+
+  - id: talk_figure
+    text: "Approach the hooded figure"
+    shortcut: D
+    next_scene: mysterious_figure_act2
+
+  - id: return_square
+    text: "Leave the inn"
+    shortcut: E
+    next_scene: town_square
+
+flags_set:
+  visited_iron_maiden: true

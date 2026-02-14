@@ -1,0 +1,25 @@
+id: death_in_bandit_fort
+act: 2
+title: "Defeated"
+
+description: |
+  You fight bravely, but there are too many bandits. Their blades
+  find their mark, and darkness claims you.
+
+  The last thing you hear is the bandit's leader: "Take them to
+  the Master. This one is strong."
+
+  You awaken in a cell...
+
+choices:
+  - id: try_escape
+    text: "Try to escape"
+    shortcut: A
+    next_scene: cell_escape
+
+  - id: wait
+    text: "Wait and observe"
+    shortcut: B
+    next_scene: cell_wait
+
+is_ending: true

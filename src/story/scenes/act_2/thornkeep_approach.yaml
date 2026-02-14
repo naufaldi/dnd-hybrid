@@ -1,0 +1,53 @@
+id: thornkeep_approach
+act: 2
+title: "The Road to Thornkeep"
+
+description: |
+  The old fort of Thornkeep rises against the evening sky, its weathered
+  walls bearing the scars of ancient wars. Torches flicker on the walls -
+  these aren't ordinary bandits.
+
+  You approach through the overgrown forest, noting the strategic positions
+  of the guard posts. Someone with military training organized this camp.
+
+  A single path leads to the main gate. To the side, you notice a drainage
+  ditch that might provide another way in.
+
+choices:
+  - id: attack_gate
+    text: "Charge the main gate"
+    shortcut: A
+    next_scene: thornkeep_assault
+    skill_check:
+      ability: str
+      dc: 14
+      success_next_scene: thornkeep_assault
+      failure_next_scene: thornkeep_assault
+
+  - id: sneak_ditch
+    text: "Sneak through the drainage ditch"
+    shortcut: B
+    next_scene: thornkeep_sneak
+    skill_check:
+      ability: dex
+      dc: 12
+      success_next_scene: thornkeep_inner
+      failure_next_scene: thornkeep_discovered
+
+  - id: observe
+    text: "Observe the fort for weaknesses"
+    shortcut: C
+    next_scene: thornkeep_observation
+    skill_check:
+      ability: wis
+      dc: 10
+      success_next_scene: thornkeep_weakness
+      failure_next_scene: thornkeep_approach
+
+  - id: return_town
+    text: "Return to town for more preparation"
+    shortcut: D
+    next_scene: town_square
+
+flags_set:
+  quest_bandits: accepted

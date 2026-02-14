@@ -1,0 +1,30 @@
+id: thornkeep_assault
+act: 2
+title: "The Assault"
+
+description: |
+  You charge forward, weapon drawn! The guards on the wall spot you and
+  raise the alarm, but you're already among them.
+
+  The first bandit falls to your blade. The second hesitates - you see fear
+  in his eyes. These aren't true warriors, just desperate men.
+
+choices:
+  - id: fight_on
+    text: "Fight your way to the leader"
+    shortcut: A
+    next_scene: thornkeep_battle
+
+  - id: demand_surrender
+    text: "Demand their surrender"
+    shortcut: B
+    next_scene: thornkeep_surrender
+
+  - id: fight_to_exit
+    text: "Fight and retreat if needed"
+    shortcut: C
+    next_scene: thornkeep_withdrawal
+
+combat_encounter: bandit
+victory_next_scene: thornkeep_victory
+defeat_scene: death_in_bandit_fort

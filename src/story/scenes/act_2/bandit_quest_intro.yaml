@@ -1,0 +1,36 @@
+id: bandit_quest_intro
+act: 2
+title: "The Bandit Problem"
+
+description: |
+  Sergeant Bron's weathered face grows serious.
+
+  "Three weeks ago, bandits started raiding the northern farms. They take
+  food, livestock, anything of value. But here's the strange part - they
+  never kill. That's not how bandits work."
+
+  He taps the map. "We tracked them to an old fort - the Ruins of Thornkeep.
+  But our scouts report they're better organized than any bandit camp.
+  Someone is training them. Leading them."
+
+  "I could use a hero who already proved themselves against dark cultists.
+  Will you investigate?"
+
+choices:
+  - id: accept_bandits
+    text: "I'll investigate the bandit fort"
+    shortcut: A
+    next_scene: thornkeep_approach
+
+  - id: need_info
+    text: "Tell me more about these bandits"
+    shortcut: B
+    next_scene: bandit_details
+
+  - id: later
+    text: "I'll think about it"
+    shortcut: C
+    next_scene: guard_barracks
+
+flags_set:
+  quest_bandits: offered

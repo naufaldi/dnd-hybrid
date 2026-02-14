@@ -1,0 +1,39 @@
+id: tower_basement
+act: 2
+title: "The Tower Basement"
+
+description: |
+  The basement stairs descend into darkness. Elara lights a magical
+  orb that casts eerie shadows on the walls.
+
+  The room below is a laboratory - tables covered in strange
+  instruments, arcane circles drawn on the floor, and...
+
+  A cage in the corner. Something was kept here. Recently.
+
+  "Vexillion was experimenting," Elara whispers. "He wasn't just
+  studying the seal. He was trying to understand it."
+
+choices:
+  - id: examine_cage
+    text: "Examine the cage"
+    shortcut: A
+    next_scene: cage_examine
+
+  - id: examine_circles
+    text: "Study the arcane circles"
+    shortcut: B
+    next_scene: circles_study
+    skill_check:
+      ability: int
+      dc: 14
+      success_next_scene: circles_understand
+      failure_next_scene: circles_confused
+
+  - id: return_up
+    text: "Return upstairs"
+    shortcut: C
+    next_scene: tower_floor_1
+
+flags_set:
+  visited_basement: true

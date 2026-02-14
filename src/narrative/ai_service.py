@@ -4,7 +4,7 @@ import json
 import hashlib
 import os
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime
 from dataclasses import asdict
 
@@ -272,6 +272,100 @@ Outcome:"""
         """Get static fallback dialogue when AI is unavailable."""
         mood_templates = self.FALLBACK_DIALOGUE.get(mood, self.FALLBACK_DIALOGUE["neutral"])
         return mood_templates.get(dialogue_type, mood_templates["greeting"])
+
+    async def generate_choices(
+        self,
+        scene_context: str,
+        character_info: Dict[str, Any],
+        story_flags: Dict[str, bool],
+        num_choices: int = 2
+    ) -> Optional[List[Dict[str, str]]]:
+        """Generate additional AI choices at key decision points.
+
+        Args:
+            scene_context: Description of current scene and situation
+            character_info: Character class, race, stats
+            story_flags: Current story flags set
+            num_choices: Number of choices to generate
+
+        Returns:
+            List of choice dicts with 'text', 'shortcut', 'next_scene' keys,
+            or None if generation fails
+        """
+        if not self.enabled or not self.client:
+            return self.get_fallback_choices(num_choices)
+
+        # Build context for prompt
+        char_desc = f"{character_info.get('name', 'Hero')} the {character_info.get('race', '')} {character_info.get('class', '')}"
+
+        prompt = f"""Generate {num_choices} creative story choices for a D&D narrative game.
+
+Current Scene: {scene_context}
+Player: {char_desc}
+Story Progress: {', '.join([k for k, v in story_flags.items() if v]) if story_flags else 'Beginning'}
+
+Generate choices that:
+- Are in character for a {character_info.get('class', 'adventurer')}
+- Have different approaches (combat, diplomatic, stealth, etc.)
+- Are thematically appropriate for a D&D adventure
+- Lead to interesting story developments
+
+For each choice, provide:
+1. A short descriptive text (10-20 words)
+2. The approach type: combat, diplomatic, stealth, exploration, or clever
+
+Format your response as a JSON list like:
+[
+  {{"text": "Choice description", "approach": "stealth"}},
+  {{"text": "Another choice", "approach": "diplomatic"}}
+]
+
+Only output the JSON, no other text:"""
+
+        context_hash = self._generate_key(prompt, str(story_flags))
+
+        # Try cache first
+        cached = self.cache.get(prompt, context_hash)
+        if cached:
+            try:
+                import json
+                return json.loads(cached)
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        # Generate new choices
+        try:
+            response = await self.client.generate(
+                prompt=prompt,
+                max_tokens=300,
+                temperature=0.8
+            )
+
+            if response:
+                # Try to parse as JSON
+                import json
+                choices = json.loads(response)
+                if isinstance(choices, list):
+                    # Cache the response
+                    self.cache.set(prompt, response, self.client.default_model, context_hash)
+                    return choices
+
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"AI choice generation failed: {e}")
+
+        # Fallback to static choices
+        return self.get_fallback_choices(num_choices)
+
+    def get_fallback_choices(self, num_choices: int = 2) -> List[Dict[str, str]]:
+        """Get fallback static choices when AI is unavailable."""
+        fallback_options = [
+            {"text": "Carefully search the area", "approach": "exploration"},
+            {"text": "Prepare for danger", "approach": "caution"},
+            {"text": "Look for another way forward", "approach": "clever"},
+            {"text": "Press forward confidently", "approach": "bold"},
+        ]
+        return fallback_options[:num_choices]
 
     def get_fallback_outcome(self, action: str, success: bool) -> str:
         """Get static fallback outcome when AI is unavailable."""

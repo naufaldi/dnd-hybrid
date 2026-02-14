@@ -1,0 +1,34 @@
+id: thornkeep_victory
+act: 2
+title: "Victory at Thornkeep"
+
+description: |
+  The bandits scatter or surrender. In the captain's quarters, you find
+  evidence that ties these raiders to someone in town - letters sealed
+  with a strange mark.
+
+  Among the loot, you find a share of stolen goods and the captain's
+  journal. Entries mention "the Master" and plans for something called
+  "the Hollowing."
+
+  You've solved the bandit problem, but revealed something larger.
+
+choices:
+  - id: return_report
+    text: "Return to report to Sergeant Bron"
+    shortcut: A
+    next_scene: thornkeep_return
+
+  - id: investigate_mark
+    text: "Investigate the strange mark"
+    shortcut: B
+    next_scene: investigate_mark
+
+  - id: search_more
+    text: "Search the fort for more clues"
+    shortcut: C
+    next_scene: fort_search
+
+flags_set:
+  defeated_bandits: true
+  found_hollowing_letters: true

@@ -1,0 +1,32 @@
+id: thornkeep_return
+act: 2
+title: "Report to the Guard"
+
+description: |
+  Sergeant Bron listens to your report with growing concern. He examines
+  the letters you found, his face growing grim.
+
+  "The Hollowing... I feared this was connected." He looks up.
+  "These aren't just bandits. They're cultists - followers of the
+  same darkness you defeated in the dungeon."
+
+  "You've done well, hero. But I fear the battle is just beginning."
+
+choices:
+  - id: ask_hollowing
+    text: "What is the Hollowing?"
+    shortcut: A
+    next_scene: hollowing_explanation
+
+  - id: accept_more_help
+    text: "I'll help in any way I can"
+    shortcut: B
+    next_scene: quest_accepted
+
+  - id: need_rest
+    text: "I need time to rest and prepare"
+    shortcut: C
+    next_scene: town_square
+
+flags_set:
+  reported_to_bron: true

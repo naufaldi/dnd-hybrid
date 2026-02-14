@@ -1,0 +1,32 @@
+id: weapon_vendor
+act: 2
+title: "Weapons Smith"
+
+description: |
+  The weapon vendor is a burly dwarf with arms like tree trunks.
+  His wares hang from every wall - swords, axes, spears, and
+  more exotic weapons.
+
+  "Looking for something to kill what killed the cultists?" he asks.
+  "I've got just the thing."
+
+choices:
+  - id: buy_sword
+    text: "Browse swords (100 gold)"
+    shortcut: A
+    next_scene: weapon_vendor
+
+  - id: buy_shield
+    text: "Look at shields (50 gold)"
+    shortcut: B
+    next_scene: weapon_vendor
+
+  - id: ask_about_enemies
+    text: "Ask about dangerous enemies"
+    shortcut: C
+    next_scene: vendor_enemies
+
+  - id: leave
+    text: "Leave the shop"
+    shortcut: D
+    next_scene: merchant_district

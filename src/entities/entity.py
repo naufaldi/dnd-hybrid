@@ -1,7 +1,8 @@
 """Base entity class."""
 
+import uuid
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Tuple, Optional
 from enum import Enum, auto
 
 
@@ -17,9 +18,9 @@ class EntityType(Enum):
 class Entity:
     """Base entity class."""
 
-    id: str
-    name: str
-    entity_type: EntityType
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = "Unnamed"
+    entity_type: EntityType = EntityType.PLAYER
     position: Tuple[int, int] = (0, 0)
     alive: bool = True
 

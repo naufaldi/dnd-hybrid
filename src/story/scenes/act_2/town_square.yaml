@@ -1,0 +1,44 @@
+id: town_square
+act: 2
+title: "Town Square"
+
+description: |
+  The sun casts golden light across the cobblestones of Millbrook's town square.
+  Merchants hawk their wares from colorful stalls, children chase each other between
+  the fountain and the bakery, and the smell of fresh bread mingles with the
+  scent of horse from the stable.
+
+  Weeks have passed since your victory in the dungeon. The cult has been routed,
+  and the ancient evil sealed away. But peace brings new challenges.
+
+  To the north stands the Guard Barracks, where Sergeant Bron oversees the town's
+  defense. The Iron Maiden Inn offers warmth and news. To the east, the merchant
+  district bustles with activity. Beyond the eastern gate, the old road leads to
+  the abandoned mages tower.
+
+  The fountain at the center depicts a hero slaying a dragon - an unfamiliar face.
+  Perhaps they will add your likeness one day.
+
+choices:
+  - id: guard_barracks
+    text: "Visit the Guard Barracks (north)"
+    shortcut: A
+    next_scene: guard_barracks
+
+  - id: iron_maiden_inn
+    text: "Go to the Iron Maiden Inn"
+    shortcut: B
+    next_scene: iron_maiden_inn
+
+  - id: merchant_district
+    text: "Explore the Merchant District (east)"
+    shortcut: C
+    next_scene: merchant_district
+
+  - id: mages_tower
+    text: "Head toward the abandoned Mages Tower"
+    shortcut: D
+    next_scene: mages_tower_road
+
+flags_set:
+  visited_town_square: true

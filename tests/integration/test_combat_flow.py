@@ -141,7 +141,7 @@ class TestEnemyDefinitions:
         from src.entities.enemy_definitions import ENEMY_DEFINITIONS
 
         for enemy_id, enemy in ENEMY_DEFINITIONS.items():
-            hp = getattr(enemy, "hp", enemy.get("hp", 0))
+            hp = getattr(enemy, "hp", 0)
             assert hp > 0, f"Enemy '{enemy_id}' has invalid HP: {hp}"
 
     def test_enemy_ac_is_valid(self):
@@ -149,7 +149,7 @@ class TestEnemyDefinitions:
         from src.entities.enemy_definitions import ENEMY_DEFINITIONS
 
         for enemy_id, enemy in ENEMY_DEFINITIONS.items():
-            ac = getattr(enemy, "ac", enemy.get("ac", 0))
+            ac = getattr(enemy, "ac", 0)
             assert 5 <= ac <= 30, f"Enemy '{enemy_id}' has unusual AC: {ac}"
 
 
@@ -207,9 +207,11 @@ class TestCombatStateManagement:
 
     def test_game_state_has_combat_flags(self):
         """Test that game state tracks combat flags."""
-        from src.narrative.game_state import GameState
+        from src.narrative.models import GameState
+        from src.character import Character
 
-        state = GameState()
+        char = Character(name="Test")
+        state = GameState(character=char)
 
         # Should have combat-related attributes
         assert hasattr(state, "is_combat")
@@ -219,18 +221,22 @@ class TestCombatStateManagement:
 
     def test_combat_flags_defaults(self):
         """Test default values for combat flags."""
-        from src.narrative.game_state import GameState
+        from src.narrative.models import GameState
+        from src.character import Character
 
-        state = GameState()
+        char = Character(name="Test")
+        state = GameState(character=char)
 
         assert state.is_combat is False
         assert state.current_enemy is None
 
     def test_combat_flags_can_be_set(self):
         """Test that combat flags can be modified."""
-        from src.narrative.game_state import GameState
+        from src.narrative.models import GameState
+        from src.character import Character
 
-        state = GameState()
+        char = Character(name="Test")
+        state = GameState(character=char)
 
         state.is_combat = True
         state.current_enemy = "goblin"
@@ -248,7 +254,7 @@ class TestCombatCharacterIntegration:
 
     def test_character_has_combat_stats(self):
         """Test that characters have combat-relevant stats."""
-        from src.character.character import Character
+        from src.character import Character
 
         char = Character(
             name="Test",
@@ -270,7 +276,7 @@ class TestCombatCharacterIntegration:
 
     def test_character_ability_modifiers_calculated(self):
         """Test that ability modifiers are calculated correctly."""
-        from src.character.character import Character
+        from src.character import Character
 
         char = Character(
             name="Test",
@@ -287,7 +293,7 @@ class TestCombatCharacterIntegration:
 
     def test_character_ac_calculation(self):
         """Test that AC is calculated correctly."""
-        from src.character.character import Character
+        from src.character import Character
 
         char = Character(
             name="Test",

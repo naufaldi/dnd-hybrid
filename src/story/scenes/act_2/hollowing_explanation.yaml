@@ -1,0 +1,35 @@
+id: hollowing_explanation
+act: 2
+title: "The Hollowing"
+
+description: |
+  Sergeant Bron's face grows dark.
+
+  "The Hollowing is what happens when the seal fails completely.
+  The Hollow King - an entity of pure hunger - begins to spread
+  its influence. It doesn't conquer with armies. It consumes.
+  Dreams. Lives. Hope itself."
+
+  "Your dungeon - it was one of several anchor points for the seal.
+  When the cult disrupted it, the first cracks appeared. These
+  bandits? They're victims. The Hollowing reaches into minds,
+  twists desperate people into servants."
+
+  "If the other anchor points fail... Millbrook will be the first
+  to fall. Then the kingdom. Then everything."
+
+choices:
+  - id: stop_hollowing
+    text: "How do we stop it?"
+    shortcut: A
+    next_scene: stop_hollowing_plan
+
+  - id: find_experts
+    text: "Who else knows about this?"
+    shortcut: B
+    next_scene: find_experts
+
+  - id: prepare
+    text: "I need to prepare"
+    shortcut: C
+    next_scene: town_square

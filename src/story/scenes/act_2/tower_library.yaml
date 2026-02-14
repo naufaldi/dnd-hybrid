@@ -1,0 +1,36 @@
+id: tower_library
+act: 2
+title: "The Ancient Library"
+
+description: |
+  Dust motes dance in shafts of light as you explore the collapsed
+  bookshelves. Many scrolls have rotted, but some remain intact.
+
+  Elara runs her fingers along the spines. "These are Vexillion's
+  research notes. He was studying the nature of the seal itself."
+
+  A particular tome catches her eye - "The Binding of Hungry Shadows."
+
+choices:
+  - id: read_tome
+    text: "Examine the tome with Elara"
+    shortcut: A
+    next_scene: read_tome
+
+  - id: search_systematically
+    text: "Search the library systematically"
+    shortcut: B
+    next_scene: library_search
+    skill_check:
+      ability: int
+      dc: 12
+      success_next_scene: find_artifact_clue
+      failure_next_scene: library_search
+
+  - id: take_notes
+    text: "Take notes for later study"
+    shortcut: C
+    next_scene: tower_floor_1
+
+flags_set:
+  visited_library: true

@@ -1,0 +1,34 @@
+id: mages_tower_road
+act: 2
+title: "The Old Road"
+
+description: |
+  The eastern road winds through overgrown fields, the ruins of old farms
+  visible through the trees. It has been years since anyone cultivated this land.
+
+  Ahead, the tower rises against the sky - a once-grand structure of white
+  stone, now marred by weathering and neglect. Vines creep up its walls,
+  and windows that once glowed with arcane light are now dark and empty.
+
+  A woman stands at the base of the tower, looking up at its heights.
+
+choices:
+  - id: approach_woman
+    text: "Approach the woman"
+    shortcut: A
+    next_scene: elara_intro
+
+  - id: enter_tower
+    text: "Enter the tower directly"
+    shortcut: B
+    next_scene: mages_tower_entrance
+
+  - id: examine_outside
+    text: "Examine the tower's exterior"
+    shortcut: C
+    next_scene: tower_exterior
+
+  - id: return_town
+    text: "Return to town"
+    shortcut: D
+    next_scene: town_square

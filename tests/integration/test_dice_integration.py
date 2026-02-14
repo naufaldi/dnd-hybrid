@@ -39,7 +39,7 @@ class TestDiceInCharacterSystem:
 
     def test_character_uses_ability_modifier(self):
         """Test that character system uses ability modifier calculations."""
-        from src.character.character import Character
+        from src.character import Character
         from src.character.attributes import attribute_modifier
 
         char = Character(
@@ -55,7 +55,7 @@ class TestDiceInCharacterSystem:
 
     def test_character_ac_uses_dexterity_modifier(self):
         """Test that AC calculation uses DEX modifier."""
-        from src.character.character import Character
+        from src.character import Character
         from src.character.attributes import attribute_modifier
 
         char = Character(

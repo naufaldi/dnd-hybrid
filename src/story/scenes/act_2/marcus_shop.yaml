@@ -1,0 +1,39 @@
+id: marcus_shop
+act: 2
+title: "Marcus's Trading Post"
+
+description: |
+  Marcus's eyes light up as you approach. "Ah, a customer! And not just
+  any customer - the hero of Millbrook! What can I do for you today?"
+
+  His shop is packed with curiosities: enchanted gems that glow faintly,
+  maps to places best left unvisited, potions of various colors, and
+  mundane goods for everyday adventuring.
+
+  "I've got some new stock since last you visited. Take a look!"
+
+choices:
+  - id: buy_potions
+    text: "Browse potions (50 gold each)"
+    shortcut: A
+    next_scene: buy_potions
+
+  - id: buy_supplies
+    text: "Buy adventuring supplies"
+    shortcut: B
+    next_scene: buy_supplies
+
+  - id: sell_loot
+    text: "Sell items from the dungeon"
+    shortcut: C
+    next_scene: sell_loot
+
+  - id: ask_rumors
+    text: "Ask about any interesting rumors"
+    shortcut: D
+    next_scene: marcus_rumors
+
+  - id: leave_shop
+    text: "Leave the shop"
+    shortcut: E
+    next_scene: merchant_district

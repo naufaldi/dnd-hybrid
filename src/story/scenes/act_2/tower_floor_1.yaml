@@ -1,0 +1,37 @@
+id: tower_floor_1
+act: 2
+title: "Tower Floor One"
+
+description: |
+  The tower's interior is dusty but intact. Scrolls line the walls in
+  collapsed bookshelves, and faint magical residue clings to the stone.
+
+  "The library was once my master's pride," Elara says, running her fingers
+  along a tome's spine. "He studied the nature of the seal you helped restore.
+  There may be answers here - or dangers."
+
+  A door leads deeper into the tower. Stairs spiral upward into darkness.
+
+choices:
+  - id: search_library
+    text: "Search the library"
+    shortcut: A
+    next_scene: tower_library
+
+  - id: go_deeper
+    text: "Go deeper into the tower"
+    shortcut: B
+    next_scene: tower_basement
+
+  - id: go_up
+    text: "Climb the spiral stairs"
+    shortcut: C
+    next_scene: tower_upper_floors
+
+  - id: leave_tower
+    text: "Leave the tower"
+    shortcut: D
+    next_scene: mages_tower_road
+
+flags_set:
+  entered_mages_tower: true

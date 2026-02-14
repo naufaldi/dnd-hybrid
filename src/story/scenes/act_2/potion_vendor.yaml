@@ -1,0 +1,32 @@
+id: potion_vendor
+act: 2
+title: "Potion Seller"
+
+description: |
+  A wizened old woman sits behind a table covered with bottles
+  of various colors. Her eyes seem to look through you.
+
+  "Potions for what ails you," she says in a cracked voice.
+  "Healing for your body. Light for your darkness. Memory for...
+  what you've forgotten."
+
+choices:
+  - id: buy_healing
+    text: "Buy healing potions (50 gold each)"
+    shortcut: A
+    next_scene: buy_healing_potions
+
+  - id: buy_antidote
+    text: "Ask about antidotes"
+    shortcut: B
+    next_scene: vendor_antidotes
+
+  - id: ask_vision
+    text: "Ask about her visions"
+    shortcut: C
+    next_scene: vendor_vision
+
+  - id: leave
+    text: "Leave"
+    shortcut: D
+    next_scene: merchant_district

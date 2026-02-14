@@ -1,0 +1,30 @@
+id: bard_song
+act: 2
+title: "The Bard's Tale"
+
+description: |
+  The bard's voice fills the inn, telling of heroes and monsters.
+  But tonight, he sings of something new - a tale of shadows and seal,
+  of cultists and a hero who walked into darkness.
+
+  It's the story of your adventure in the dungeon. The crowd
+  listens with wide eyes, none knowing the hero sits among them.
+
+  When the song ends, the bard catches your eye and raises
+  his cup in silent salute.
+
+choices:
+  - id: applaud
+    text: "Applaud the performance"
+    shortcut: A
+    next_scene: iron_maiden_inn
+
+  - id: talk_bard
+    text: "Speak with the bard privately"
+    shortcut: B
+    next_scene: bard_secret
+
+  - id: leave
+    text: "Return to your drink"
+    shortcut: C
+    next_scene: iron_maiden_inn
