@@ -20,6 +20,8 @@ choices:
     text: "Fight the guardian!"
     shortcut: A
     combat_encounter: guardian
+    victory_next_scene: old_armory
+    defeat_scene: death_in_dungeon
 
   - id: talk_creature
     text: "Try to communicate with it"

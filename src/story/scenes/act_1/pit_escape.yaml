@@ -1,0 +1,36 @@
+id: pit_escape
+act: 1
+title: "Freedom at Last"
+
+description: |
+  You dig your fingers into the rough stone walls, finding purchase in ancient
+  cracks and crevices. With a surge of strength, you pull yourself upward,
+  muscles burning with the effort.
+  
+  Hand over hand, you climb. Your sprained ankle throbs with each movement,
+  but you grit your teeth and push through the pain.
+  
+  Finally, your fingers grasp the edge of the pit. With one final heave,
+  you drag yourself over the rim and collapse on the stone floor of the
+  dungeon entrance, gasping for breath.
+  
+  You're free, though battered and bruised.
+
+choices:
+  - id: continue_carefully
+    text: "Continue carefully"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    set_flags:
+      escaped_pit: true
+
+  - id: rest_moment
+    text: "Rest a moment"
+    shortcut: B
+    next_scene: pit_escaped
+    set_flags:
+      escaped_pit: true
+      exhausted: true
+
+flags_set:
+  injured: true

@@ -1,0 +1,41 @@
+id: artifact_destruction
+act: 1
+title: "The Only Solution"
+
+description: |
+  You study the sketches in Aldric's journal, noting the detailed diagrams
+  of the Void Heart's structure. There's a specific weakness - a stress
+  point where a precisely placed strike could shatter the crystal.
+  
+  "The Heart can't be destroyed by normal means," Aldric confirms. "But
+  there's a ritual - dangerous, but effective. It would destroy the Heart
+  and seal the doorway it opens."
+  
+  He looks at you seriously. "The problem is location. The ritual must be
+  performed at the Heart's birthplace - deep in the temple, in the chamber
+  where it was originally created. And the cultists have that area heavily
+  guarded."
+  
+  "Are you prepared to fight through them to destroy this thing once and
+  for all?"
+
+choices:
+  - id: accept_destruction_mission
+    text: "Accept the mission"
+    shortcut: A
+    next_scene: dungeon_entrance
+    set_flags:
+      destruction_mission: true
+      knows_ritual: true
+
+  - id: ask_about_danger
+    text: "How dangerous is this?"
+    shortcut: B
+    next_scene: dungeon_info
+
+  - id: refuse_destruction
+    text: "This is too dangerous"
+    shortcut: C
+    next_scene: tavern_entry
+    set_flags:
+      refused_mission: true

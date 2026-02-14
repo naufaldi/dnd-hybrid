@@ -1,0 +1,47 @@
+id: goblin_capture
+act: 1
+title: "Prisoner of the Goblins"
+
+description: |
+  You drop your weapon and raise your hands in surrender. The goblins swarm
+  around you, cackling with glee as they bind your hands with rough rope.
+  
+  "Smart human!" the leader grins, showing yellowed teeth. "Live longer this way!"
+  
+  They drag you deeper into the dungeon, through twisting passages that reek
+  of filth and decay. Finally, they throw you into a makeshift cage of rusted
+  iron bars.
+  
+  "Master come soon," one goblin cackles as they leave you in the dark.
+  "Master like fresh meat!"
+  
+  You are trapped, wounded, and at the mercy of whatever "master" the goblins
+  serve. Your situation is dire.
+
+choices:
+  - id: pick_lock
+    text: "Try to pick the lock"
+    shortcut: A
+    skill_check:
+      ability: dex
+      dc: 14
+      success_next_scene: escape_cage
+      failure_next_scene: caught_escaping
+
+  - id: wait_opportunity
+    text: "Wait for an opportunity"
+    shortcut: B
+    next_scene: master_arrives
+    set_flags:
+      met_master: true
+
+  - id: call_help
+    text: "Call for help"
+    shortcut: C
+    next_scene: pit_calling
+    set_flags:
+      desperate_call: true
+
+flags_set:
+  captured: true
+  imprisoned: true

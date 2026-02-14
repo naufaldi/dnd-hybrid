@@ -21,6 +21,7 @@ choices:
   - id: play_again
     text: "Play Again"
     shortcut: A
+    next_scene: tavern_entry
 
 flags_set:
   escaped_dungeon: true

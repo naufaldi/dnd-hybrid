@@ -104,10 +104,13 @@ class NarrativeGameScreen(Screen):
                         dialogue_type="greeting",
                     )
                     # Append AI dialogue with distinct styling
-                    description += f"\n\n[cyan italic]{self.current_scene.npc_name}:[/cyan italic] \"[italic]{ai_dialogue}[/italic]\""
+                    description += f'\n\n[cyan italic]{self.current_scene.npc_name}:[/cyan italic] "[italic]{ai_dialogue}[/italic]"'
                 except Exception as e:
-                    # Fallback silently - use static description
-                    pass
+                    # Log error for debugging but continue with fallback
+                    logger.error(
+                        f"AI dialogue generation failed for {self.current_scene.npc_name}: {e}"
+                    )
+                    # Continue with static description as fallback
 
         desc_widget.update(description)
 
@@ -126,7 +129,7 @@ class NarrativeGameScreen(Screen):
             return f"[cyan italic]{quote}[/cyan italic]"
 
         # Match text in double quotes (including multi-line)
-        formatted = re.sub(r'\"([^\"]*)\"', replace_dialogue, description)
+        formatted = re.sub(r"\"([^\"]*)\"", replace_dialogue, description)
 
         return formatted
 
@@ -309,6 +312,7 @@ class NarrativeGameScreen(Screen):
         # Import and show combat screen
         try:
             from .combat_screen import CombatScreen
+
             combat_screen = CombatScreen(
                 enemy_name=enemy.name,
                 enemy_hp=enemy.hp,

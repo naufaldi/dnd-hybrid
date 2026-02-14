@@ -1,0 +1,31 @@
+id: cultist_surprise
+act: 1
+title: "Surprise Attack!"
+
+description: |
+  You burst from the shadows with a battle cry, striking down the nearest
+  cultist before they can react. The chanting stops abruptly as the robed
+  figures scatter in confusion.
+  
+  The cultist leader spins around, his eyes wide with shock and rage. He
+  clutches the Void Heart tightly, its purple light pulsing wildly.
+  
+  "You fool!" he screams. "Do you know what you've interrupted? The ritual
+  was almost complete!"
+  
+  He thrusts the artifact toward you, and you feel a wave of cold dread
+  wash over you. But there's no turning back now.
+
+is_combat: true
+
+choices:
+  - id: fight_cultist_surprise
+    text: "Attack the leader!"
+    shortcut: A
+    combat_encounter: cultist_boss
+    victory_next_scene: act1_conclusion
+    defeat_scene: death_in_dungeon
+
+flags_set:
+  interrupted_ritual: true
+  surprise_attack: true

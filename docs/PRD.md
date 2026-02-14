@@ -2,9 +2,9 @@
 
 ## AI Dungeon Chronicles - Narrative D&D Interactive Fiction
 
-**Version:** 2.2.0
-**Status:** In Progress
-**Last Updated:** 2026-02-12
+**Version:** 2.3.0
+**Status:** Act 1 MVP Complete
+**Last Updated:** 2026-02-13
 
 ---
 
@@ -232,11 +232,12 @@ choices:
 
 | Phase | Focus | Description | Target |
 |-------|-------|-------------|--------|
-| **Phase 1** | Act 1 MVP | Full playable Act 1: tavern → dungeon → ending | 1-2 weeks |
-| **Phase 2** | Polish | Narrative prose + BG3-style dice drama | 1 week |
-| **Phase 3** | Act 2-3 | Outline + core scenes for full campaign | 2 weeks |
-| **Phase 4** | AI NPCs | Dialogue generation for NPCs | 1-2 weeks |
-| **Phase 5** | AI Branches | Dynamic story branches + endings | Ongoing |
+| **Phase 1** | Act 1 MVP | Full playable Act 1: tavern → dungeon → ending | ✅ Complete |
+| **Phase 2** | Polish | Narrative prose + BG3-style dice drama | ✅ Complete |
+| **Phase 3** | Bug Fixes | Critical fixes + test suite | ✅ Complete |
+| **Phase 4** | Act 2-3 | Outline + core scenes for full campaign | Planned |
+| **Phase 5** | AI NPCs | Dialogue generation for NPCs | Planned |
+| **Phase 6** | AI Branches | Dynamic story branches + endings | Ongoing |
 
 ---
 
@@ -244,33 +245,33 @@ choices:
 
 **Goal:** Complete playable experience from tavern to ending
 
-#### 1.1 Screen Flow Wiring
-- [ ] Title Screen → New/Continue/Load/Quit
-- [ ] Character Creation flow (name → class → race)
-- [ ] Narrative Game Screen (story + choices + stats)
-- [ ] Combat Screen (if needed)
-- [ ] Ending Screen (determination + display)
-- [ ] Save/Load integration
+#### 1.1 Screen Flow Wiring ✅
+- [x] Title Screen → New/Continue/Load/Quit
+- [x] Character Creation flow (name → class → race)
+- [x] Narrative Game Screen (story + choices + stats)
+- [x] Combat Screen (if needed)
+- [x] Ending Screen (determination + display)
+- [x] Save/Load integration
 
-#### 1.2 Core Systems
-- [ ] Game state management (flags, character, inventory)
-- [ ] Scene navigation (next_scene, skill checks, consequences)
-- [ ] Flag-based choice filtering
-- [ ] Gold/inventory management
-- [ ] Character stats (HP, AC, attributes)
+#### 1.2 Core Systems ✅
+- [x] Game state management (flags, character, inventory)
+- [x] Scene navigation (next_scene, skill checks, consequences)
+- [x] Flag-based choice filtering
+- [x] Gold/inventory management
+- [x] Character stats (HP, AC, attributes)
 
-#### 1.3 Missing Scenes (Act 1)
-- [ ] Pit scenarios (pit_escaped, pit_exhausted)
-- [ ] Loot collection scenes
-- [ ] Secret compartment outcomes
-- [ ] Dock collapse/far_shore continuation
-- [ ] Cultist boss continuation
+#### 1.3 Missing Scenes (Act 1) ✅
+- [x] Pit scenarios (pit_escaped, pit_exhausted, pit_escape)
+- [x] Loot collection scenes
+- [x] Secret compartment outcomes
+- [x] Dock collapse/far_shore continuation
+- [x] Cultist boss continuation
 
-#### 1.4 Act 1 Completion Checklist
-- [ ] All 39 scenes implemented
-- [ ] All paths lead to ending (no dead ends)
-- [ ] 4 endings working (Hero, Survivor, Mystery, Fallen)
-- [ ] Victory/defeat paths complete
+#### 1.4 Act 1 Completion Checklist ✅
+- [x] All 65 scenes implemented (up from 39)
+- [x] All paths lead to ending (no dead ends)
+- [x] 4 endings working (Hero, Survivor, Mystery, Fallen)
+- [x] Victory/defeat paths complete
 
 ---
 

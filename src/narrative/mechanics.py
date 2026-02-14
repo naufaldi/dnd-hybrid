@@ -43,7 +43,7 @@ AVAILABLE_MECHANICS: Dict[str, MechanicInfo] = {
         description="Move silently",
         available_actions=["hide", "sneak", "ambush"],
     ),
-    " Athletics_mechanic": MechanicInfo(
+    "Athletics_mechanic": MechanicInfo(
         skill_check="str",
         description="Physical challenges",
         available_actions=["climb", "swim", "jump", "break_door"],

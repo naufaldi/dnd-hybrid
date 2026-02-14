@@ -1,0 +1,41 @@
+id: sneak_to_cultist
+act: 1
+title: "Silent Approach"
+
+description: |
+  You press yourself against the cold stone wall, moving with practiced
+  silence. The cultists' chanting grows louder as you approach, but their
+  attention is entirely focused on the dark ritual before them.
+  
+  The cultist leader stands before a shrine of twisted black stone, holding
+  something that pulses with sickly purple light - the Void Heart. Around
+  him, five robed figures chant in a language that hurts to hear.
+  
+  You're close enough to strike now. The element of surprise is yours.
+
+choices:
+  - id: attack_surprise
+    text: "Attack with surprise!"
+    shortcut: A
+    next_scene: cultist_surprise
+    set_flags:
+      surprise_attack: true
+
+  - id: observe_longer
+    text: "Observe longer"
+    shortcut: B
+    next_scene: ritual_observed
+    set_flags:
+      observed_ritual: true
+
+  - id: steal_artifact
+    text: "Try to steal the artifact"
+    shortcut: C
+    skill_check:
+      ability: dex
+      dc: 16
+      success_next_scene: artifact_stolen
+      failure_next_scene: caught_stealing
+
+flags_set:
+  sneaked_to_shrine: true

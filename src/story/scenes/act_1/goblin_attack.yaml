@@ -17,6 +17,8 @@ choices:
     text: "Fight them!"
     shortcut: A
     combat_encounter: goblins
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
 
   - id: dodge
     text: "Try to dodge past and run"

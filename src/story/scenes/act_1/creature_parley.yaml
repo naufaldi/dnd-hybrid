@@ -1,0 +1,40 @@
+id: creature_parley
+act: 1
+title: "Ancient Understanding"
+
+description: |
+  You lower your weapon and raise your hands in a gesture of peace. The
+  massive plesiosaur watches you with ancient, intelligent eyes.
+  
+  "I mean no harm, great one," you say softly. "I seek only to stop those
+  who disturbed your rest."
+  
+  The creature makes a low rumbling sound - almost musical. It seems to
+  understand. Slowly, it lowers its long neck, and you sense a connection
+  forming between you.
+  
+  Through some ancient magic or simple understanding, you realize this
+  creature has guarded the temple for centuries. It recognizes you as
+  different from the cultists - someone who respects the old ways.
+  
+  The guardian moves aside, allowing you access to a passage behind its lair.
+
+choices:
+  - id: thank_guardian
+    text: "Thank the guardian and proceed"
+    shortcut: A
+    next_scene: old_armory
+    set_flags:
+      befriended_guardian: true
+      guardian_truce: true
+
+  - id: ask_about_cultists
+    text: "Ask about the cultists"
+    shortcut: B
+    next_scene: creature_lore
+    set_flags:
+      befriended_guardian: true
+
+flags_set:
+  parley_success: true
+  guardian_ally: true

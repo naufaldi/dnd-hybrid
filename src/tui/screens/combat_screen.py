@@ -1,5 +1,7 @@
 """Combat screen for narrative combat encounters."""
 
+import random
+import logging
 from textual.screen import Screen
 from textual.containers import Container, Vertical, Horizontal
 from textual.widgets import Static, Button
@@ -7,10 +9,15 @@ from textual import events
 from typing import List, Optional
 from dataclasses import dataclass
 
+from ...combat.dice import roll_dice, ability_modifier
+
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Attack:
     """Enemy attack for combat."""
+
     name: str
     damage: str
     damage_type: str
@@ -31,7 +38,7 @@ class CombatScreen(Screen):
         enemy_abilities: List[str] = None,
         victory_scene: str = "dungeon_entry_hall",
         defeat_scene: str = "death_in_dungeon",
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.enemy_name = enemy_name
@@ -81,7 +88,7 @@ class CombatScreen(Screen):
 
         # Title
         title_widget = self.query_one("#combat_title", Static)
-        title_widget.update(f"[b][size=25]═══ ⚔ Combat: {self.enemy_name} ⚔ ═══[/size][/b]")
+        title_widget.update(f"[b]═══ ⚔ Combat: {self.enemy_name} ⚔ ═══[/b]")
 
         # Status
         status_widget = self.query_one("#combat_status", Static)
@@ -135,9 +142,6 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
 
     async def _player_attack(self) -> None:
         """Player attacks the enemy."""
-        import random
-        from ...combat.dice import roll_dice, ability_modifier
-
         game_state = getattr(self.app, "narrative_game_state", None)
         if not game_state or not game_state.character:
             self._add_combat_message("Error: No character found")
@@ -147,13 +151,19 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
 
         # Roll attack
         attack_roll = random.randint(1, 20)
-        attack_modifier = getattr(char, f"{char.equipment.get('weapon_stat', 'strength')}_mod", 0) if hasattr(char, 'equipment') else char.strength_mod
+        attack_modifier = (
+            getattr(char, f"{char.equipment.get('weapon_stat', 'strength')}_mod", 0)
+            if hasattr(char, "equipment")
+            else char.strength_mod
+        )
 
         # Check proficiency
         proficiency = 2  # Level 1
         total_attack = attack_roll + attack_modifier + proficiency
 
-        self._add_combat_message(f"You attack: d20({attack_roll}) + {attack_modifier} + {proficiency} = {total_attack} vs AC {self.enemy_ac}")
+        self._add_combat_message(
+            f"You attack: d20({attack_roll}) + {attack_modifier} + {proficiency} = {total_attack} vs AC {self.enemy_ac}"
+        )
 
         if attack_roll == 1:
             self._add_combat_message("[red]Critical failure! You miss![/red]")
@@ -162,8 +172,14 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
 
         if total_attack >= self.enemy_ac:
             # Hit! Roll damage
-            damage_dice = char.equipment.get('weapon_damage', '1d8') if hasattr(char, 'equipment') else "1d8"
-            damage = roll_dice(damage_dice) + attack_modifier
+            damage_dice = (
+                char.equipment.get("weapon_damage", "1d8") if hasattr(char, "equipment") else "1d8"
+            )
+            try:
+                damage = roll_dice(damage_dice) + attack_modifier
+            except Exception as e:
+                logger.error(f"Error rolling damage dice '{damage_dice}': {e}")
+                damage = 4  # Fallback damage on error
             if attack_roll == 20:
                 damage *= 2
                 self._add_combat_message(f"[green]CRITICAL HIT! You deal {damage} damage![/green]")
@@ -194,7 +210,9 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
         dex_mod = 0  # Could get from character
 
         total = dex_check + dex_mod
-        self._add_combat_message(f"You try to flee: d20({dex_check}) + {dex_mod} = {total} vs DC 12")
+        self._add_combat_message(
+            f"You try to flee: d20({dex_check}) + {dex_mod} = {total} vs DC 12"
+        )
 
         if total >= 12:
             self._add_combat_message("[green]You successfully escape![/green]")
@@ -226,7 +244,9 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
         if game_state and game_state.character:
             player_ac = game_state.character.armor_class
 
-        self._add_combat_message(f"{self.enemy_name} attacks: d20({attack_roll}) + {enemy_attack_bonus} = {total_attack} vs AC {player_ac}")
+        self._add_combat_message(
+            f"{self.enemy_name} attacks: d20({attack_roll}) + {enemy_attack_bonus} = {total_attack} vs AC {player_ac}"
+        )
 
         if attack_roll == 1:
             self._add_combat_message(f"[cyan]The {self.enemy_name} trips and misses![/cyan]")
@@ -238,7 +258,9 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
             damage = random.randint(1, 6) + enemy_attack_bonus
             if attack_roll == 20:
                 damage *= 2
-                self._add_combat_message(f"[red]CRITICAL HIT! {self.enemy_name} deals {damage} damage![/red]")
+                self._add_combat_message(
+                    f"[red]CRITICAL HIT! {self.enemy_name} deals {damage} damage![/red]"
+                )
             else:
                 self._add_combat_message(f"[red]{self.enemy_name} hits for {damage} damage![/red]")
 
@@ -253,7 +275,9 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
 
     async def _combat_victory(self) -> None:
         """Handle combat victory."""
-        self._add_combat_message(f"\n[green][b]VICTORY! You have defeated the {self.enemy_name}![/b][/green]")
+        self._add_combat_message(
+            f"\n[green][b]VICTORY! You have defeated the {self.enemy_name}![/b][/green]"
+        )
 
         # Clear combat state
         game_state = getattr(self.app, "narrative_game_state", None)
@@ -267,11 +291,12 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
         # Transition to victory scene
         if self.victory_scene:
             from .narrative_game_screen import NarrativeGameScreen
+
             screen = NarrativeGameScreen()
             scene_mgr = getattr(self.app, "scene_manager", None)
             if scene_mgr:
                 scene = scene_mgr.get_scene(self.victory_scene)
-                screen.set_scene(scene)
+                await screen.set_scene(scene)
                 screen.game_state = game_state
 
     async def _combat_defeat(self) -> None:
@@ -290,9 +315,10 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
         # Transition to defeat scene
         if self.defeat_scene:
             from .narrative_game_screen import NarrativeGameScreen
+
             screen = NarrativeGameScreen()
             scene_mgr = getattr(self.app, "scene_manager", None)
             if scene_mgr:
                 scene = scene_mgr.get_scene(self.defeat_scene)
-                screen.set_scene(scene)
+                await screen.set_scene(scene)
                 screen.game_state = game_state

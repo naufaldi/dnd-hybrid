@@ -23,3 +23,8 @@ choices:
     text: "Stop and fight!"
     shortcut: B
     combat_encounter: goblins
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
+
+flags_set:
+  attempted_flee: true

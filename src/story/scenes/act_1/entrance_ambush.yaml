@@ -1,0 +1,38 @@
+id: entrance_ambush
+act: 1
+title: "Setting the Trap"
+
+description: |
+  You quickly survey the entrance, looking for good ambush positions. The
+  narrow passage offers several options - loose stones that could be pushed,
+  a ledge above the entrance, or simply hiding in the shadows.
+  
+  You prepare your trap and settle in to wait. The goblins' cackling voices
+  echo from within, growing louder as they approach.
+  
+  "Come, come!" one calls out. "Fresh meat for the master!"
+  
+  They're nearly here. Your ambush is ready.
+
+choices:
+  - id: spring_trap
+    text: "Spring the ambush!"
+    shortcut: A
+    next_scene: ambush_resolution
+    skill_check:
+      ability: int
+      dc: 12
+      success_next_scene: ambush_success
+      failure_next_scene: ambush_fail
+
+  - id: call_out
+    text: "Call out to them"
+    shortcut: B
+    next_scene: goblin_encounter
+
+  - id: flee_now
+    text: "Flee while you can"
+    shortcut: C
+    next_scene: dungeon_entry_hall
+    set_flags:
+      avoided_goblins: true

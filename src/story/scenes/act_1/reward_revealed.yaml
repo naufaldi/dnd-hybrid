@@ -1,0 +1,45 @@
+id: reward_revealed
+act: 1
+title: "A Hero's Reward"
+
+description: |
+  Aldric nods approvingly at your pragmatic approach.
+  
+  "A fair question. Yes, there is reward - though perhaps not what you expect."
+  
+  He reaches into his cloak and produces a small leather pouch, tossing it to you.
+  The jingle of coins is unmistakable.
+  
+  "Twenty gold now. Another eighty when the artifact is recovered - if it still
+  exists. And it does exist. I've seen the cultists carrying fragments of it."
+  
+  He pauses, his expression turning serious.
+  
+  "But the true reward is stopping what they're planning. These cultists serve
+  something... old. Something that should have stayed buried."
+
+choices:
+  - id: accept_deal
+    text: "Accept the deal"
+    shortcut: A
+    next_scene: dungeon_entrance
+    set_flags:
+      accepted_reward: true
+      has_gold: true
+
+  - id: ask_more_questions
+    text: "Ask more questions"
+    shortcut: B
+    next_scene: artifact_lore
+
+  - id: refuse_deal
+    text: "Refuse the gold"
+    shortcut: C
+    next_scene: dungeon_entrance
+    set_flags:
+      refused_reward: true
+      heroic_motive: true
+
+flags_set:
+  reward_discussed: true
+  gold_reward: 20

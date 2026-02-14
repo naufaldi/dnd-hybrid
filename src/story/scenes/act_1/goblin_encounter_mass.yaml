@@ -1,0 +1,39 @@
+id: goblin_encounter_mass
+act: 1
+title: "Ambush in the Dark"
+
+description: |
+  You charge into the darkness, weapon raised! 
+  
+  But the goblins were ready for you. Dozens of beady red eyes gleam in the
+  torchlight as goblins pour from side passages, cutting off your retreat.
+  
+  "Foolish human!" their leader cackles from the back. "You walk into our trap!"
+  
+  You're surrounded, outnumbered at least ten to one. The air fills with
+  the stench of goblin sweat and the gleam of rusty weapons.
+  
+  This will be a desperate fight.
+
+is_combat: true
+
+choices:
+  - id: fight_horde
+    text: "Fight the horde"
+    shortcut: A
+    combat_encounter: goblins
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
+
+  - id: try_breakthrough
+    text: "Try to break through"
+    shortcut: B
+    skill_check:
+      ability: str
+      dc: 16
+      success_next_scene: goblin_escape
+      failure_next_scene: death_in_dungeon
+
+flags_set:
+  outnumbered: true
+  ambushed: true

@@ -23,6 +23,8 @@ choices:
     text: "Fight everyone!"
     shortcut: A
     combat_encounter: cultist_boss
+    victory_next_scene: act1_conclusion
+    defeat_scene: death_in_dungeon
 
   - id: sneak_cultist
     text: "Sneak past the guards to attack the cultist"
@@ -43,6 +45,8 @@ choices:
     text: "Charge directly at the altar"
     shortcut: D
     combat_encounter: cultist_boss
+    victory_next_scene: act1_conclusion
+    defeat_scene: death_in_dungeon
     set_flags:
       direct_assault: true
 

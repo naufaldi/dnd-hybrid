@@ -23,4 +23,5 @@ choices:
     text: "Try the brass key"
     shortcut: B
     next_scene: shrine_unlocked
-    requires_item: brass_key
+    required_flags:
+      has_brass_key: true

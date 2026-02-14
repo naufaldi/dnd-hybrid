@@ -1,4 +1,5 @@
 """D&D dice mechanics for combat system."""
+
 import random
 import re
 from typing import List
@@ -93,3 +94,49 @@ class DiceRoller:
         dice_sum = sum(self._random.randint(1, die_size) for _ in range(num_dice))
 
         return dice_sum + modifier
+
+
+def roll_dice(notation: str) -> int:
+    """Roll dice according to D&D notation and return the total.
+
+    Convenience function that creates a DiceRoller and returns the sum.
+
+    Args:
+        notation: Dice notation string (e.g., "2d6+3", "1d8", "3d10-2")
+
+    Returns:
+        Total sum of all dice rolls plus modifiers
+
+    Examples:
+        >>> roll_dice("2d6+3")
+        13  # e.g., rolled 4 and 6, plus 3 modifier
+        >>> roll_dice("1d20")
+        15
+        >>> roll_dice("3d8")
+        12
+    """
+    return DiceRoller().roll_sum(notation)
+
+
+def ability_modifier(score: int) -> int:
+    """Calculate D&D 5e ability modifier from ability score.
+
+    Formula: (score - 10) // 2
+
+    Args:
+        score: Ability score (typically 1-20, can be higher with magic)
+
+    Returns:
+        Modifier value (-5 to +10 or more)
+
+    Examples:
+        >>> ability_modifier(10)  # Average
+        0
+        >>> ability_modifier(16)  # High
+        3
+        >>> ability_modifier(8)   # Low
+        -1
+        >>> ability_modifier(20)  # Maximum normal
+        5
+    """
+    return (score - 10) // 2

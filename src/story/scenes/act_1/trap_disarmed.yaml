@@ -1,0 +1,34 @@
+id: trap_disarmed
+act: 1
+title: "Trap Disabled"
+
+description: |
+  Working carefully, you examine the pressure plate's mechanism. The trigger
+  is surprisingly sophisticated - a series of counterweights designed to
+  release when enough weight is applied.
+  
+  With steady hands, you wedge a small stone beneath the plate's support,
+  preventing it from depressing fully. You test your work by gently pressing
+  on the stone - the plate doesn't budge.
+  
+  "Nicely done," you mutter to yourself, stepping carefully over the disabled
+  trap. The entrance hall beyond awaits, its secrets ready to be discovered.
+
+choices:
+  - id: enter_hall
+    text: "Enter the dungeon hall"
+    shortcut: A
+    next_scene: dungeon_entry_hall
+    set_flags:
+      trap_disarmed: true
+      cautious_approach: true
+
+  - id: search_more_traps
+    text: "Search for more traps"
+    shortcut: B
+    next_scene: entrance_examined
+    set_flags:
+      thorough_search: true
+
+flags_set:
+  disarmed_trap: true

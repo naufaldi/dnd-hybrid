@@ -77,7 +77,9 @@ class OpenRouterClient:
     ):
         self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY", "")
         self.default_model = self.DEFAULT_MODEL
-        self.timeout = aiohttp.ClientTimeout(total=timeout)
+        self.timeout = aiohttp.ClientTimeout(
+            total=timeout, connect=min(10, timeout // 2), sock_read=min(10, timeout // 2)
+        )
         self.retry_config = retry_config or RetryConfig()
         self.rate_limiter = RateLimiter()
 
@@ -166,6 +168,12 @@ class OpenRouterClient:
             session = await self._get_session()
             async with session.post(url, json=payload, headers=headers) as response:
                 if response.status == 429:
+                    # Parse Retry-After header if available
+                    retry_after = response.headers.get("Retry-After")
+                    if retry_after:
+                        wait_time = int(retry_after)
+                        logger.warning(f"Rate limited by API, waiting {wait_time}s before retry")
+                        await asyncio.sleep(wait_time)
                     raise RateLimitError("Rate limit exceeded")
                 if response.status == 401:
                     raise AIError("Invalid API key")
@@ -177,7 +185,21 @@ class OpenRouterClient:
                 if "choices" not in data or not data["choices"]:
                     raise AIError("Invalid response format: no choices returned")
 
-                return data["choices"][0]["message"]["content"]
+                # Validate nested structure before accessing
+                first_choice = data["choices"][0]
+                if not isinstance(first_choice, dict):
+                    raise AIError("Invalid response format: choice is not an object")
+                if "message" not in first_choice:
+                    raise AIError("Invalid response format: no message in choice")
+                message = first_choice["message"]
+                if not isinstance(message, dict) or "content" not in message:
+                    raise AIError("Invalid response format: no content in message")
+
+                content = message["content"]
+                if not content or not isinstance(content, str):
+                    raise AIError("Invalid response format: empty or invalid content")
+
+                return content
 
         except aiohttp.ClientError as e:
             raise AIError(f"Network error: {e}")

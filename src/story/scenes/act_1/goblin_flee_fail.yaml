@@ -1,0 +1,34 @@
+id: goblin_flee_fail
+act: 1
+title: "Failed Escape"
+
+description: |
+  You try to dodge past the charging goblins, but they're faster than they look!
+  
+  A scimitar catches your arm, opening a painful gash. You stumble, and the
+  goblins swarm around you, cutting off all escape routes.
+  
+  "No run! No run!" the lead goblin cackles. "You fight now!"
+  
+  You have no choice but to defend yourself.
+
+is_combat: true
+
+choices:
+  - id: fight_desperate
+    text: "Fight desperately"
+    shortcut: A
+    combat_encounter: goblins
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
+
+  - id: surrender
+    text: "Try to surrender"
+    shortcut: B
+    next_scene: goblin_capture
+    set_flags:
+      captured_by_goblins: true
+
+flags_set:
+  injured: true
+  failed_escape: true

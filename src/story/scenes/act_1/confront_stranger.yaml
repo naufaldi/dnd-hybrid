@@ -1,0 +1,38 @@
+id: confront_stranger
+act: 1
+title: "Tense Confrontation"
+
+description: |
+  You step forward aggressively, trying to intimidate the hooded figure.
+  
+  "Who are you? Why are you watching me?" you demand, hand on your weapon.
+  
+  The stranger doesn't flinch. Those gleaming eyes study you with amusement.
+  
+  "So quick to anger," the stranger murmurs. "The dungeon rewards patience,
+  not bravado. But very well - if you wish to test me, let us see who has
+  the stronger will."
+
+choices:
+  - id: stand_ground
+    text: "Stand your ground"
+    shortcut: A
+    skill_check:
+      ability: cha
+      dc: 14
+      success_next_scene: confrontation_success
+      failure_next_scene: confrontation_fail
+
+  - id: back_down
+    text: "Back down and apologize"
+    shortcut: B
+    next_scene: offer_heroic
+    set_flags:
+      backed_down: true
+
+  - id: attack_stranger
+    text: "Attack the stranger"
+    shortcut: C
+    next_scene: death_in_dungeon
+    set_flags:
+      killed_by_stranger: true

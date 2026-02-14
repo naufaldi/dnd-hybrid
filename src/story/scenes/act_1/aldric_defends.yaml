@@ -1,0 +1,43 @@
+id: aldric_defends
+act: 1
+title: "Aldric's True Colors"
+
+description: |
+  "Blame me?" Aldric laughs, but there's no humor in it. "I tried to warn
+  everyone! I tried to seal the temple forever!"
+  
+  He pulls back his hood, revealing terrible scars that seem to shift and
+  move in the candlelight. 
+  
+  "I was the first to find the Void Heart. I was the one who unleashed
+  what sleeps within. Everything that's happened - the disappearances,
+  the nightmares, the cult - it's all my fault."
+  
+  He meets your gaze, and you see genuine pain in his eyes.
+  
+  "But I can fix it. With your help, I can fix everything. Will you help me
+  end this nightmare?"
+
+choices:
+  - id: help_aldric
+    text: "Help him redeem himself"
+    shortcut: A
+    next_scene: dungeon_entrance
+    set_flags:
+      aldric_redemption: true
+      knows_aldric_secret: true
+
+  - id: demand_justice
+    text: "Demand he face justice"
+    shortcut: B
+    next_scene: dungeon_entrance
+    set_flags:
+      aldric_guilt: true
+      knows_aldric_secret: true
+
+  - id: walk_away_aldric
+    text: "Walk away from him"
+    shortcut: C
+    next_scene: tavern_entry
+    set_flags:
+      refused_aldric: true

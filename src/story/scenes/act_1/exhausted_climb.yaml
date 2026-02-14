@@ -1,0 +1,32 @@
+id: exhausted_climb
+act: 1
+title: "Too Weak to Continue"
+
+description: |
+  You try to climb out of the pit, but your wounds are too severe. Each attempt
+  leaves you more exhausted than before. Your grip slips, and you fall back
+  to the bottom with a groan.
+  
+  Blood loss and exhaustion overwhelm you. The world spins, and darkness creeps
+  in at the edges of your vision.
+  
+  You collapse against the cold stone wall, unable to go on.
+  
+  Your adventure ends here, in the dark, alone.
+
+choices:
+  - id: accept_fate
+    text: "Accept your fate"
+    shortcut: A
+    next_scene: death_in_dungeon
+
+  - id: call_one_last_time
+    text: "Call for help one last time"
+    shortcut: B
+    next_scene: pit_calling
+    set_flags:
+      desperate_call: true
+
+flags_set:
+  critically_injured: true
+  near_death: true

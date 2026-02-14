@@ -6,6 +6,12 @@ description: |
   You charge into battle! The cultist leader screeches orders as his goblin
   guards attack. But with the Void Heart's power, he is formidable.
 
-combat_encounter: cultist_boss
+is_combat: true
 
-choices: []
+choices:
+  - id: fight_cultist
+    text: "Fight the Cultist Leader!"
+    shortcut: A
+    combat_encounter: cultist_boss
+    victory_next_scene: act1_conclusion
+    defeat_scene: death_in_dungeon

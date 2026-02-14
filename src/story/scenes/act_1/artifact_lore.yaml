@@ -1,0 +1,47 @@
+id: artifact_lore
+act: 1
+title: "The Artifact's History"
+
+description: |
+  Aldric seems pleased by your curiosity. He settles back in his chair,
+  lowering his voice.
+  
+  "The artifact is called the Void Heart - a crystal sphere about the size
+  of a human head. It was created centuries ago by a cult that worshipped
+  the spaces between stars."
+  
+  He pulls out a worn journal, showing you sketches of strange symbols.
+  
+  "The Void Heart can... thin the barrier between worlds. Open doorways to
+  places that should remain sealed. The original cultists were destroyed
+  by what they unleashed. The temple was built to contain both the Heart
+  and the... things... that came through."
+  
+  He closes the journal.
+  
+  "Now a new cult has found it. They're trying to finish what the ancients
+  started. We cannot allow that."
+
+choices:
+  - id: accept_mission
+    text: "Accept the mission"
+    shortcut: A
+    next_scene: dungeon_entrance
+    set_flags:
+      knows_artifact_lore: true
+      accepted_mission: true
+
+  - id: ask_about_aldric
+    text: "Ask how he knows all this"
+    shortcut: B
+    next_scene: dungeon_info
+
+  - id: refuse_dangerous
+    text: "This sounds too dangerous"
+    shortcut: C
+    next_scene: tavern_entry
+    set_flags:
+      refused_mission: true
+
+flags_set:
+      artifact_lore_known: true

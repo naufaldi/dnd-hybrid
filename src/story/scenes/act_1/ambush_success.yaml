@@ -1,0 +1,29 @@
+id: ambush_success
+act: 1
+title: "Surprise Attack!"
+
+description: |
+  Your ambush is perfectly timed! As the first goblin steps through the
+  entrance, you trigger your trap - a pile of loose stones crashes down
+  from above, crushing two goblins instantly.
+  
+  The remaining goblins are thrown into chaos, screeching in panic. You
+  use the confusion to strike, taking down another before they even realize
+  what's happening.
+  
+  "Ambush! Ambush!" one goblin shrieks, but it's too late. The battle is
+  already turning in your favor.
+
+is_combat: true
+
+choices:
+  - id: fight_disoriented
+    text: "Press the attack!"
+    shortcut: A
+    combat_encounter: goblins
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
+
+flags_set:
+  ambush_successful: true
+  goblins_surprised: true

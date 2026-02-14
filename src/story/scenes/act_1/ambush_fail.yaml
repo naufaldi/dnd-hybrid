@@ -1,0 +1,32 @@
+id: ambush_fail
+act: 1
+title: "Ambush Discovered!"
+
+description: |
+  You wait in position, heart pounding, as the goblins approach. But just
+  as you're about to spring your trap, one of the goblins sniffs the air
+  and lets out a warning cry.
+  
+  "Smell human! SMELL HUMAN!"
+  
+  Your ambush is ruined! The goblins scatter, then regroup, advancing
+  cautiously with weapons drawn. They know you're here now - the element
+  of surprise is lost.
+  
+  "Come out, come out!" their leader calls mockingly. "We find you anyway!"
+  
+  You're exposed and outnumbered. There's no choice but to fight.
+
+is_combat: true
+
+choices:
+  - id: fight_exposed
+    text: "Fight!"
+    shortcut: A
+    combat_encounter: goblins
+    victory_next_scene: goblin_victory
+    defeat_scene: death_in_dungeon
+
+flags_set:
+  ambush_failed: true
+  goblins_alerted: true

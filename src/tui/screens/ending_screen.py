@@ -42,7 +42,7 @@ class EndingScreen(Screen):
         stats_widget = self.query_one("#stats_section", Static)
         buttons_widget = self.query_one("#ending_buttons", Static)
 
-        title_widget.update(f"[b][size=30]{self.ending_title}[/size][/b]")
+        title_widget.update(f"[b]{self.ending_title}[/b]")
         desc_widget.update(f"\n{self.ending_description}\n")
 
         stats_lines = ["[b]STATISTICS[/b]", "-" * 20]

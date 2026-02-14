@@ -1,0 +1,35 @@
+id: stranger_escapes
+act: 1
+title: "A Quick Escape"
+
+description: |
+  As you stumble back from your failed intimidation attempt, the hooded
+  figure slips away with surprising speed. By the time you recover, he's
+  vanished into the tavern crowd.
+  
+  "Gone," the barkeep mutters, shaking his head. "That one's always been
+  slippery."
+  
+  You scan the room, but there's no sign of the stranger. Your aggressive
+  approach has cost you a potential ally - and any information he might have
+  shared.
+  
+  Perhaps you'll have another chance to find him later.
+
+choices:
+  - id: ask_barkeep
+    text: "Ask the barkeep about him"
+    shortcut: A
+    next_scene: barkeep_info
+
+  - id: leave_tavern
+    text: "Leave the tavern"
+    shortcut: B
+    next_scene: tavern_entry
+
+  - id: search_tavern
+    text: "Search the tavern"
+    shortcut: C
+    next_scene: tavern_entry
+    set_flags:
+      searched_for_stranger: true
