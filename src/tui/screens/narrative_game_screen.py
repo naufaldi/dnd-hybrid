@@ -2,15 +2,15 @@
 
 import asyncio
 from textual.screen import Screen
-from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
+from textual.containers import Horizontal, Vertical, ScrollableContainer  # noqa: F401
 from textual.widgets import Static, Button
 from textual import events
-from textual.app import App
 
-from ...narrative.models import Scene, Choice, GameState, DiceRollResult
-from ...narrative.scene_manager import SceneManager
-from ...narrative.ending_manager import EndingManager
+from ...narrative.models import Scene, Choice, GameState  # noqa: F401
 from ...combat.dice_display import DiceDisplay
+from ...utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class NarrativeGameScreen(Screen):
@@ -103,8 +103,9 @@ class NarrativeGameScreen(Screen):
                         context=npc_context,
                         dialogue_type="greeting",
                     )
-                    # Append AI dialogue with distinct styling
-                    description += f'\n\n[cyan italic]{self.current_scene.npc_name}:[/cyan italic] "[italic]{ai_dialogue}[/italic]"'
+                    description += self._format_ai_dialogue(
+                        self.current_scene.npc_name, ai_dialogue
+                    )
                 except Exception as e:
                     # Log error for debugging but continue with fallback
                     logger.error(
@@ -119,19 +120,23 @@ class NarrativeGameScreen(Screen):
         self._update_action_buttons()
 
     def _format_description(self, description: str) -> str:
-        """Format description - make NPC dialogue distinct with cyan color."""
+        """Format description - make NPC dialogue distinct with styling."""
         import re
 
-        # Find dialogue in quotes - handle multi-line
-        # Match text between quotes (including newlines)
         def replace_dialogue(match):
             quote = match.group(0)
-            return f"[cyan italic]{quote}[/cyan italic]"
+            return f"[italic #87CEEB]{quote}[/italic #87CEEB]"
 
-        # Match text in double quotes (including multi-line)
         formatted = re.sub(r"\"([^\"]*)\"", replace_dialogue, description)
 
         return formatted
+
+    def _format_ai_dialogue(self, npc_name: str, dialogue: str) -> str:
+        """Format AI-generated NPC dialogue with distinct roleplay styling."""
+        return f"""
+[dim]────────────────────────────────[/dim]
+[bold cyan]{npc_name}:[/bold cyan] [italic #87CEEB]"{dialogue}"[/italic #87CEEB]
+[dim]────────────────────────────────[/dim]"""
 
     def _build_npc_context(self) -> str:
         """Build context string for NPC AI."""

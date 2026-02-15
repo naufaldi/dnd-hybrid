@@ -3,10 +3,10 @@
 import json
 import hashlib
 import os
+import re
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 from datetime import datetime
-from dataclasses import asdict
 
 from ..ai.openrouter_client import OpenRouterClient, AIError, RateLimitError
 from ..utils.logger import get_logger
@@ -167,10 +167,18 @@ class AIService:
     ):
         self.client = client
         self.cache = cache or ResponseCache()
-        self.enabled = enabled and bool(client and client.api_key)
 
-        if not self.enabled:
-            logger.info("AI service disabled (no API key or disabled)")
+        has_api_key = bool(client and client.api_key)
+        self.enabled = enabled and has_api_key
+
+        if self.enabled:
+            logger.info(
+                f"AI service enabled with model: {client.default_model if client else 'unknown'}"
+            )
+        elif not has_api_key:
+            logger.warning("AI service disabled: no API key provided")
+        elif not enabled:
+            logger.info("AI service disabled: explicitly disabled")
 
     async def enhance_dialogue(
         self,
@@ -214,12 +222,65 @@ Dialogue:"""
             )
             response = response.strip()
             if response:
+                response = self.clean_dialogue_response(response)
                 self.cache.set(cache_key, response, self.client.default_model, context_hash)
                 return response
         except (AIError, RateLimitError) as e:
             logger.warning(f"AI dialogue generation failed: {e}")
 
         return self.get_fallback_dialogue(mood, dialogue_type)
+
+    @staticmethod
+    def clean_dialogue_response(response: str) -> str:
+        """Clean AI response from template text, mood markers, and garbage output."""
+        original = response
+        response = response.strip()
+        if not response:
+            return original
+
+        lines = response.split("\n")
+        clean_lines = []
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            if re.match(r"^\*\*[A-Za-z]+/[A-Za-z]+:\*\*", line):
+                continue
+
+            if re.match(r"^\*\*[A-Za-z]+:\*\*", line):
+                continue
+
+            if re.match(r"^Stranger:", line, re.IGNORECASE):
+                line = re.sub(r"^Stranger:\s*", "", line, flags=re.IGNORECASE)
+
+            if re.match(r"^(Okay|Here|Following|Absolutely|Sure)", line, re.IGNORECASE):
+                continue
+
+            if "here are" in line.lower() or "options:" in line.lower():
+                continue
+
+            clean_lines.append(line)
+
+        if clean_lines:
+            response = " ".join(clean_lines)
+
+        if '"' in response:
+            match = re.search(r'"([^"]+)"', response)
+            if match:
+                response = match.group(1)
+            else:
+                match = re.search(r"'([^']+)'", response)
+                if match:
+                    response = match.group(1)
+
+        response = response.strip()
+
+        if not response or len(response) < 3:
+            return original
+
+        return response
 
     async def narrate_outcome(
         self,
@@ -238,19 +299,6 @@ Dialogue:"""
         cached = self.cache.get(cache_key, context_hash)
         if cached:
             return cached
-
-        prompt = f"""Generate a brief narrative outcome for a D&D skill check.
-
-Action: {action}
-Roll: {roll_result} vs DC {dc}
-Result: {"SUCCESS" if success else "FAILURE"}
-
-Requirements:
-- 1-2 sentences
-- Dramatic and evocative
-- Show consequences of success or failure
-
-Outcome:"""
 
         try:
             response = await self.client.generate_outcome(
@@ -278,7 +326,7 @@ Outcome:"""
         scene_context: str,
         character_info: Dict[str, Any],
         story_flags: Dict[str, bool],
-        num_choices: int = 2
+        num_choices: int = 2,
     ) -> Optional[List[Dict[str, str]]]:
         """Generate additional AI choices at key decision points.
 
@@ -302,10 +350,10 @@ Outcome:"""
 
 Current Scene: {scene_context}
 Player: {char_desc}
-Story Progress: {', '.join([k for k, v in story_flags.items() if v]) if story_flags else 'Beginning'}
+Story Progress: {", ".join([k for k, v in story_flags.items() if v]) if story_flags else "Beginning"}
 
 Generate choices that:
-- Are in character for a {character_info.get('class', 'adventurer')}
+- Are in character for a {character_info.get("class", "adventurer")}
 - Have different approaches (combat, diplomatic, stealth, etc.)
 - Are thematically appropriate for a D&D adventure
 - Lead to interesting story developments
@@ -329,21 +377,19 @@ Only output the JSON, no other text:"""
         if cached:
             try:
                 import json
+
                 return json.loads(cached)
             except (json.JSONDecodeError, TypeError):
                 pass
 
         # Generate new choices
         try:
-            response = await self.client.generate(
-                prompt=prompt,
-                max_tokens=300,
-                temperature=0.8
-            )
+            response = await self.client.generate(prompt=prompt, max_tokens=300, temperature=0.8)
 
             if response:
                 # Try to parse as JSON
                 import json
+
                 choices = json.loads(response)
                 if isinstance(choices, list):
                     # Cache the response
@@ -352,6 +398,7 @@ Only output the JSON, no other text:"""
 
         except Exception as e:
             import logging
+
             logging.getLogger(__name__).warning(f"AI choice generation failed: {e}")
 
         # Fallback to static choices
@@ -388,9 +435,12 @@ Only output the JSON, no other text:"""
 
 def create_ai_service(api_key: Optional[str] = None) -> AIService:
     """Factory function to create an AI service."""
-    # Use provided api_key or fall back to environment variable
     effective_key = api_key or os.environ.get("OPENROUTER_API_KEY")
     client = None
     if effective_key:
+        masked = f"{effective_key[:8]}...{effective_key[-4:]}" if len(effective_key) > 12 else "***"
+        logger.info(f"Creating AI service with API key: {masked}")
         client = OpenRouterClient(api_key=effective_key)
+    else:
+        logger.warning("create_ai_service called without API key - AI will be disabled")
     return AIService(client=client)
