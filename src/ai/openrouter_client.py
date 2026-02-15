@@ -85,6 +85,16 @@ class OpenRouterClient:
 
         self._session: Optional[aiohttp.ClientSession] = None
 
+        if self.api_key:
+            masked = (
+                f"{self.api_key[:8]}...{self.api_key[-4:]}" if len(self.api_key) > 12 else "***"
+            )
+            logger.info(
+                f"OpenRouterClient initialized with model: {self.default_model}, API key: {masked}"
+            )
+        else:
+            logger.warning("OpenRouterClient initialized WITHOUT API KEY - requests will fail")
+
     async def _get_session(self) -> aiohttp.ClientSession:
         """Get or create HTTP session."""
         if self._session is None or self._session.closed:
@@ -115,7 +125,12 @@ class OpenRouterClient:
     ) -> str:
         """Generate text using OpenRouter API."""
         if not self.api_key:
+            logger.error("generate() called but no API key is configured")
             raise AIError("No API key configured")
+
+        model_name = model or self.default_model
+        logger.info(f"AI request: model={model_name}, max_tokens={max_tokens}, temp={temperature}")
+        logger.debug(f"Prompt preview: {prompt[:100]}...")
 
         url = f"{self.BASE_URL}/chat/completions"
         headers = {
@@ -125,7 +140,7 @@ class OpenRouterClient:
             "X-Title": "AI Dungeon Chronicles",
         }
         payload = {
-            "model": model or self.default_model,
+            "model": model_name,
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": max_tokens,
             "temperature": temperature,
@@ -166,44 +181,59 @@ class OpenRouterClient:
         """Make a single API request."""
         try:
             session = await self._get_session()
+            logger.debug(f"Sending POST request to {url}")
+
             async with session.post(url, json=payload, headers=headers) as response:
+                logger.debug(f"Response status: {response.status}")
+
                 if response.status == 429:
-                    # Parse Retry-After header if available
                     retry_after = response.headers.get("Retry-After")
                     if retry_after:
                         wait_time = int(retry_after)
-                        logger.warning(f"Rate limited by API, waiting {wait_time}s before retry")
+                        logger.warning(f"Rate limited by API (429), waiting {wait_time}s")
                         await asyncio.sleep(wait_time)
                     raise RateLimitError("Rate limit exceeded")
+
                 if response.status == 401:
+                    logger.error("API authentication failed (401) - Invalid API key")
                     raise AIError("Invalid API key")
+
                 if response.status != 200:
                     error_text = await response.text()
+                    logger.error(f"API returned status {response.status}: {error_text[:200]}")
                     raise AIError(f"API returned status {response.status}: {error_text}")
 
                 data = await response.json()
                 if "choices" not in data or not data["choices"]:
+                    logger.error("Invalid API response: no choices returned")
                     raise AIError("Invalid response format: no choices returned")
 
-                # Validate nested structure before accessing
                 first_choice = data["choices"][0]
                 if not isinstance(first_choice, dict):
+                    logger.error("Invalid API response: choice is not an object")
                     raise AIError("Invalid response format: choice is not an object")
                 if "message" not in first_choice:
+                    logger.error("Invalid API response: no message in choice")
                     raise AIError("Invalid response format: no message in choice")
                 message = first_choice["message"]
                 if not isinstance(message, dict) or "content" not in message:
+                    logger.error("Invalid API response: no content in message")
                     raise AIError("Invalid response format: no content in message")
 
                 content = message["content"]
                 if not content or not isinstance(content, str):
+                    logger.error("Invalid API response: empty or invalid content")
                     raise AIError("Invalid response format: empty or invalid content")
 
+                logger.info(f"AI request successful, response length: {len(content)} chars")
+                logger.debug(f"Response preview: {content[:100]}...")
                 return content
 
         except aiohttp.ClientError as e:
+            logger.error(f"Network error during API request: {e}")
             raise AIError(f"Network error: {e}")
         except KeyError as e:
+            logger.error(f"Invalid response format (KeyError): {e}")
             raise AIError(f"Invalid response format: {e}")
 
     async def generate_with_fallback(
@@ -212,6 +242,10 @@ class OpenRouterClient:
         """Generate text with fallback models on error."""
         models_to_try = [self.default_model] + self.FALLBACK_MODELS
 
+        logger.info(
+            f"generate_with_fallback: trying {len(models_to_try)} models ({', '.join(models_to_try)})"
+        )
+
         last_error = None
         for model in models_to_try:
             try:
@@ -219,11 +253,16 @@ class OpenRouterClient:
                 return await self.generate(
                     prompt, model=model, max_tokens=max_tokens, temperature=temperature
                 )
-            except (AIError, RateLimitError) as e:
+            except RateLimitError as e:
+                logger.warning(f"Rate limited on model {model}, trying next: {e}")
+                last_error = e
+                continue
+            except AIError as e:
                 logger.warning(f"Model {model} failed: {e}")
                 last_error = e
                 continue
 
+        logger.error(f"All {len(models_to_try)} models failed. Last error: {last_error}")
         raise AIError(f"All models failed. Last error: {last_error}")
 
     async def enhance_description(self, template: str, context: dict) -> str:

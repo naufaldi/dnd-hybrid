@@ -9,6 +9,7 @@ textual>=4.0.0
 
 # AI Integration
 aiohttp>=3.9.0
+python-dotenv>=1.0.0
 
 # Type checking & Linting
 mypy>=1.15.0

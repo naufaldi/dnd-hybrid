@@ -235,9 +235,10 @@ choices:
 | **Phase 1** | Act 1 MVP | Full playable Act 1: tavern → dungeon → ending | ✅ Complete |
 | **Phase 2** | Polish | Narrative prose + BG3-style dice drama | ✅ Complete |
 | **Phase 3** | Bug Fixes | Critical fixes + test suite | ✅ Complete |
-| **Phase 4** | Act 2-3 | Outline + core scenes for full campaign | Planned |
-| **Phase 5** | AI NPCs | Dialogue generation for NPCs | Planned |
-| **Phase 6** | AI Branches | Dynamic story branches + endings | Ongoing |
+| **Phase 4** | Act 2 | Rising Action - Town, NPCs, Quests | ✅ Complete |
+| **Phase 5** | AI NPCs | Dialogue generation for NPCs | ✅ Complete |
+| **Phase 6** | AI Branches | Dynamic story branches + endings | ✅ Complete |
+| **Phase 7** | Act 3 | Climax - Final confrontation | Planned |
 
 ---
 
@@ -298,19 +299,19 @@ choices:
 
 ### Phase 3: Act 2-3
 
-#### 3.1 Act 2: Rising Action
+#### 3.1 Act 2: Rising Action ✅ IMPLEMENTED
 **Premise:** Player returns to town with knowledge of dungeon. New threats emerge.
 
-**Key Elements:**
-- New location: Town + surrounding areas
-- New NPCs: Merchant, Guard Captain, local Mage
-- Branch continuation from Act 1 choices
-- Side quests available
-- Dungeon deeper levels accessible
+**Implemented Features:**
+- ✅ New location: Millbrook town + surrounding areas
+- ✅ New NPCs: Marcus (Merchant), Sergeant Bron (Guard Captain), Elara (Mage)
+- ✅ Branch continuation from Act 1 choices (endings link to Act 2)
+- ✅ Side quests available (Bandit quest, Tower quest)
+- ✅ Mages Tower explorable
 
-**Scene Count Target:** ~25 new scenes
+**Scene Count:** 33 scenes (exceeded target of 25)
 
-#### 3.2 Act 3: Climax
+#### 3.2 Act 3: Climax (Future)
 **Premise:** Final confrontation with cultist leader + ancient evil.
 
 **Key Elements:**
@@ -486,6 +487,127 @@ choices:
                    │ MYSTERY: default       │
                    └─────────────────────────┘
 ```
+
+---
+
+### Act 2 Scene Map - Rising Action
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     TOWN SQUARE (ACT 2 HUB)                                 │
+│              "Welcome to Millbrook"                                         │
+│                                                                             │
+│    A → Guard Barracks     B → Iron Maiden Inn     C → Merchant District   │
+│    D → Mages Tower Road                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+         │                    │                      │                  │
+         ▼                    ▼                      ▼                  ▼
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ ┌─────────────────────┐
+│ GUARD BARRACKS  │  │ IRON MAIDEN    │  │MERCHANT DISTRICT│ │  MAGES TOWER ROAD  │
+│                 │  │ INN            │  │                 │ │                    │
+│ - Quest: Bandits│  │ - Bess News    │  │ - Marcus Shop  │ │ - Elara (Mage)    │
+│ - Bron (Captain)│  │ - Bard Song    │  │ - Rumors      │ │ - Tower Entrance   │
+│ - News          │  │ - Rest         │  │ - Sell Loot   │ │                    │
+└────────┬────────┘  └────────┬────────┘  └────────┬────────┘ └────────┬────────┘
+         │                    │                      │                  │
+         ▼                    ▼                      ▼                  ▼
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ ┌─────────────────────┐
+│ BANDIT QUEST    │  │ BARD_SECRET     │  │ MARCUS RUMORS  │ │ TOWER FLOOR 1      │
+│                 │  │                 │  │                 │ │                    │
+│ - Thornkeep     │  │ - Ask about     │  │ - Summoning    │ │ - Library          │
+│   Approach      │  │   rumors        │  │   secrets      │ │ - Basement         │
+│                 │  │                 │  │                 │ │ - Upper Floors     │
+└────────┬────────┘  └─────────────────┘  └─────────────────┘ └────────┬────────┘
+         │                                                              │
+         ▼                                                              ▼
+┌─────────────────┐                                              ┌─────────────────────┐
+│ THORNKEEP       │                                              │ TOWER QUESTS        │
+│ FORTRESS        │                                              │                    │
+│                 │                                              │ - Read Tome        │
+│ A → Assault     │                                              │ - Study Circles    │
+│ B → Sneak       │                                              │ - Find Artifact    │
+│ C → Observe     │                                              │ - Compartment      │
+└────────┬────────┘                                              └────────┬────────┘
+         │                                                              │
+    ┌────┴────┐                                                         │
+    ▼         ▼                                                        ▼
+┌─────────┐ ┌──────────────┐                                    ┌─────────────────────┐
+│ VICTORY │ │ DEFEAT       │                                    │ ACT 2 CLIMAX       │
+│         │ │              │                                    │                    │
+│ - Return │ │ - Captured  │                                    │ - Hollowing        │
+│   to Town│ │ - Cell      │                                    │   Revealed         │
+│         │              │                                    │                    │
+└─────────┘ └──────────────┘                                    │ OR                 │
+    │                                                             │                    │
+    └─────────────────────┐                                      │ Continue to         │
+                          │                                      │ Investigation      │
+                          ▼                                      └──────────┬──────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        ACT 2 CONCLUSION                                    │
+│                  "The Shadow Stirs"                                       │
+│                                                                             │
+│  Flags Set:                                                              │
+│  - quest_bandits: accepted/completed                                       │
+│  - met_elara: true                                                        │
+│  - learned_about_entity: true                                              │
+│  - visited_mages_tower: true                                              │
+│                                                                             │
+│  → Link to Act 3 (Climax) OR Continue Exploring                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Act 2 Scene Inventory
+
+#### Total Act 2 Scenes: 33
+
+| Scene ID | File | Status |
+|----------|------|--------|
+| town_square | town_square.yaml | ✅ Complete |
+| guard_barracks | guard_barracks.yaml | ✅ Complete |
+| guard_barracks_declined | guard_barracks_declined.yaml | ✅ Complete |
+| guard_news | guard_news.yaml | ✅ Complete |
+| merchant_district | merchant_district.yaml | ✅ Complete |
+| marcus_shop | marcus_shop.yaml | ✅ Complete |
+| marcus_rumors | marcus_rumors.yaml | ✅ Complete |
+| marcus_reveals | marcus_reveals.yaml | ✅ Complete |
+| sell_loot | sell_loot.yaml | ✅ Complete |
+| buy_supplies | buy_supplies.yaml | ✅ Complete |
+| weapon_vendor | weapon_vendor.yaml | ✅ Complete |
+| potion_vendor | potion_vendor.yaml | ✅ Complete |
+| iron_maiden_inn | iron_maiden_inn.yaml | ✅ Complete |
+| bess_news | bess_news.yaml | ✅ Complete |
+| bard_song | bard_song.yaml | ✅ Complete |
+| inn_rest | inn_rest.yaml | ✅ Complete |
+| mages_tower_road | mages_tower_road.yaml | ✅ Complete |
+| elara_intro | elara_intro.yaml | ✅ Complete |
+| elara_backstory | elara_backstory.yaml | ✅ Complete |
+| entity_lore | entity_lore.yaml | ✅ Complete |
+| tower_floor_1 | tower_floor_1.yaml | ✅ Complete |
+| tower_library | tower_library.yaml | ✅ Complete |
+| tower_basement | tower_basement.yaml | ✅ Complete |
+| tower_upper_floors | tower_upper_floors.yaml | ✅ Complete |
+| compartment_discovery | compartment_discovery.yaml | ✅ Complete |
+| bandit_quest_intro | bandit_quest_intro.yaml | ✅ Complete |
+| thornkeep_approach | thornkeep_approach.yaml | ✅ Complete |
+| thornkeep_assault | thornkeep_assault.yaml | ✅ Complete |
+| thornkeep_sneak | thornkeep_sneak.yaml | ✅ Complete |
+| thornkeep_victory | thornkeep_victory.yaml | ✅ Complete |
+| thornkeep_return | thornkeep_return.yaml | ✅ Complete |
+| hollowing_explanation | hollowing_explanation.yaml | ✅ Complete |
+| death_in_bandit_fort | death_in_bandit_fort.yaml | ✅ Complete |
+
+---
+
+### Act 2 Quest Overview
+
+| Quest | NPC | Scenes | Rewards |
+|-------|-----|--------|---------|
+| Bandit Problem | Sergeant Bron | 5 | 200 gold, intel |
+| Tower Mystery | Elara | 8 | Artifacts, lore |
+| Merchant Rumors | Marcus | 3 | 100 gold, warnings |
+| Town Exploration | Various | 10 | Items, gold |
 
 ### Scene Inventory
 

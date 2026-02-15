@@ -2,6 +2,7 @@
 
 import os
 import uuid
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -27,12 +28,19 @@ from ..narrative.ending_manager import EndingManager
 from ..narrative.ai_service import create_ai_service
 from ..narrative.npc_memory import NPCMemoryManager
 
+logger = logging.getLogger(__name__)
+
 
 def _load_api_key() -> Optional[str]:
     """Load OpenRouter API key from common sources."""
     # 1. Environment variable (already set)
-    if os.environ.get("OPENROUTER_API_KEY"):
-        return os.environ.get("OPENROUTER_API_KEY")
+    env_key = os.environ.get("OPENROUTER_API_KEY")
+    if env_key:
+        masked = f"{env_key[:8]}...{env_key[-4:]}" if len(env_key) > 12 else "***"
+        logger.info(f"OpenRouter API key loaded from environment variable (key: {masked})")
+        return env_key
+
+    logger.debug("No OPENROUTER_API_KEY found in environment variable")
 
     # 2. Check for .env file in project root or home directory
     candidates = [
@@ -43,6 +51,7 @@ def _load_api_key() -> Optional[str]:
 
     for env_path in candidates:
         if env_path.exists():
+            logger.debug(f"Checking for .env file at: {env_path}")
             try:
                 content = env_path.read_text()
                 for line in content.splitlines():
@@ -50,24 +59,32 @@ def _load_api_key() -> Optional[str]:
                     if line.startswith("OPENROUTER_API_KEY="):
                         key = line.split("=", 1)[1].strip().strip('"').strip("'")
                         if key:
+                            masked = f"{key[:8]}...{key[-4:]}" if len(key) > 12 else "***"
+                            logger.info(
+                                f"OpenRouter API key loaded from {env_path} (key: {masked})"
+                            )
                             return key
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Failed to read .env file at {env_path}: {e}")
 
     # 3. Check config file
     config_dir = Path.home() / ".dnd_roguelike"
     config_file = config_dir / "config"
     if config_file.exists():
+        logger.debug(f"Checking config file at: {config_file}")
         try:
             content = config_file.read_text()
             for line in content.splitlines():
                 if line.startswith("openrouter_api_key="):
                     key = line.split("=", 1)[1].strip()
                     if key:
+                        masked = f"{key[:8]}...{key[-4:]}" if len(key) > 12 else "***"
+                        logger.info(f"OpenRouter API key loaded from config file (key: {masked})")
                         return key
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Failed to read config file at {config_file}: {e}")
 
+    logger.warning("OpenRouter API key not found in any source")
     return None
 
 
@@ -135,9 +152,7 @@ class DNDRoguelikeApp(App):
         if result:
             self.load_narrative_game(result)
 
-    def start_narrative_game(
-        self, character_name: str, character_class: str, race: str
-    ) -> None:
+    def start_narrative_game(self, character_name: str, character_class: str, race: str) -> None:
         """Start a new narrative game with the given character."""
         char_id = str(uuid.uuid4())
         character = Character(
@@ -196,7 +211,9 @@ class DNDRoguelikeApp(App):
             config.ensure_directories()
             json_str = json.dumps(save_data, indent=2, default=str)
             compressed = zlib.compress(json_str.encode("utf-8"), level=6)
-            char_name = save_data.get("narrative_state", {}).get("character", {}).get("name", "game")
+            char_name = (
+                save_data.get("narrative_state", {}).get("character", {}).get("name", "game")
+            )
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{char_name}_{timestamp}.sav"
             save_path = config.save_directory / filename

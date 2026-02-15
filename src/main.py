@@ -1,11 +1,14 @@
 """Main entry point for D&D Roguelike."""
 
 import sys
-import asyncio
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def main():
