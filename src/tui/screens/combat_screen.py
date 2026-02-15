@@ -296,8 +296,9 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
             scene_mgr = getattr(self.app, "scene_manager", None)
             if scene_mgr:
                 scene = scene_mgr.get_scene(self.victory_scene)
-                await screen.set_scene(scene)
+                self.app.push_screen(screen)
                 screen.game_state = game_state
+                await screen.set_scene(scene)
 
     async def _combat_defeat(self) -> None:
         """Handle combat defeat."""
@@ -320,5 +321,6 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
             scene_mgr = getattr(self.app, "scene_manager", None)
             if scene_mgr:
                 scene = scene_mgr.get_scene(self.defeat_scene)
-                await screen.set_scene(scene)
+                self.app.push_screen(screen)
                 screen.game_state = game_state
+                await screen.set_scene(scene)
