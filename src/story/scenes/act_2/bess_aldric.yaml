@@ -1,0 +1,25 @@
+id: bess_aldric
+act: 2
+title: "Bess on Aldric"
+
+description: |
+  Bess lowers her voice further. "The stranger? Haven't seen him in weeks.
+  Left town right after the dungeon business. Didn't say where he was going."
+
+  She wipes the bar. "Quiet fellow. Paid his tab, helped with the heavy
+  barrels once. Never caused trouble. But there was something about him -
+  like he was carrying a weight no one else could see."
+
+  "If you're looking for him, I'd try the old roads north. Or the temple
+  ruins. Places folk like him go when they need to disappear."
+
+choices:
+  - id: ask_more
+    text: "Ask about the dungeon business"
+    shortcut: A
+    next_scene: bess_news
+
+  - id: return_inn
+    text: "Thanks, Bess"
+    shortcut: B
+    next_scene: iron_maiden_inn

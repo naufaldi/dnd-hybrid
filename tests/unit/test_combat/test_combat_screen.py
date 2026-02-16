@@ -1,7 +1,7 @@
 """Unit tests for combat screen functionality."""
 
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock, patch, AsyncMock, PropertyMock
 from src.tui.screens.combat_screen import CombatScreen, Attack
 
 
@@ -84,17 +84,13 @@ class TestCombatScreenActions:
         messages = ["Message 1", "Message 2", "Message 3"]
         for msg in messages:
             combat_screen._add_combat_message(msg)
-
         assert len(combat_screen.combat_log) == 3
         assert combat_screen.combat_log == messages
 
     def test_combat_log_limit(self, combat_screen):
         """Test that combat log displays last 5 messages."""
-        # Add 10 messages
         for i in range(10):
             combat_screen._add_combat_message(f"Message {i}")
-
-        # Log should have all 10, but display shows last 5
         assert len(combat_screen.combat_log) == 10
 
 
@@ -167,57 +163,49 @@ class TestCombatScreenTransitions:
     @pytest.fixture
     def combat_screen(self):
         """Create a combat screen with mocked app."""
-        screen = CombatScreen(
-            enemy_name="Boss",
-            enemy_hp=50,
-            enemy_ac=15,
-            victory_scene="hero_ending",
-            defeat_scene="death_in_dungeon",
-        )
-        screen.app = Mock()
-        screen.app.pop_screen = Mock()
-        return screen
+        mock_app = Mock()
+        mock_app.pop_screen = Mock()
+        with patch.object(CombatScreen, "app", new_callable=PropertyMock) as p:
+            p.return_value = mock_app
+            screen = CombatScreen(
+                enemy_name="Boss",
+                enemy_hp=50,
+                enemy_ac=15,
+                victory_scene="hero_ending",
+                defeat_scene="death_in_dungeon",
+            )
+            yield screen
 
     @pytest.mark.asyncio
     async def test_victory_transition(self, combat_screen):
         """Test that victory transitions to victory scene."""
-        # Mock the app attributes
         mock_game_state = Mock()
         mock_game_state.is_combat = True
         mock_game_state.current_enemy = "boss"
         combat_screen.app.narrative_game_state = mock_game_state
-        combat_screen.app.scene_manager = Mock()
-        combat_screen.app.scene_manager.get_scene = Mock(return_value=Mock())
+        combat_screen.app.pop_screen = Mock()
 
-        # Trigger victory
-        await combat_screen._combat_victory()
+        with patch.object(combat_screen.app, "scene_manager", None):
+            await combat_screen._combat_victory()
 
-        # Verify combat state cleared
         assert mock_game_state.is_combat is False
         assert mock_game_state.current_enemy is None
-
-        # Verify screen popped
         combat_screen.app.pop_screen.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_defeat_transition(self, combat_screen):
         """Test that defeat transitions to defeat scene."""
-        # Mock the app attributes
         mock_game_state = Mock()
         mock_game_state.is_combat = True
         mock_game_state.current_enemy = "boss"
         combat_screen.app.narrative_game_state = mock_game_state
-        combat_screen.app.scene_manager = Mock()
-        combat_screen.app.scene_manager.get_scene = Mock(return_value=Mock())
+        combat_screen.app.pop_screen = Mock()
 
-        # Trigger defeat
-        await combat_screen._combat_defeat()
+        with patch.object(combat_screen.app, "scene_manager", None):
+            await combat_screen._combat_defeat()
 
-        # Verify combat state cleared
         assert mock_game_state.is_combat is False
         assert mock_game_state.current_enemy is None
-
-        # Verify screen popped
         combat_screen.app.pop_screen.assert_called_once()
 
 
@@ -250,13 +238,6 @@ class TestCombatScreenPlayerState:
     @pytest.fixture
     def combat_screen(self):
         """Create a combat screen with mocked character."""
-        screen = CombatScreen(
-            enemy_name="Goblin",
-            enemy_hp=10,
-            enemy_ac=10,
-        )
-
-        # Mock game state with character
         mock_char = Mock()
         mock_char.hit_points = 20
         mock_char.max_hp = 20
@@ -268,10 +249,17 @@ class TestCombatScreenPlayerState:
         mock_game_state = Mock()
         mock_game_state.character = mock_char
 
-        screen.app = Mock()
-        screen.app.narrative_game_state = mock_game_state
+        mock_app = Mock()
+        mock_app.narrative_game_state = mock_game_state
 
-        return screen
+        with patch.object(CombatScreen, "app", new_callable=PropertyMock) as p:
+            p.return_value = mock_app
+            screen = CombatScreen(
+                enemy_name="Goblin",
+                enemy_hp=10,
+                enemy_ac=10,
+            )
+            yield screen
 
     def test_player_info_display(self, combat_screen):
         """Test that player info is retrieved correctly."""

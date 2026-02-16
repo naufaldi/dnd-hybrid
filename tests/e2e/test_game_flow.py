@@ -37,7 +37,7 @@ class TestCompleteGameFlow:
                 # Check skill check destinations
                 if choice.skill_check:
                     for key in ["success_next_scene", "failure_next_scene"]:
-                        target = choice.skill_check.get(key)
+                        target = getattr(choice.skill_check, key, None)
                         if target:
                             queue.append(target)
 
@@ -79,7 +79,7 @@ class TestCompleteGameFlow:
         scenes_dir = Path(__file__).parent.parent.parent / "src" / "story" / "scenes"
         manager = SceneManager(scenes_dir)
 
-        # Define main quest path
+        # Define main quest path (lake route: dungeon -> lake -> far_shore -> shrine -> conclusion)
         main_quest = [
             "tavern_entry",
             "mysterious_figure",
@@ -87,8 +87,9 @@ class TestCompleteGameFlow:
             "offer_heroic",
             "dungeon_entrance",
             "dungeon_entry_hall",
-            "goblin_encounter",
-            "goblin_victory",
+            "underground_lake",
+            "far_shore",
+            "dark_shrine",
             "act1_conclusion",
         ]
 
@@ -111,7 +112,7 @@ class TestCompleteGameFlow:
                 # Check skill check destinations
                 if choice.skill_check:
                     for key in ["success_next_scene", "failure_next_scene"]:
-                        if choice.skill_check.get(key) == next_in_chain:
+                        if getattr(choice.skill_check, key, None) == next_in_chain:
                             has_path = True
                             break
 

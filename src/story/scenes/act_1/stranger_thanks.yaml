@@ -1,0 +1,32 @@
+id: stranger_thanks
+act: 1
+title: "A Private Word"
+
+description: |
+  You step aside with the stranger. The crowd's cheers fade as you walk
+  toward the edge of the village square.
+
+  He pulls back his hood. Aldric - the fugitive priest, the one who
+  unleashed the darkness. His scars seem less terrible in the daylight.
+
+  "You did what I could not," he says quietly. "I tried to warn them.
+  I tried to seal the temple. But I was too broken, too afraid."
+
+  He meets your gaze. "Thank you. Not just for the town - for showing me
+  that redemption is possible."
+
+  He presses a small pouch into your hand - gold, and a worn journal.
+  "My notes. Perhaps they'll help if darkness ever stirs again."
+
+  With a final nod, he melts into the crowd. You never see him leave.
+
+choices:
+  - id: rejoin_celebration
+    text: "Rejoin the celebration"
+    shortcut: A
+    next_scene: hero_ending
+
+  - id: slip_away
+    text: "Slip away to rest"
+    shortcut: B
+    next_scene: survivor_ending

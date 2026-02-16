@@ -1,0 +1,34 @@
+id: inn_drink
+act: 2
+title: "A Quiet Ale"
+
+description: |
+  Bess slides a foaming mug across the bar. "On the house. Hero's discount."
+
+  The ale is cool and bitter, exactly what you need. Around you, the
+  inn hums with conversation - merchants discussing routes, guards
+  swapping stories, a group of travelers planning their next move.
+
+  For a moment, you can almost forget the darkness you faced below.
+  Almost.
+
+choices:
+  - id: talk_bess
+    text: "Actually, I'd like to hear the news"
+    shortcut: A
+    next_scene: bess_news
+
+  - id: listen_bard
+    text: "Listen to the bard"
+    shortcut: B
+    next_scene: bard_song
+
+  - id: rest
+    text: "Rent a room"
+    shortcut: C
+    next_scene: inn_rest
+
+  - id: leave
+    text: "Finish up and leave"
+    shortcut: D
+    next_scene: iron_maiden_inn

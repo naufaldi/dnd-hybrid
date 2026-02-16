@@ -90,10 +90,6 @@ class TestFullCombatScenario:
             defeat_scene="death_in_dungeon",
         )
 
-        # Mock app
-        screen.app = Mock()
-        screen.app.narrative_game_state = mock_game_state
-
         assert screen.enemy_name == "Goblin"
         assert screen.enemy_current_hp == 7
         assert screen.victory_scene == "goblin_victory"
@@ -158,9 +154,10 @@ class TestCombatVictoryPath:
 
     def test_combat_victory_clears_state(self):
         """Test that victory clears combat state."""
-        from src.narrative.game_state import GameState
+        from src.narrative.models import GameState
 
-        state = GameState()
+        mock_char = Mock()
+        state = GameState(character=mock_char)
         state.is_combat = True
         state.current_enemy = "goblin"
 

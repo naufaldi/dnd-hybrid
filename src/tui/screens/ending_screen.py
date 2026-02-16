@@ -37,7 +37,10 @@ class EndingScreen(Screen):
 
     def _update_display(self) -> None:
         """Update the ending display."""
-        title_widget = self.query_one("#ending_title", Static)
+        try:
+            title_widget = self.query_one("#ending_title", Static)
+        except Exception:
+            return
         desc_widget = self.query_one("#ending_description", Static)
         stats_widget = self.query_one("#stats_section", Static)
         buttons_widget = self.query_one("#ending_buttons", Static)

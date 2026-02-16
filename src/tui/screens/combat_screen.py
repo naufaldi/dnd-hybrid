@@ -74,8 +74,10 @@ class CombatScreen(Screen):
 
     def _update_display(self) -> None:
         """Update the combat display."""
-        # Get player info from game state
-        game_state = getattr(self.app, "narrative_game_state", None)
+        try:
+            game_state = getattr(self.app, "narrative_game_state", None)
+        except Exception:
+            return
         player_hp = "??"
         player_max_hp = "??"
         player_name = "Adventurer"
@@ -86,11 +88,12 @@ class CombatScreen(Screen):
             player_max_hp = str(char.max_hp)
             player_name = char.name
 
-        # Title
-        title_widget = self.query_one("#combat_title", Static)
+        try:
+            title_widget = self.query_one("#combat_title", Static)
+        except Exception:
+            return
         title_widget.update(f"[b]═══ ⚔ Combat: {self.enemy_name} ⚔ ═══[/b]")
 
-        # Status
         status_widget = self.query_one("#combat_status", Static)
         status = f"""
 [yellow]{player_name}[/yellow]
@@ -103,11 +106,9 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
             status += f"Abilities: {', '.join(self.enemy_abilities)}"
         status_widget.update(status)
 
-        # Combat log
         log_widget = self.query_one("#combat_log", Static)
         log_widget.update("\n".join(self.combat_log[-5:]) if self.combat_log else "Combat begins!")
 
-        # Choices
         choices_widget = self.query_one("#combat_choices", Static)
         if self.player_action is None:
             choices_widget.update(

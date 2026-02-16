@@ -1,0 +1,30 @@
+id: bess_farms
+act: 2
+title: "The Farm Raids"
+
+description: |
+  Bess's expression darkens. "The raids? Bad business. North of here,
+  near Thornkeep. Bandits - or something worse. Good folk losing
+  livestock, grain stores emptied. A few farmers have gone missing."
+
+  She leans in. "The guard's stretched thin. Sergeant Bron's been
+  asking for volunteers to scout the area. Says he'll pay well for
+  anyone who can bring back information - or put an end to it."
+
+  "You being a hero and all, you might be just what they need."
+
+choices:
+  - id: volunteer
+    text: "I'll look into it"
+    shortcut: A
+    next_scene: bandit_quest_intro
+
+  - id: ask_tower
+    text: "What about the mages tower?"
+    shortcut: B
+    next_scene: bess_news
+
+  - id: return_inn
+    text: "I'll think about it"
+    shortcut: C
+    next_scene: iron_maiden_inn
