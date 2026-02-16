@@ -8,6 +8,7 @@ from .models import Scene, Choice, GameState, Consequence, SkillCheck
 from .validators import validate_scene
 from .fallbacks import get_fallback_scene
 from ..ai.openrouter_client import OpenRouterClient
+from ..ai.prompts import build_story_summary, build_scene_generation_prompt
 
 logger = get_logger(__name__)
 
@@ -69,6 +70,7 @@ class SceneManager:
                 combat_encounter=choice_data.get("combat_encounter"),
                 victory_next_scene=choice_data.get("victory_next_scene"),
                 defeat_scene=choice_data.get("defeat_scene"),
+                quest_trigger=choice_data.get("quest_trigger"),
             )
             choices.append(choice)
 
@@ -89,8 +91,9 @@ class SceneManager:
             npc_name=data.get("npc_name"),
             npc_mood=data.get("npc_mood"),
             required_mechanics=data.get("required_mechanics", []),
-            is_ai_generated=False,  # YAML scenes are manual
+            is_ai_generated=False,
             source_file=source_path,
+            ai_choices=data.get("ai_choices", False),
         )
 
     def get_scene(self, scene_id: str) -> Scene:
@@ -219,58 +222,56 @@ class SceneManager:
 
         logger.info(f"AI generating scene for: {scene_id}")
 
-        # Build context for the AI
-        char_info = ""
-        flags_info = ""
-        if game_state and game_state.character:
-            char = game_state.character
-            char_info = f"Player: {char.name} the {char.race} {char.character_class} (HP: {char.hit_points})"
-        if game_state and game_state.flags:
-            flags_info = f"Story progress: {', '.join([k for k, v in game_state.flags.items() if v])}"
+        ctx: Dict[str, str] = {
+            "char_info": "",
+            "flags_info": "",
+            "story_summary": "",
+            "scene_history": "",
+            "choices_made": "",
+            "inventory_info": "",
+            "relationships_info": "",
+            "current_act": 2,
+        }
 
-        prompt = f"""Generate a D&D narrative game scene in YAML format.
+        if game_state:
+            ctx["current_act"] = game_state.current_act
+            if game_state.character:
+                char = game_state.character
+                ctx["char_info"] = (
+                    f"Player: {char.name} the {char.race} {char.character_class} "
+                    f"(HP: {char.hit_points})"
+                )
+            if game_state.flags:
+                ctx["flags_info"] = (
+                    f"Story progress: {', '.join([k for k, v in game_state.flags.items() if v])}"
+                )
+            if game_state.scene_history:
+                recent = game_state.scene_history[-7:]
+                ctx["scene_history"] = f"Path: {' -> '.join(recent)}"
+            if game_state.choices_made:
+                recent_choices = game_state.choices_made[-10:]
+                ctx["choices_made"] = f"Chose: {', '.join(recent_choices)}"
+            if game_state.inventory:
+                ctx["inventory_info"] = (
+                    f"Inventory: {', '.join(game_state.inventory[:5])}"
+                )
+            if game_state.relationships:
+                rels = [
+                    f"{npc}:{val}"
+                    for npc, val in list(game_state.relationships.items())[:3]
+                ]
+                ctx["relationships_info"] = f"Relationships: {', '.join(rels)}"
+            ctx["story_summary"] = build_story_summary(
+                {
+                    "flags": game_state.flags,
+                    "choices_made": game_state.choices_made,
+                    "scene_history": game_state.scene_history,
+                    "inventory": game_state.inventory,
+                    "relationships": game_state.relationships,
+                }
+            )
 
-Scene ID: {scene_id}
-{char_info}
-{flags_info}
-
-Generate a complete scene with:
-- id: {scene_id}
-- act: 2 (this is Act 2)
-- title: A fitting title
-- description: 3-5 sentences of atmospheric narrative in second person ("You see...", "You hear...")
-- choices: 3-4 choices with different approaches (combat, diplomatic, stealth, exploration)
-- Each choice should have a unique next_scene ID that continues the story
-
-The tone should be:
-- Atmospheric and immersive
-- Present tense, second person
-- Mix of danger and opportunity
-- Logical story progression
-
-Format as clean YAML. Include flags_set if appropriate.
-
-Example format:
-```yaml
-id: {scene_id}
-act: 2
-title: "Your Scene Title"
-description: |
-  Narrative description here. Present tense, second person.
-choices:
-  - id: choice_1
-    text: "First choice description"
-    shortcut: A
-    next_scene: scene_id_for_choice_1
-  - id: choice_2
-    text: "Second choice"
-    shortcut: B
-    next_scene: another_scene_id
-flags_set:
-  visited_generated_scene: true
-```
-
-Generate ONLY the YAML, no other text:"""
+        prompt = build_scene_generation_prompt(scene_id, ctx)
 
         try:
             import asyncio
@@ -311,7 +312,8 @@ Generate ONLY the YAML, no other text:"""
                         title=scene_data.get("title", "Untitled"),
                         description=scene_data.get("description", ""),
                         choices=choices,
-                        flags_set=scene_data.get("flags_set", {})
+                        flags_set=scene_data.get("flags_set", {}),
+                        is_ai_generated=True,
                     )
 
                     logger.info(f"AI successfully generated scene: {scene_id}")

@@ -296,7 +296,12 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
             screen = NarrativeGameScreen()
             scene_mgr = getattr(self.app, "scene_manager", None)
             if scene_mgr:
-                scene = scene_mgr.get_scene(self.victory_scene)
+                if scene_mgr.ai_client and game_state:
+                    scene = await scene_mgr.get_scene_async(
+                        self.victory_scene, game_state
+                    )
+                else:
+                    scene = scene_mgr.get_scene(self.victory_scene)
                 self.app.push_screen(screen)
                 screen.game_state = game_state
                 await screen.set_scene(scene)
@@ -321,7 +326,12 @@ HP: {self.enemy_current_hp}/{self.enemy_max_hp}  AC: {self.enemy_ac}
             screen = NarrativeGameScreen()
             scene_mgr = getattr(self.app, "scene_manager", None)
             if scene_mgr:
-                scene = scene_mgr.get_scene(self.defeat_scene)
+                if scene_mgr.ai_client and game_state:
+                    scene = await scene_mgr.get_scene_async(
+                        self.defeat_scene, game_state
+                    )
+                else:
+                    scene = scene_mgr.get_scene(self.defeat_scene)
                 self.app.push_screen(screen)
                 screen.game_state = game_state
                 await screen.set_scene(scene)

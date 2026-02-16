@@ -6,7 +6,10 @@ from textual.containers import Horizontal, Vertical, ScrollableContainer  # noqa
 from textual.widgets import Static, Button
 from textual import events
 
+from typing import List
+
 from ...narrative.models import Scene, Choice, GameState  # noqa: F401
+from ...narrative.quest_generator import QUEST_TEMPLATES
 from ...combat.dice_display import DiceDisplay
 from ...utils.logger import get_logger
 
@@ -22,6 +25,7 @@ class NarrativeGameScreen(Screen):
         self.game_state: GameState | None = None
         self.dice_display = DiceDisplay()
         self._start_time: float | None = None
+        self._effective_choices: List[Choice] = []
 
     def compose(self):
         """Compose the narrative game screen."""
@@ -55,9 +59,15 @@ class NarrativeGameScreen(Screen):
         if not self.current_scene and hasattr(self.app, "narrative_initial_scene"):
             scene_id = self.app.narrative_initial_scene
             if scene_id and hasattr(self.app, "scene_manager"):
+                scene_mgr = self.app.scene_manager
                 try:
-                    self.current_scene = self.app.scene_manager.get_scene(scene_id)
-                except ValueError:
+                    if scene_mgr.ai_client and self.game_state:
+                        self.current_scene = await scene_mgr.get_scene_async(
+                            scene_id, self.game_state
+                        )
+                    else:
+                        self.current_scene = scene_mgr.get_scene(scene_id)
+                except Exception:
                     pass
         if self.current_scene:
             await self._update_display()
@@ -189,10 +199,57 @@ class NarrativeGameScreen(Screen):
         choices_container = self.query_one("#choices_container", Vertical)
         await choices_container.remove_children()
 
-        if not self.current_scene or not self.current_scene.choices:
+        if not self.current_scene:
             return
 
-        for choice in self.current_scene.choices:
+        effective_choices: List[Choice] = list(self.current_scene.choices)
+        need_ai = (
+            self.current_scene.ai_choices or len(effective_choices) < 2
+        ) and getattr(self.app, "ai_service", None)
+
+        if need_ai and self.app.ai_service and self.app.ai_service.is_enabled():
+            try:
+                scene_context = (
+                    f"{self.current_scene.title}: {self.current_scene.description[:200]}"
+                )
+                char_info = {}
+                if self.game_state and self.game_state.character:
+                    c = self.game_state.character
+                    char_info = {
+                        "name": getattr(c, "name", "Hero"),
+                        "race": getattr(c, "race", ""),
+                        "class": getattr(c, "character_class", "adventurer"),
+                    }
+                story_flags = self.game_state.flags if self.game_state else {}
+                num_ai = max(2 - len(effective_choices), 2) if not self.current_scene.ai_choices else 2
+                ai_choices_raw = await self.app.ai_service.generate_choices(
+                    scene_context, char_info, story_flags, num_choices=num_ai
+                )
+                used_shortcuts = {ch.shortcut.upper() for ch in effective_choices}
+                shortcuts = ["A", "B", "C", "D"]
+                available = [s for s in shortcuts if s not in used_shortcuts]
+                for i, raw in enumerate(ai_choices_raw):
+                    if i >= len(available):
+                        break
+                    choice_id = f"ai_choice_{i}"
+                    next_scene = f"{self.current_scene.id}_ai_{i}"
+                    effective_choices.append(
+                        Choice(
+                            id=choice_id,
+                            text=raw.get("text", "Continue"),
+                            shortcut=available[i],
+                            next_scene=next_scene,
+                        )
+                    )
+            except Exception as e:
+                logger.warning(f"AI choice generation failed: {e}")
+
+        self._effective_choices = effective_choices
+
+        if not effective_choices:
+            return
+
+        for choice in effective_choices:
             if self._is_choice_available(choice):
                 # Format: [A] Choice text - shortcut in yellow (NOT a hotkey)
                 # Use scene ID prefix to ensure unique button IDs across scenes
@@ -293,7 +350,7 @@ class NarrativeGameScreen(Screen):
         if not self.current_scene or not self.game_state:
             return
 
-        choice = next((c for c in self.current_scene.choices if c.id == choice_id), None)
+        choice = next((c for c in self._effective_choices if c.id == choice_id), None)
         if not choice:
             return
 
@@ -302,13 +359,42 @@ class NarrativeGameScreen(Screen):
         for flag, value in choice.set_flags.items():
             self.game_state.flags[flag] = value
 
-        # Check for combat encounter first
+        if choice.quest_trigger:
+            await self._handle_quest_trigger(choice)
+            return
+
         if choice.combat_encounter:
             await self._start_combat(choice)
         elif choice.skill_check:
             self._handle_skill_check(choice)
         else:
             await self._transition_to_scene(choice.next_scene)
+
+    async def _handle_quest_trigger(self, choice: Choice) -> None:
+        """Generate procedural quest and transition to first scene."""
+        quest_generator = getattr(self.app, "quest_generator", None)
+        scene_manager = getattr(self.app, "scene_manager", None)
+        if not quest_generator or not scene_manager or not quest_generator.ai_client:
+            await self._transition_to_scene(choice.next_scene or "town_square")
+            return
+
+        template = QUEST_TEMPLATES.get(
+            choice.quest_trigger,
+            QUEST_TEMPLATES.get("fetch_artifact"),
+        )
+
+        if template:
+            try:
+                scenes = await quest_generator.generate_quest(
+                    template, self.game_state, scene_manager
+                )
+                if scenes:
+                    first_scene = scenes[0]
+                    await self._transition_to_scene(first_scene.id)
+                    return
+            except Exception as e:
+                logger.warning(f"Quest generation failed: {e}")
+        await self._transition_to_scene(choice.next_scene or "town_square")
 
     async def _start_combat(self, choice) -> None:
         """Start a combat encounter with the specified enemy."""
@@ -449,7 +535,10 @@ class NarrativeGameScreen(Screen):
             return
 
         try:
-            scene = scene_manager.get_scene(scene_id)
+            if scene_manager.ai_client and self.game_state:
+                scene = await scene_manager.get_scene_async(scene_id, self.game_state)
+            else:
+                scene = scene_manager.get_scene(scene_id)
             self.game_state.current_scene = scene_id
             self.game_state.scene_history.append(scene_id)
             await self.set_scene(scene)
@@ -461,12 +550,13 @@ class NarrativeGameScreen(Screen):
                 self.game_state.is_combat = True
 
             if scene.is_ending:
-                self._handle_ending(scene)
+                await self._handle_ending(scene)
 
-        except ValueError:
+        except Exception as e:
+            logger.warning(f"Scene load failed for {scene_id}: {e}")
             self.notify(f"Scene not found: {scene_id}")
 
-    def _handle_ending(self, scene: Scene) -> None:
+    async def _handle_ending(self, scene: Scene) -> None:
         """Handle reaching an ending."""
         if not self.game_state:
             return
@@ -484,13 +574,28 @@ class NarrativeGameScreen(Screen):
         import time
         from .ending_screen import EndingScreen
 
+        description = ending.description
+        ai_service = getattr(self.app, "ai_service", None)
+        if ai_service and ai_service.is_enabled():
+            try:
+                ctx = {
+                    "flags": self.game_state.flags,
+                    "choices_made": self.game_state.choices_made,
+                    "scene_history": self.game_state.scene_history,
+                }
+                description = await ai_service.enhance_ending(
+                    ending.description, ctx
+                )
+            except Exception as e:
+                logger.warning(f"Ending enhancement failed: {e}")
+
         stats = {
             "Choices Made": str(len(self.game_state.choices_made)),
             "Scenes Visited": str(len(self.game_state.scene_history)),
             "Play Time": f"{int((time.time() - self._start_time) / 60) if self._start_time else 0} minutes",
         }
         ending_screen = EndingScreen()
-        ending_screen.set_ending(ending.title, ending.description, stats)
+        ending_screen.set_ending(ending.title, description, stats)
         self.app.push_screen(ending_screen)
 
     async def on_key(self, event: events.Key) -> None:
@@ -506,7 +611,7 @@ class NarrativeGameScreen(Screen):
             return
 
         key = event.key.upper()
-        for choice in self.current_scene.choices:
+        for choice in self._effective_choices:
             if choice.shortcut.upper() == key and self._is_choice_available(choice):
                 await self._handle_choice(choice.id)
                 break

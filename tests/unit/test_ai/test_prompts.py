@@ -6,6 +6,9 @@ from src.ai.prompts import (
     build_dialogue_prompt,
     build_outcome_prompt,
     build_choices_prompt,
+    build_story_summary,
+    build_scene_generation_prompt,
+    build_ending_enhancement_prompt,
 )
 
 
@@ -58,3 +61,43 @@ class TestChoicesPrompt:
         assert "A tavern" in prompt
         assert "Hero" in prompt or "fighter" in prompt
         assert "2" in prompt
+
+
+class TestStorySummary:
+    def test_build_story_summary_with_history(self):
+        summary = build_story_summary(
+            {
+                "scene_history": ["tavern", "dungeon", "goblins"],
+                "choices_made": ["fought", "took_left"],
+                "flags": {"met_stranger": True},
+            }
+        )
+        assert "tavern" in summary or "dungeon" in summary
+        assert "fought" in summary or "took_left" in summary
+
+    def test_build_story_summary_empty(self):
+        summary = build_story_summary({})
+        assert "Beginning" in summary or summary
+
+
+class TestSceneGenerationPrompt:
+    def test_build_scene_generation_prompt_includes_context(self):
+        prompt = build_scene_generation_prompt(
+            "test_scene",
+            {
+                "char_info": "Player: Hero the human fighter",
+                "story_summary": "Path: tavern -> dungeon",
+            },
+        )
+        assert "test_scene" in prompt
+        assert "Hero" in prompt or "fighter" in prompt
+
+
+class TestEndingEnhancementPrompt:
+    def test_build_ending_enhancement_prompt_includes_context(self):
+        prompt = build_ending_enhancement_prompt(
+            "You emerge victorious.",
+            {"flags": {"defeated_cultist": True}, "choices_made": ["heroic"]},
+        )
+        assert "You emerge victorious" in prompt
+        assert "defeated_cultist" in prompt or "heroic" in prompt

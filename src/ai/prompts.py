@@ -3,6 +3,104 @@
 from typing import Dict, Any
 
 
+def build_story_summary(game_state: Dict[str, Any]) -> str:
+    """Build a brief story summary from game state for narrative consistency."""
+    flags = game_state.get("flags", {})
+    choices_made = game_state.get("choices_made", [])[-10:]
+    scene_history = game_state.get("scene_history", [])[-7:]
+    inventory = game_state.get("inventory", [])
+    relationships = game_state.get("relationships", {})
+
+    parts = []
+    if scene_history:
+        path = " -> ".join(scene_history)
+        parts.append(f"Path: {path}")
+    if choices_made:
+        parts.append(f"Key choices: {', '.join(choices_made)}")
+    if flags:
+        active = [k for k, v in flags.items() if v]
+        if active:
+            parts.append(f"Story flags: {', '.join(active)}")
+    if inventory:
+        parts.append(f"Inventory: {', '.join(inventory[:5])}")
+    if relationships:
+        notable = [f"{npc}:{val}" for npc, val in list(relationships.items())[:3]]
+        parts.append(f"Relationships: {', '.join(notable)}")
+
+    return " | ".join(parts) if parts else "Beginning of adventure"
+
+
+def build_scene_generation_prompt(
+    scene_id: str, context: Dict[str, Any]
+) -> str:
+    """Build prompt for AI scene generation with full context."""
+    char_info = context.get("char_info", "")
+    flags_info = context.get("flags_info", "")
+    story_summary = context.get("story_summary", "")
+    scene_history = context.get("scene_history", "")
+    choices_made = context.get("choices_made", "")
+    inventory_info = context.get("inventory_info", "")
+    relationships_info = context.get("relationships_info", "")
+    current_act = context.get("current_act", 2)
+
+    consistency_note = ""
+    if story_summary:
+        consistency_note = f"""
+CRITICAL - Narrative consistency:
+Story so far: {story_summary}
+Do NOT contradict established facts. Maintain tone and continuity."""
+
+    return f"""Generate a D&D narrative game scene in YAML format.
+
+Scene ID: {scene_id}
+{char_info}
+{flags_info}
+{scene_history}
+{choices_made}
+{inventory_info}
+{relationships_info}
+Current act: {current_act}
+{consistency_note}
+
+Generate a complete scene with:
+- id: {scene_id}
+- act: {current_act}
+- title: A fitting title
+- description: 3-5 sentences of atmospheric narrative in second person ("You see...", "You hear...")
+- choices: 3-4 choices with different approaches (combat, diplomatic, stealth, exploration)
+- Each choice should have a unique next_scene ID that continues the story
+
+The tone should be:
+- Atmospheric and immersive
+- Present tense, second person
+- Mix of danger and opportunity
+- Logical story progression
+
+Format as clean YAML. Include flags_set if appropriate.
+
+Example format:
+```yaml
+id: {scene_id}
+act: {current_act}
+title: "Your Scene Title"
+description: |
+  Narrative description here. Present tense, second person.
+choices:
+  - id: choice_1
+    text: "First choice description"
+    shortcut: A
+    next_scene: scene_id_for_choice_1
+  - id: choice_2
+    text: "Second choice"
+    shortcut: B
+    next_scene: another_scene_id
+flags_set:
+  visited_generated_scene: true
+```
+
+Generate ONLY the YAML, no other text:"""
+
+
 def build_scene_enhancement_prompt(template: str, context: Dict[str, Any]) -> str:
     """Build prompt for enhancing scene description."""
     player_class = context.get("player_class", "unknown")
@@ -99,3 +197,64 @@ Format your response as a JSON list like:
 ]
 
 Only output the JSON, no other text:"""
+
+
+def build_quest_scene_prompt(
+    objective: str,
+    step_index: int,
+    total_steps: int,
+    quest_type: str,
+    context: Dict[str, Any],
+) -> str:
+    """Build prompt for procedural quest scene generation."""
+    char_info = context.get("char_info", "")
+    story_summary = context.get("story_summary", "")
+
+    step_desc = {
+        0: "introduction - the quest giver explains the task",
+        total_steps - 1: "climax - the objective is achieved, reward given",
+    }.get(step_index, f"middle step {step_index + 1} of {total_steps}")
+
+    return f"""Generate a D&D narrative game scene for a procedural quest.
+
+Quest type: {quest_type}
+Objective: {objective}
+This is step {step_index + 1} of {total_steps}: {step_desc}
+
+{char_info}
+{story_summary}
+
+Generate a complete scene in YAML format with:
+- id: quest_{objective}_{step_index}
+- act: (from context, usually 2)
+- title: A fitting title
+- description: 3-5 sentences, second person, atmospheric
+- choices: 3-4 choices with next_scene IDs
+
+For the final step, one choice should lead to a completion scene (next_scene: quest_complete_{objective}).
+For middle steps, choices lead to quest_{objective}_{step_index + 1} or similar.
+
+Generate ONLY valid YAML, no other text:"""
+
+
+def build_ending_enhancement_prompt(
+    base_description: str, game_state: Dict[str, Any]
+) -> str:
+    """Build prompt for AI-enhanced ending with playthrough-specific details."""
+    flags = game_state.get("flags", {})
+    choices_made = game_state.get("choices_made", [])
+    scene_count = len(game_state.get("scene_history", []))
+
+    active_flags = [k for k, v in flags.items() if v]
+    context = f"Flags: {', '.join(active_flags) or 'none'}. "
+    context += f"Key choices: {', '.join(choices_made[-5:]) or 'none'}. "
+    context += f"Scenes visited: {scene_count}."
+
+    return f"""Enhance this game ending with 1-2 personalized sentences reflecting the player's unique journey.
+
+Base ending:
+{base_description}
+
+Playthrough context: {context}
+
+Add 1-2 sentences that reference specific choices or achievements. Keep the original tone. Output ONLY the enhanced ending text, no preamble:"""

@@ -25,6 +25,7 @@ from ..entities.character import Character
 from ..narrative.models import GameState
 from ..narrative.scene_manager import SceneManager
 from ..narrative.ending_manager import EndingManager
+from ..narrative.quest_generator import QuestGenerator
 from ..ai.narrative_generator import create_ai_service
 from ..narrative.npc_memory import NPCMemoryManager
 
@@ -121,7 +122,9 @@ class DNDRoguelikeApp(App):
         story_dir = Path(__file__).parent.parent / "story" / "scenes"
         endings_file = Path(__file__).parent.parent / "story" / "endings.yaml"
         self.ai_service = create_ai_service(api_key=_load_api_key())
-        self.scene_manager = SceneManager(story_dir, ai_client=self.ai_service)
+        ai_client = getattr(self.ai_service, "client", None)
+        self.scene_manager = SceneManager(story_dir, ai_client=ai_client)
+        self.quest_generator = QuestGenerator(ai_client=ai_client)
         self.ending_manager = EndingManager(endings_file)
 
         self.narrative_game_state: Optional[GameState] = None

@@ -39,9 +39,9 @@ class Choice:
     required_mechanics: List[str] = field(default_factory=list)
     # NEW: Combat encounter - triggers combat with specified enemy type
     combat_encounter: Optional[str] = None
-    # Scenes to transition to after combat
     victory_next_scene: Optional[str] = None
     defeat_scene: Optional[str] = None
+    quest_trigger: Optional[str] = None
 
 
 @dataclass
@@ -67,6 +67,7 @@ class Scene:
     required_mechanics: List[str] = field(default_factory=list)
     is_ai_generated: bool = False
     source_file: Optional[str] = None
+    ai_choices: bool = False
 
 
 @dataclass
@@ -99,8 +100,9 @@ class GameState:
     turns_spent: int = 0
     # Combat tracking
     current_enemy: Optional[str] = None  # Enemy type for current combat
-    victory_scene: Optional[str] = None  # Scene after winning
-    defeat_scene: Optional[str] = None  # Scene after losing
+    victory_scene: Optional[str] = None
+    defeat_scene: Optional[str] = None
+    active_quest: Optional[Any] = None
 
 
 @dataclass

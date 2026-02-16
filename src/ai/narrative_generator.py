@@ -13,6 +13,7 @@ from .prompts import (
     build_dialogue_prompt,
     build_outcome_prompt,
     build_choices_prompt,
+    build_ending_enhancement_prompt,
 )
 from .fallback import (
     get_fallback_dialogue,
@@ -294,6 +295,39 @@ class NarrativeGenerator:
             logger.warning(f"AI choice generation failed: {e}")
 
         return fallback_options[:num_choices]
+
+    async def enhance_ending(
+        self, base_description: str, game_state: Dict[str, Any]
+    ) -> str:
+        """Enhance ending description with playthrough-specific details."""
+        if not self.enabled or not self.client:
+            return base_description
+
+        ctx = {
+            "flags": game_state.get("flags", {}),
+            "choices_made": game_state.get("choices_made", []),
+            "scene_history": game_state.get("scene_history", []),
+        }
+        cache_key = f"ending_{hashlib.sha256(base_description.encode()).hexdigest()[:12]}"
+        context_hash = str(ctx.get("flags", {}))
+        cached = self.cache.get(cache_key, context_hash)
+        if cached:
+            return cached
+
+        prompt = build_ending_enhancement_prompt(base_description, ctx)
+        try:
+            response = await self.client.generate_with_fallback(
+                prompt, max_tokens=200, temperature=0.7
+            )
+            if response and response.strip():
+                enhanced = response.strip()
+                self.cache.set(
+                    cache_key, enhanced, self.client.default_model, context_hash
+                )
+                return enhanced
+        except (AIError, RateLimitError, Exception) as e:
+            logger.warning(f"AI ending enhancement failed: {e}")
+        return base_description
 
     def is_enabled(self) -> bool:
         """Check if AI generation is enabled."""
