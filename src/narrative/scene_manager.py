@@ -77,6 +77,7 @@ class SceneManager:
             act=data.get("act", 1),
             title=data.get("title", ""),
             description=data.get("description", ""),
+            description_ai=data.get("description_ai"),
             choices=choices,
             next_scene=data.get("next_scene"),
             flags_required=data.get("flags_required", {}),

@@ -52,6 +52,7 @@ class Scene:
     act: int
     title: str
     description: str
+    description_ai: Optional[str] = None
     choices: List[Choice] = field(default_factory=list)
     next_scene: Optional[str] = None
     flags_required: Dict[str, bool] = field(default_factory=dict)

@@ -25,7 +25,7 @@ from ..entities.character import Character
 from ..narrative.models import GameState
 from ..narrative.scene_manager import SceneManager
 from ..narrative.ending_manager import EndingManager
-from ..narrative.ai_service import create_ai_service
+from ..ai.narrative_generator import create_ai_service
 from ..narrative.npc_memory import NPCMemoryManager
 
 logger = logging.getLogger(__name__)
@@ -120,12 +120,12 @@ class DNDRoguelikeApp(App):
 
         story_dir = Path(__file__).parent.parent / "story" / "scenes"
         endings_file = Path(__file__).parent.parent / "story" / "endings.yaml"
-        self.scene_manager = SceneManager(story_dir)
+        self.ai_service = create_ai_service(api_key=_load_api_key())
+        self.scene_manager = SceneManager(story_dir, ai_client=self.ai_service)
         self.ending_manager = EndingManager(endings_file)
 
         self.narrative_game_state: Optional[GameState] = None
         self.narrative_initial_scene: Optional[str] = None
-        self.ai_service = create_ai_service(api_key=_load_api_key())
         self.npc_memory = NPCMemoryManager()
 
     def compose(self) -> ComposeResult:
@@ -192,7 +192,7 @@ class DNDRoguelikeApp(App):
         try:
             game_state = SaveDataBuilder.extract_narrative_state(save_data)
             scene_id = game_state.current_scene
-            scene = self.scene_manager.get_scene(scene_id)
+            self.scene_manager.get_scene(scene_id)
 
             self.narrative_game_state = game_state
             self.narrative_initial_scene = scene_id

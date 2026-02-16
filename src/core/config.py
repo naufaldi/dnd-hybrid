@@ -4,6 +4,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import os
 
+AI_CONFIG = {
+    "enabled": True,
+    "provider": "openrouter",
+    "api_key_env": "OPENROUTER_API_KEY",
+    "default_model": "openrouter/free",
+    "fallback_models": [
+        "deepseek/deepseek-chat",
+        "qwen/qwen-2.5-7b-instruct",
+    ],
+    "max_tokens": 500,
+    "temperature": 0.7,
+    "timeout_seconds": 10,
+}
+
 
 @dataclass
 class GameConfig:

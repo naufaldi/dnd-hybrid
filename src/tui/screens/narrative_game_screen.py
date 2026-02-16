@@ -83,8 +83,23 @@ class NarrativeGameScreen(Screen):
         # Format title with decoration per PRD
         title_widget.update(f"[b]═══ {self.current_scene.title} ═══[/b]")
 
-        # Parse and format description - separate narration from dialogue
-        description = self._format_description(self.current_scene.description)
+        # Get description - enhance with AI when available for rich content
+        if (
+            hasattr(self.app, "scene_manager")
+            and self.app.scene_manager.ai_client
+            and self.game_state
+        ):
+            try:
+                description = await self.app.scene_manager.render_scene(
+                    self.current_scene, self.game_state
+                )
+            except Exception as e:
+                logger.warning(f"Scene enhancement failed: {e}")
+                description = self.current_scene.description
+        else:
+            description = self.current_scene.description
+
+        description = self._format_description(description)
 
         # Check for AI-enhanced dialogue
         if self.current_scene.ai_dialogue and self.current_scene.npc_name:

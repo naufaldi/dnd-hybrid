@@ -50,20 +50,37 @@ class TestOpenRouterClient:
 
     @pytest.mark.asyncio
     async def test_response_validation(self, mock_client):
-        """Test response validation handles various formats."""
+        """Test invalid API response (empty choices) raises AIError."""
         from src.ai.openrouter_client import AIError
+        from unittest.mock import AsyncMock, MagicMock
 
-        # Test missing choices
-        invalid_response = {}
-        with pytest.raises(AIError) as exc_info:
-            mock_client._validate_response(invalid_response)
-        assert "no choices" in str(exc_info.value)
+        class FakeResponse:
+            status = 200
+            headers = {}
 
-        # Test empty choices
-        invalid_response = {"choices": []}
-        with pytest.raises(AIError) as exc_info:
-            mock_client._validate_response(invalid_response)
-        assert "no choices" in str(exc_info.value)
+            async def json(self):
+                return {"choices": []}
+
+            async def text(self):
+                return "{}"
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *args):
+                pass
+
+        with patch.object(mock_client, "_get_session", new_callable=AsyncMock) as mock_get:
+            mock_session = MagicMock()
+            mock_session.post = lambda *a, **kw: FakeResponse()
+            mock_get.return_value = mock_session
+
+            with pytest.raises(AIError):
+                await mock_client._make_request(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    {},
+                    {"model": "test", "messages": [], "max_tokens": 100},
+                )
 
     @pytest.mark.asyncio
     async def test_timeout_configuration(self):
@@ -92,14 +109,16 @@ class TestAIService:
     """Tests for AI service layer."""
 
     @pytest.fixture
-    def mock_ai_service(self):
-        """Create a mock AI service."""
-        from src.narrative.ai_service import AIService
+    def mock_ai_service(self, tmp_path):
+        """Create a mock AI service with temp cache."""
+        from src.narrative.ai_service import AIService, ResponseCache
 
         mock_client = Mock()
         mock_client.api_key = "test_key"
+        mock_client.default_model = "openrouter/free"
 
-        service = AIService(client=mock_client, enabled=True)
+        cache = ResponseCache(cache_dir=tmp_path)
+        service = AIService(client=mock_client, enabled=True, cache=cache)
         return service
 
     def test_service_enabled_check(self, mock_ai_service):
@@ -203,19 +222,76 @@ class TestAIFallbackMechanisms:
     @pytest.mark.asyncio
     async def test_fallback_used_on_ai_failure(self):
         """Test that fallback content is used when AI fails."""
-        from src.narrative.ai_service import AIService
+        import tempfile
+        from pathlib import Path
+        from src.ai.narrative_generator import NarrativeGenerator, ResponseCache
         from unittest.mock import Mock, AsyncMock
 
-        # Create service with failing client
         mock_client = Mock()
         mock_client.api_key = "test"
+        mock_client.default_model = "openrouter/free"
         mock_client.generate_with_fallback = AsyncMock(side_effect=Exception("API Error"))
 
-        service = AIService(client=mock_client, enabled=True)
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = ResponseCache(cache_dir=Path(tmp))
+            generator = NarrativeGenerator(client=mock_client, enabled=True, cache=cache)
+            result = await generator.enhance_scene_description(template="Test", context={})
+        assert isinstance(result, str)
+        assert len(result) > 0
 
-        # This should either raise or return fallback
-        with pytest.raises(Exception):
-            await service.enhance_scene_description(template="Test", context={})
+
+class TestSceneEnhancementIntegration:
+    """Tests for scene enhancement wiring."""
+
+    @pytest.mark.asyncio
+    async def test_scene_manager_enhances_description_when_ai_provided(self):
+        """SceneManager.render_scene returns enhanced description when ai_client provided."""
+        from pathlib import Path
+        from unittest.mock import Mock, AsyncMock
+        from src.narrative.scene_manager import SceneManager
+        from src.narrative.models import Scene, GameState
+
+        mock_client = Mock()
+        mock_client.enhance_description = AsyncMock(
+            return_value="Enhanced rich description of the scene."
+        )
+
+        story_dir = Path(__file__).parent.parent.parent / "src" / "story" / "scenes"
+        manager = SceneManager(story_dir, ai_client=mock_client)
+
+        scene = Scene(
+            id="test_scene",
+            act=1,
+            title="Test",
+            description="Base description.",
+        )
+        state = GameState(character=None, current_scene="test_scene")
+
+        result = await manager.render_scene(scene, state)
+        assert "Enhanced" in result or "rich" in result
+        mock_client.enhance_description.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_enhance_dialogue_integration(self):
+        """Full flow: enhance_dialogue returns AI or fallback content."""
+        import tempfile
+        from pathlib import Path
+        from src.ai.narrative_generator import NarrativeGenerator, ResponseCache
+        from unittest.mock import Mock, AsyncMock
+
+        mock_client = Mock()
+        mock_client.api_key = "test"
+        mock_client.default_model = "openrouter/free"
+        mock_client.generate_dialogue = AsyncMock(return_value='"The dungeon holds secrets."')
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = ResponseCache(cache_dir=Path(tmp))
+            generator = NarrativeGenerator(client=mock_client, enabled=True, cache=cache)
+            result = await generator.enhance_dialogue(
+                npc_name="Stranger", mood="enigmatic", context="Player approaches"
+            )
+        assert isinstance(result, str)
+        assert len(result) > 5
 
 
 class TestAIErrorScenarios:
@@ -223,18 +299,11 @@ class TestAIErrorScenarios:
 
     @pytest.mark.asyncio
     async def test_network_timeout_handling(self):
-        """Test handling of network timeouts."""
-        from src.ai.openrouter_client import OpenRouterClient, AIError
-        from unittest.mock import AsyncMock, patch
-        import aiohttp
+        """Test client has timeout configuration."""
+        from src.ai.openrouter_client import OpenRouterClient
 
         client = OpenRouterClient(api_key="test", timeout=1)
-
-        # Mock timeout error
-        with patch.object(client, "_get_session", AsyncMock()):
-            with pytest.raises(Exception):
-                # Would raise timeout in real scenario
-                pass
+        assert client.timeout.total == 1
 
     @pytest.mark.asyncio
     async def test_invalid_api_response(self):

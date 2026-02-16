@@ -1,6 +1,7 @@
 id: tavern_entry
 act: 1
 title: "The Prancing Pony"
+description_ai: "Add 2-3 sensory details about the busy tavern atmosphere"
 
 description: |
   The warm glow of hearth fire spills onto the cobblestones as you push 

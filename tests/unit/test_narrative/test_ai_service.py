@@ -22,6 +22,12 @@ class MockOpenRouterClient:
             raise AIError("Simulated API failure")
         return f"Mock dialogue from {npc_name} ({mood})"
 
+    async def generate_with_fallback(self, prompt, max_tokens=100, temperature=0.7):
+        self.call_count += 1
+        if self.should_fail:
+            raise AIError("Simulated API failure")
+        return "Mock outcome narration"
+
     async def generate_outcome(self, action, roll_result, dc, success):
         self.call_count += 1
         if self.should_fail:
